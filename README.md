@@ -25,13 +25,13 @@ La carpeta `.specify/` es la fuente central de verdad. El dataset, el target, lo
 ## Ramas
 
 - `main`: versión estable.
-- `codex/develop`: integración.
-- `codex/i1-data-foundation`: frente inicial de datos.
-- `codex/i2-evaluation-contract`: frente inicial de evaluación.
-- `codex/i3-frontend-mock`: frente inicial de frontend.
-- `codex/i4-backend-mock`: frente inicial de backend.
+- `develop`: integración.
+- `feature/i1-data-foundation`: frente inicial de datos.
+- `feature/i2-evaluation-contract`: frente inicial de evaluación.
+- `feature/i3-frontend-mock`: frente inicial de frontend.
+- `feature/i4-backend-mock`: frente inicial de backend.
 
-Después de los frentes iniciales, las ramas se crearán por ticket y se integrarán mediante Pull Request hacia `codex/develop`.
+Después de los frentes iniciales, las ramas se crearán por ticket y se integrarán mediante Pull Request hacia `develop`.
 
 ## Estructura
 

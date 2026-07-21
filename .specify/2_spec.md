@@ -90,14 +90,14 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 | Persistencia | Pendiente | No seleccionada |
 | Despliegue | Pendiente | No seleccionado |
 | Gestión del equipo | Pendiente | Trello u otra herramienta |
-| Estrategia Git | Aprobada | `main` estable, `codex/develop` integración y ramas por ticket |
+| Estrategia Git | Aprobada | `main` estable, `develop` integración y ramas `feature/` por ticket |
 
 ## Estrategia Git aprobada
 
 ### Ramas permanentes
 
 - `main`: versión estable, demostrable y potencialmente entregable.
-- `codex/develop`: rama de integración del trabajo revisado.
+- `develop`: rama de integración del trabajo revisado.
 
 No se trabajará directamente sobre estas ramas salvo una operación de bootstrap aprobada por el equipo. El cambio que crea la estructura inicial constituye esa operación excepcional.
 
@@ -108,38 +108,38 @@ Las ramas de trabajo serán temporales y estarán asociadas a un ticket de `4_ta
 Formato general:
 
 ```text
-codex/t-<fase>.<tarea>-<descripcion-corta>
+feature/t-<fase>.<tarea>-<descripcion-corta>
 ```
 
 Ejemplos posteriores:
 
 ```text
-codex/t-1.1-dataset-loader
-codex/t-2.1-model-a
-codex/t-3.3-frontend-integration
+feature/t-1.1-dataset-loader
+feature/t-2.1-model-a
+feature/t-3.3-frontend-integration
 ```
 
 Para iniciar los cuatro frentes se crean estas ramas:
 
-- `codex/i1-data-foundation`.
-- `codex/i2-evaluation-contract`.
-- `codex/i3-frontend-mock`.
-- `codex/i4-backend-mock`.
+- `feature/i1-data-foundation`.
+- `feature/i2-evaluation-contract`.
+- `feature/i3-frontend-mock`.
+- `feature/i4-backend-mock`.
 
 Estas ramas iniciales no son ramas personales permanentes. Se cerrarán después de integrar las tareas iniciales y las siguientes ramas se crearán por ticket.
 
 ### Flujo de integración
 
-1. Actualizar la rama de trabajo desde `codex/develop` antes de comenzar.
+1. Actualizar la rama de trabajo desde `develop` antes de comenzar.
 2. Implementar únicamente el ticket asignado.
 3. Ejecutar pruebas y registrar evidencia.
-4. Abrir Pull Request hacia `codex/develop`.
+4. Abrir Pull Request hacia `develop`.
 5. Obtener al menos una revisión de otra persona.
 6. Integrar solo con criterios de aceptación satisfechos.
 7. Eliminar la rama temporal después del merge.
-8. Promover `codex/develop` a `main` mediante Pull Request cuando exista un gate estable.
+8. Promover `develop` a `main` mediante Pull Request cuando exista un gate estable.
 
-No se permiten pushes directos a `main` ni a `codex/develop` después del bootstrap. Los cambios urgentes deberán utilizar una rama temporal y revisión.
+No se permiten pushes directos a `main` ni a `develop` después del bootstrap. Los cambios urgentes deberán utilizar una rama temporal y revisión.
 
 ### Convención de commits
 
