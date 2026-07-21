@@ -2,7 +2,7 @@
 
 ## Naturaleza del plan
 
-Este documento define la secuencia y las dependencias del proyecto. El calendario diario definitivo se cerrará cuando se aprueben dataset, arquitectura, modelos candidatos y estrategia Git.
+Este documento define la secuencia y las dependencias del proyecto. El calendario diario definitivo se cerrará cuando se aprueben dataset, arquitectura y modelos candidatos. La estrategia Git y la estructura inicial ya están definidas en `2_spec.md`.
 
 Restricción temporal: ocho días hábiles.
 
@@ -78,7 +78,7 @@ Resolver las decisiones que bloquean el inicio técnico.
 - Métrica principal propuesta.
 - Cuatro modelos candidatos acordados.
 - Tecnología de aplicación acordada.
-- Estrategia Git y herramienta organizativa acordadas.
+- Estrategia Git aplicada y herramienta organizativa acordada.
 
 ### Gate
 

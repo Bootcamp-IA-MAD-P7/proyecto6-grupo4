@@ -1,0 +1,49 @@
+# Entornos y secretos
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Editores y sistema operativo
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs y datos locales de ejecución
+*.log
+*.db
+*.sqlite
+*.sqlite3
+
+# Datos: se versionan contratos y marcadores, no datasets hasta aprobarlo
+data/raw/*
+!data/raw/.gitkeep
+data/interim/*
+!data/interim/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/feedback/*
+!data/feedback/.gitkeep
+
+# Artefactos binarios de modelos
+models/**/*.pkl
+models/**/*.pickle
+models/**/*.joblib
+models/**/*.onnx
+models/**/*.h5
+models/**/*.keras

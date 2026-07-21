@@ -88,13 +88,21 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Criterio de aceptación: frontend y backend pueden avanzar con mocks compatibles.
 - Evidencia: arquitectura y contratos registrados en `2_spec.md`.
 
-### [ ] T-0.7 Definir estrategia Git y herramienta organizativa
+### [x] T-0.7 Definir estrategia Git
 
 - Responsable: todo el equipo.
 - Dependencias: T-0.1.
-- Acción: acordar ramas, PR, revisiones, commits y tablero.
-- Criterio de aceptación: flujo entendido y enlace organizativo documentado.
-- Evidencia: `2_spec.md`, README y tablero actualizados cuando corresponda.
+- Acción: acordar ramas, PR, revisiones y commits.
+- Criterio de aceptación: existen rama de integración y cuatro ramas iniciales; el flujo está documentado.
+- Evidencia: estrategia registrada en `2_spec.md`, estructura inicial y ramas publicadas en GitHub.
+
+### [ ] T-0.8 Elegir herramienta organizativa
+
+- Responsable: todo el equipo.
+- Dependencias: T-0.1.
+- Acción: elegir Trello u otra herramienta, crear el tablero y registrar el enlace.
+- Criterio de aceptación: backlog visible y estados de trabajo acordados.
+- Evidencia: enlace registrado en `2_spec.md` y README.
 
 ## Fase 1 — Base común y `Data Ready`
 

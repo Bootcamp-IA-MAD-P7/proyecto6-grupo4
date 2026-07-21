@@ -90,7 +90,147 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 | Persistencia | Pendiente | No seleccionada |
 | Despliegue | Pendiente | No seleccionado |
 | Gestión del equipo | Pendiente | Trello u otra herramienta |
-| Estrategia Git | Pendiente | No definida |
+| Estrategia Git | Aprobada | `main` estable, `codex/develop` integración y ramas por ticket |
+
+## Estrategia Git aprobada
+
+### Ramas permanentes
+
+- `main`: versión estable, demostrable y potencialmente entregable.
+- `codex/develop`: rama de integración del trabajo revisado.
+
+No se trabajará directamente sobre estas ramas salvo una operación de bootstrap aprobada por el equipo. El cambio que crea la estructura inicial constituye esa operación excepcional.
+
+### Ramas de trabajo
+
+Las ramas de trabajo serán temporales y estarán asociadas a un ticket de `4_tasks.md`.
+
+Formato general:
+
+```text
+codex/t-<fase>.<tarea>-<descripcion-corta>
+```
+
+Ejemplos posteriores:
+
+```text
+codex/t-1.1-dataset-loader
+codex/t-2.1-model-a
+codex/t-3.3-frontend-integration
+```
+
+Para iniciar los cuatro frentes se crean estas ramas:
+
+- `codex/i1-data-foundation`.
+- `codex/i2-evaluation-contract`.
+- `codex/i3-frontend-mock`.
+- `codex/i4-backend-mock`.
+
+Estas ramas iniciales no son ramas personales permanentes. Se cerrarán después de integrar las tareas iniciales y las siguientes ramas se crearán por ticket.
+
+### Flujo de integración
+
+1. Actualizar la rama de trabajo desde `codex/develop` antes de comenzar.
+2. Implementar únicamente el ticket asignado.
+3. Ejecutar pruebas y registrar evidencia.
+4. Abrir Pull Request hacia `codex/develop`.
+5. Obtener al menos una revisión de otra persona.
+6. Integrar solo con criterios de aceptación satisfechos.
+7. Eliminar la rama temporal después del merge.
+8. Promover `codex/develop` a `main` mediante Pull Request cuando exista un gate estable.
+
+No se permiten pushes directos a `main` ni a `codex/develop` después del bootstrap. Los cambios urgentes deberán utilizar una rama temporal y revisión.
+
+### Convención de commits
+
+Los commits serán pequeños y descriptivos. Prefijos recomendados:
+
+- `feat:` funcionalidad.
+- `fix:` corrección.
+- `docs:` documentación.
+- `test:` pruebas.
+- `refactor:` reestructuración sin cambio funcional.
+- `chore:` mantenimiento.
+
+## Estructura objetivo del repositorio
+
+La estructura inicial es neutral respecto del dataset, los cuatro algoritmos y los frameworks de frontend/backend:
+
+```text
+.
+|-- .github/
+|   |-- workflows/
+|   `-- pull_request_template.md
+|-- .specify/
+|   |-- 1_intent.md
+|   |-- 2_spec.md
+|   |-- 3_plan.md
+|   `-- 4_tasks.md
+|-- app/
+|   |-- backend/
+|   `-- frontend/
+|-- config/
+|-- data/
+|   |-- raw/
+|   |-- interim/
+|   |-- processed/
+|   `-- feedback/
+|-- docker/
+|-- docs/
+|   |-- business_presentation/
+|   |-- decisions/
+|   |-- project_management/
+|   `-- technical_presentation/
+|-- models/
+|   |-- candidates/
+|   |   |-- model_a/
+|   |   |-- model_b/
+|   |   |-- model_c/
+|   |   `-- model_d/
+|   |-- champion/
+|   `-- monitoring/
+|-- notebooks/
+|-- reports/
+|   |-- experiments/
+|   |-- figures/
+|   `-- metrics/
+|-- scripts/
+|-- src/
+|   |-- candidates/
+|   |   |-- model_a/
+|   |   |-- model_b/
+|   |   |-- model_c/
+|   |   `-- model_d/
+|   |-- common/
+|   |-- data/
+|   |-- evaluation/
+|   |-- inference/
+|   `-- mlops/
+|-- tests/
+|   |-- e2e/
+|   |-- fixtures/
+|   |-- integration/
+|   `-- unit/
+|-- .gitignore
+`-- README.md
+```
+
+Responsabilidades de las áreas principales:
+
+- `data/raw/`: dataset original inmutable; inicialmente ignorado por Git salvo marcador.
+- `data/interim/`: resultados intermedios reproducibles.
+- `data/processed/`: base común posterior a las reglas aprobadas.
+- `src/data/`: conexión, auditoría y limpieza comunes.
+- `src/candidates/model_*`: pipeline y entrenamiento específicos de cada candidato.
+- `models/candidates/model_*`: artefactos candidatos; inicialmente ignorados por Git salvo marcador.
+- `src/evaluation/`: métricas, overfitting y comparación común.
+- `app/frontend/` y `app/backend/`: separación lógica preparada sin imponer frameworks.
+- `src/inference/`: carga del Champion y lógica de inferencia compartida.
+- `src/mlops/` y `models/monitoring/`: componentes opcionales de niveles superiores.
+- `reports/`: evidencia generada, métricas, experimentos y figuras.
+- `tests/`: pruebas separadas por alcance.
+
+No se crearán implementaciones dentro de estas carpetas hasta que exista un ticket autorizado y se hayan resuelto sus decisiones técnicas.
 
 ## Estrategia común de datos
 
