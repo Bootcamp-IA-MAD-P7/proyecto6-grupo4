@@ -10,6 +10,9 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .pytest_cache/
+.pytest_tmp/
+.ipython/
+.jupyter_runtime/
 .mypy_cache/
 .ruff_cache/
 .coverage
@@ -29,6 +32,9 @@ Thumbs.db
 *.db
 *.sqlite
 *.sqlite3
+
+# Artefactos locales generados fuera de reports/
+outputs/
 
 # Datos: se versionan contratos y marcadores, no datasets hasta aprobarlo
 data/raw/*

@@ -6,6 +6,10 @@ Este documento define la secuencia y las dependencias del proyecto. El calendari
 
 Restricción temporal: ocho días hábiles.
 
+## Registro de avance provisional — 2026-07-22
+
+Se ejecuta en la rama `feature/t-1.3-laliga-eda` un incremento conjunto de T-1.1, T-1.2 y T-1.3 para evaluar la propuesta LaLiga. El incremento produce loader único, huellas de fuentes, auditoría, contrato provisional, notebook, informe y visualizaciones. No crea splits, no entrena modelos y no habilita fases posteriores. El avance solo podrá marcarse terminado cuando se confirmen las dependencias y revisiones de `4_tasks.md`.
+
 ## Regla de prioridad
 
 El trabajo seguirá este orden:

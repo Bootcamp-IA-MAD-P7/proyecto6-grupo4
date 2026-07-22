@@ -1,0 +1,38 @@
+{
+  "dataset_id": "laliga_matches_1995_96_to_2025_26_v1",
+  "target_provisional": "result_ft",
+  "generated_from": [
+    {
+      "filename": "LaLiga_Matches.csv",
+      "bytes": 582442,
+      "sha256": "d5d36d0ffff6dc73697e5bf794e19f0546fde07a77fe8caaf20eee60ca6ef2a7"
+    },
+    {
+      "filename": "laliga_2025_2026_stats.csv",
+      "bytes": 203623,
+      "sha256": "22f754836d287254c9b4fc85001192a235f468a56bde5df540018914fc26dea4"
+    }
+  ],
+  "canonical_audit": {
+    "rows": 11944,
+    "columns": 54,
+    "season_count": 31,
+    "date_min": "1995-09-02",
+    "date_max": "2026-05-24",
+    "duplicate_rows": 0,
+    "duplicate_match_ids": 0,
+    "missing_target": 0,
+    "missing_half_time_rows": 2,
+    "full_time_result_inconsistencies": 0,
+    "invalid_target_values": [],
+    "same_team_rows": 0,
+    "negative_goal_rows": 0,
+    "detailed_rows": 380,
+    "source_coverage": {
+      "historical_only": 11564,
+      "detailed_only": 280,
+      "both_sources": 100
+    }
+  },
+  "provenance_status": "pending_source_and_license_confirmation"
+}

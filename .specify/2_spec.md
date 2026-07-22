@@ -4,7 +4,7 @@
 
 Este documento define el contrato técnico del proyecto. Toda implementación debe respetarlo o detenerse hasta que el equipo apruebe y documente un cambio.
 
-Estado actual: **definición inicial; implementación bloqueada por decisiones pendientes**.
+Estado actual: **EDA provisional autorizado y reproducible; entrenamiento, splits y aplicación bloqueados por decisiones pendientes**.
 
 ## Requisitos obligatorios de la consigna
 
@@ -77,11 +77,11 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 
 | Decisión | Estado | Valor |
 |---|---|---|
-| Dataset | Pendiente | No seleccionado |
-| Problema de negocio | Pendiente | No definido |
-| Usuario principal | Pendiente | No definido |
-| Target | Pendiente | No definido |
-| Tipo de clasificación | Pendiente | Binaria o multiclase |
+| Dataset | Propuesta registrada; aprobación y licencia pendientes | Partidos de LaLiga 1995-96–2025-26, dos CSV locales combinados mediante loader único |
+| Problema de negocio | Propuesta registrada | Predicción prepartido del resultado final; no se inicia entrenamiento hasta aprobación |
+| Usuario principal | Propuesta registrada | Persona usuaria interesada en análisis deportivo prepartido |
+| Target | Propuesta registrada | `result_ft`: `H`, `D`, `A` |
+| Tipo de clasificación | Propuesta registrada | Multiclase de tres clases |
 | Métrica principal | Pendiente | No definida |
 | Fórmula de overfitting | Pendiente | Debe demostrar gap menor al 5 % |
 | Modelos A, B, C y D | Pendiente | No seleccionados |
@@ -91,6 +91,18 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 | Despliegue | Pendiente | No seleccionado |
 | Gestión del equipo | Pendiente | Trello u otra herramienta |
 | Estrategia Git | Aprobada | `main` estable, `develop` integración y ramas `feature/` por ticket |
+
+### Excepción provisional controlada para T-1.1–T-1.3
+
+La solicitud de 2026-07-22 autoriza implementar la carga, auditoría, diccionario y EDA para evaluar este dataset. Esta excepción resuelve la contradicción entre la petición de análisis y el estado inicial, pero no sustituye la aprobación cruzada exigida por el proyecto.
+
+- Dataset canónico provisional: `laliga_matches_1995_96_to_2025_26_v1`.
+- Fuentes raw locales: `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv`; se conservan inmutables y fuera de Git.
+- Manifest con dimensiones y SHA-256: `reports/metrics/dataset_manifest.json`.
+- Target provisional: `result_ft` (`H`, `D`, `A`).
+- Resultado de auditoría: 11.944 filas, 54 columnas, 31 temporadas, 0 IDs duplicados, 0 targets nulos y 0 incoherencias marcador/resultado.
+- EDA reproducible: `reports/laliga_eda.md` y `notebooks/01_laliga_eda.ipynb`.
+- Procedencia y licencia: pendientes de confirmación; el gate `Data Ready` permanece abierto.
 
 ## Estrategia Git aprobada
 

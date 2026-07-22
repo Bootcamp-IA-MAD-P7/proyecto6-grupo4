@@ -80,6 +80,16 @@ La separación entre frontend y backend deberá existir al menos de forma lógic
 
 La decisión de construir servicios separados o una única aplicación modular deberá registrarse en `2_spec.md` antes de implementarse.
 
+## Propuesta de dominio registrada para revisión — LaLiga
+
+Fecha de registro: 2026-07-22.
+
+Para reducir las decisiones pendientes sin iniciar todavía el entrenamiento, se adopta como hipótesis de trabajo el dataset combinado de partidos de LaLiga 1995-96–2025-26. La unidad de análisis es un partido y el target provisional es `result_ft`, con tres clases: `H` (victoria local), `D` (empate) y `A` (victoria visitante).
+
+Problema propuesto: estimar antes del inicio el resultado final de un partido para una persona usuaria interesada en análisis deportivo. Los únicos inputs admisibles serán datos disponibles antes del partido. Marcadores, tiros, faltas, córners, tarjetas y cualquier variable derivada del encuentro actual se consideran posteriores al evento y quedan excluidos por leakage.
+
+Esta propuesta permite ejecutar la carga, auditoría y EDA compartidos para evaluar viabilidad. No equivale a aprobación del equipo ni cierra `Data Ready`. Siguen pendientes la fuente/licencia, la ventana exacta de inferencia, la métrica, los splits, los cuatro candidatos y los contratos de aplicación.
+
 ## Principios de trabajo
 
 - Priorizar una solución completa y demostrable antes de añadir complejidad.
