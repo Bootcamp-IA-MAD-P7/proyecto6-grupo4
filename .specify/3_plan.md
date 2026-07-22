@@ -69,7 +69,7 @@ Resolver las decisiones que bloquean el inicio técnico.
 - Integrante 1: coordinar criterios y revisión de datasets candidatos.
 - Integrante 2: proponer protocolo de métricas y overfitting según los candidatos.
 - Integrante 3: analizar qué variables de cada dataset serían utilizables por una persona usuaria.
-- Integrante 4: analizar viabilidad de productivización, carga y despliegue.
+- Integrante 4: analizar viabilidad de productivización, carga y despliegue; para LSE, estimar límites de imagen, latencia, memoria y tamaño del artefacto.
 
 ### Entregables
 
@@ -95,7 +95,7 @@ Crear una base común, reproducible y aprobada para los cuatro experimentos.
 - Integrante 1: conexión común, auditoría, consolidación del EDA y limpieza.
 - Integrante 2: particiones, métricas, fórmula de overfitting y formato de experimentos.
 - Integrante 3: mock de frontend y validación de inputs potenciales.
-- Integrante 4: stub de backend, mecanismo preliminar de carga y prueba temprana de entorno/Docker.
+- Integrante 4: stub de backend para una imagen, validación preliminar del payload y prueba temprana de carga del modelo, entorno y Docker.
 - Todos: EDA dividido por preguntas y revisión de decisiones de limpieza.
 
 ### Entregables
@@ -114,6 +114,10 @@ Debe completarse toda la checklist `Data Ready` de `2_spec.md`.
 
 ### Riesgos
 
+- Los archivos completos de Zenodo ocupan 24,9 GB; descargar ambas resoluciones puede consumir tiempo y almacenamiento sin aportar valor al Nivel Esencial.
+- Las tres representaciones y las dos resoluciones pueden derivar de las mismas capturas; separarlas entre train, validación y test produciría leakage.
+- Un split aleatorio por imagen puede sobreestimar la generalización si una misma persona o sesión aparece en varias particiones.
+- Las letras dinámicas y el reconocimiento continuo quedan fuera del alcance del conjunto de 23 signos estáticos descrito por la aplicación asociada.
 - Elegir variables que no existirían durante una predicción real.
 - Introducir leakage durante limpieza o partición.
 - Permitir que cada candidato utilice datos diferentes.

@@ -16,6 +16,7 @@ Sus documentos cumplen estas funciones:
 - `2_spec.md`: requisitos, restricciones, contratos y criterios de aceptación.
 - `3_plan.md`: estrategia de ejecución, fases, dependencias y gates.
 - `4_tasks.md`: backlog ejecutable, responsables, revisiones y evidencias.
+- `5_dataset.md`: ficha del dataset canónico, justificación, acceso, licencia, cita y riesgos.
 
 Si una decisión, tarea o implementación contradice estos documentos, el equipo deberá detenerse, resolver la contradicción y actualizar la especificación de forma explícita antes de continuar.
 
@@ -71,7 +72,9 @@ Ser responsable de un área significa garantizar su resultado y coordinar sus co
 
 ## Producto esperado
 
-La solución deberá permitir que un usuario introduzca datos compatibles con el modelo y reciba una clasificación. La interfaz concreta, el dominio, el dataset, el target y la arquitectura definitiva permanecen pendientes de aprobación.
+El dominio seleccionado es el reconocimiento del alfabeto dactilológico de la Lengua de Signos Española (LSE) a partir de imágenes. El dataset canónico es **Spanish Sign Language (LSE) Fingerspelling Dataset**, publicado en Zenodo con DOI `10.5281/zenodo.21351703` y descrito en `5_dataset.md`.
+
+La solución deberá permitir que una persona proporcione una imagen compatible de una única configuración manual estática y reciba la letra LSE predicha junto con una medida comprensible de confianza. El alcance se limita a clasificación de letras estáticas: no equivale a reconocer palabras, secuencias, gramática ni traducir LSE. La interfaz concreta, el usuario principal y la arquitectura definitiva permanecen pendientes de aprobación.
 
 La separación entre frontend y backend deberá existir al menos de forma lógica:
 
@@ -98,10 +101,8 @@ La decisión de construir servicios separados o una única aplicación modular d
 
 Antes de implementar componentes dependientes de ellas, el equipo deberá aprobar:
 
-- Dataset y licencia o fuente de uso.
-- Problema de negocio y usuarios.
-- Variable objetivo y clases.
-- Clasificación binaria o multiclase.
+- Usuario principal y escenario de uso exacto.
+- Confirmación del inventario de clases y de la unidad independiente durante la auditoría del dataset.
 - Métrica principal y métricas secundarias.
 - Fórmula operativa del overfitting inferior al 5 %.
 - Estrategia de partición y semilla.

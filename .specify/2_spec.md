@@ -77,11 +77,12 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 
 | Decisión | Estado | Valor |
 |---|---|---|
-| Dataset | Pendiente | No seleccionado |
-| Problema de negocio | Pendiente | No definido |
+| Dataset | Aprobada | Spanish Sign Language (LSE) Fingerspelling Dataset, Zenodo `10.5281/zenodo.21351703` |
+| Fuente y licencia | Aprobada | Zenodo; CC BY 4.0; cita obligatoria registrada en `5_dataset.md` |
+| Problema de negocio | Provisional | Reconocer una letra estática del alfabeto dactilológico LSE a partir de una imagen |
 | Usuario principal | Pendiente | No definido |
-| Target | Pendiente | No definido |
-| Tipo de clasificación | Pendiente | Binaria o multiclase |
+| Target | Provisional | Etiqueta de letra LSE; 23 clases estáticas indicadas por el repositorio asociado, sujetas a auditoría del schema |
+| Tipo de clasificación | Provisional | Multiclase de imagen única |
 | Métrica principal | Pendiente | No definida |
 | Fórmula de overfitting | Pendiente | Debe demostrar gap menor al 5 % |
 | Modelos A, B, C y D | Pendiente | No seleccionados |
@@ -165,7 +166,8 @@ La estructura inicial es neutral respecto del dataset, los cuatro algoritmos y l
 |   |-- 1_intent.md
 |   |-- 2_spec.md
 |   |-- 3_plan.md
-|   `-- 4_tasks.md
+|   |-- 4_tasks.md
+|   `-- 5_dataset.md
 |-- app/
 |   |-- backend/
 |   `-- frontend/
@@ -236,7 +238,9 @@ No se crearán implementaciones dentro de estas carpetas hasta que exista un tic
 
 ### Dataset canónico
 
-El equipo seleccionará un único dataset. Su carga se implementará una sola vez y será reutilizada por los cuatro integrantes.
+El dataset canónico seleccionado es **Spanish Sign Language (LSE) Fingerspelling Dataset**, publicado en Zenodo con DOI `10.5281/zenodo.21351703`. La ficha reproducible, los enlaces de acceso, checksums, licencia, cita obligatoria, justificación y riesgos están en `5_dataset.md`. Su carga se implementará una sola vez y será reutilizada por los cuatro integrantes.
+
+La unidad de predicción propuesta es una imagen de una única configuración manual estática. El target es la letra LSE indicada por la carpeta o metadata de clase. Antes de congelar el contrato deberá comprobarse el inventario real de clases y la relación entre captura original, resolución y representación derivada.
 
 El dataset original deberá:
 
@@ -249,6 +253,15 @@ El dataset original deberá:
 - Permitir una aplicación con inputs disponibles antes de la predicción.
 
 No se crearán cuatro mecanismos independientes de conexión o cuatro versiones incompatibles del dataset.
+
+Para evitar leakage específico de este dataset:
+
+- No se tratarán como observaciones independientes las versiones `Original`, `Keypoints` y `Original-Keypoints` de una misma captura.
+- Tampoco se mezclarán entre particiones las resoluciones `192x192` y `512x512` de una misma captura.
+- Se conservarán inicialmente los splits publicados (`Train`, `Validation` y `Evaluation`) y se auditará si separan personas o sesiones antes de aceptarlos.
+- El equipo elegirá una única resolución y representación canónicas para el Nivel Esencial; las demás quedarán para experimentos controlados.
+- Cualquier aumento de datos se aplicará únicamente dentro de entrenamiento.
+- El conjunto `Evaluation` permanecerá reservado como test final si la auditoría confirma que no existe solapamiento.
 
 ### EDA y limpieza comunes
 
@@ -303,8 +316,8 @@ El Integrante 2 coordinará este contrato con revisión del Integrante 1.
 
 No podrá comenzar el entrenamiento individual hasta verificar:
 
-- [ ] Dataset seleccionado y accesible.
-- [ ] Fuente y licencia documentadas.
+- [x] Dataset seleccionado y accesible mediante Zenodo.
+- [x] Fuente, licencia y cita obligatoria documentadas.
 - [ ] Target y clases aprobados.
 - [ ] EDA inicial completado.
 - [ ] Reglas comunes de limpieza aprobadas.

@@ -42,7 +42,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Responsable: todo el equipo.
 - Revisor: todo el equipo.
 - Dependencias: ninguna.
-- Acción: leer los cuatro documentos, registrar dudas y aprobar o corregir el contrato inicial.
+- Acción: leer los cinco documentos, registrar dudas y aprobar o corregir el contrato inicial.
 - Criterio de aceptación: todos entienden el flujo común de datos y los cuatro pipelines individuales.
 - Evidencia: aprobación registrada por el equipo.
 
@@ -52,7 +52,8 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Dependencias: T-0.1.
 - Acción: comparar candidatos por target, tamaño, licencia, leakage, interpretabilidad, balance y viabilidad de aplicación.
 - Criterio de aceptación: tabla de candidatos con ventajas, riesgos y recomendación.
-- Evidencia: decisión registrada en `2_spec.md`.
+- Evidencia: decisión registrada en `2_spec.md` y ficha comparativa en `5_dataset.md`.
+- Aporte I4 registrado: viabilidad preliminar de productivización, almacenamiento y despliegue del dataset LSE en `5_dataset.md`.
 
 ### [ ] T-0.3 Definir problema, usuarios y target
 
@@ -113,7 +114,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Dependencias: T-0.2, T-0.3.
 - Acción: crear un mecanismo reproducible para cargar el dataset canónico sin modificar el original.
 - Criterio de aceptación: los cuatro integrantes pueden obtener la misma versión de datos.
-- Verificación: comprobar schema, dimensiones y huella o versión.
+- Verificación: comprobar schema, clases, dimensiones, resolución/representación elegidas y MD5 del archivo de Zenodo.
 
 ### [ ] T-1.2 Crear diccionario y auditoría de datos
 
@@ -164,7 +165,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Responsable: I4.
 - Revisor: I3.
 - Dependencias: T-0.6, T-1.2.
-- Acción: implementar o diseñar una respuesta mock y mecanismo preliminar de carga.
+- Acción: implementar o diseñar una entrada mock de imagen y una respuesta con letra, confianza, versión del modelo y errores controlados; definir límites de formato y tamaño sin descargar todavía el dataset completo.
 - Criterio de aceptación: contrato consumible por frontend.
 - Evidencia: prueba de contrato o llamada reproducible.
 
