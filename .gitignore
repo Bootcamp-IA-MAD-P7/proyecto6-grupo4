@@ -47,3 +47,6 @@ models/**/*.joblib
 models/**/*.onnx
 models/**/*.h5
 models/**/*.keras
+
+# Planificación local de dailys
+docs/project_management/DAILYS.md
