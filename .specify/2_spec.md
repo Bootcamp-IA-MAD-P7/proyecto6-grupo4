@@ -272,14 +272,6 @@ Las reglas comunes de limpieza deberán quedar codificadas y documentadas. Ning�
 
 Se permiten diagnósticos adicionales específicos por modelo, siempre que no alteren la base común sin aprobación.
 
-### Preprocesamiento común y separación de responsabilidades
-
-El Integrante 1 mantendrá una capa común y reutilizable para validar el contrato, aplicar exclusiones y ejecutar las reglas de limpieza aprobadas. Esta capa deberá prevenir data leakage, quedar sin ajustar hasta disponer de las particiones congeladas y garantizar que cualquier transformación con estado se ajuste únicamente sobre entrenamiento. El mismo componente ajustado deberá reutilizarse sin divergencias durante la inferencia.
-
-El preprocesamiento común no elimina la responsabilidad de cada integrante sobre su pipeline candidato. La imputación, codificación, escalado, selección o balanceo específicos de un algoritmo permanecerán encapsulados en el pipeline de ese candidato. El Pipeline A consumirá la capa común y añadirá únicamente sus transformaciones específicas.
-
-Frontend y backend no duplicarán transformaciones estadísticas. El backend deberá invocar el pipeline serializado que corresponda y el frontend se limitará a validaciones de interacción compatibles con el contrato de entrada.
-
 ### Contrato de datos
 
 Antes de entrenar deberá documentarse para cada variable:
@@ -288,13 +280,10 @@ Antes de entrenar deberá documentarse para cada variable:
 - Descripción.
 - Tipo.
 - Rol: feature, target, identificador o excluida.
-- Valores o rango permitidos y categorías admitidas cuando corresponda.
-- Obligatoriedad.
+- Valores o rango permitidos.
 - Tratamiento común de nulos.
 - Disponibilidad en el momento de inferencia.
 - Riesgo de leakage o sensibilidad.
-
-El contrato incluirá ejemplos de entradas válidas e inválidas que frontend y backend puedan reutilizar en desarrollo y pruebas.
 
 ### Particiones congeladas
 
@@ -412,17 +401,10 @@ El test final se utilizará una única vez después de la selección y no se reu
 
 ### Integrante 1 — Datos y ciclo de vida del dato
 
-- Audita el dataset aprobado: tipos, nulos, duplicados, valores extremos, clases y posibles fugas de información.
-- Coordina la consolidación del EDA compartido y mantiene el diccionario y contrato de datos, incluidos tipo, rango, categorías y obligatoriedad.
-- Acuerda con el Integrante 2 la estrategia de partición y con los Integrantes 3 y 4 los contratos de entrada.
-- Construye y mantiene el preprocesamiento común según la separación de responsabilidades definida en esta especificación.
-- Entrena Pipeline A + Modelo A y registra parámetros, tiempos, métricas y overfitting.
-- Proporciona casos de datos válidos e inválidos para frontend, backend y pruebas.
-- Valida la coherencia entre entrenamiento e inferencia, incluidas categorías desconocidas, nulos, límites y entradas incorrectas.
-- Valida la calidad de los datos de feedback y mantiene la referencia estadística de drift cuando corresponda.
-- Documenta transformaciones, exclusiones y limitaciones durante todo el ciclo de vida.
-
-El Integrante 1 no podrá cambiar particiones sin aprobación del Integrante 2 y del equipo, seleccionar unilateralmente el Champion, duplicar preprocesamiento en frontend ni modificar frontend o backend salvo autorización expresa de una tarea.
+- Coordina dataset, carga, EDA, limpieza y contrato de datos.
+- Entrena Pipeline A + Modelo A.
+- Valida la coherencia entre entrenamiento e inferencia.
+- Mantiene validaciones de calidad y referencia de drift cuando corresponda.
 
 ### Integrante 2 — Evaluación y ciclo de vida del modelo
 
@@ -464,13 +446,12 @@ El contrato concreto deberá definirse después del `Data Ready` e incluir:
 - Manejo de errores.
 - Versión del modelo.
 - Mecanismo de feedback si se alcanza el Nivel Medio.
-- Ejemplos de entradas válidas e inválidas mantenidos junto con el contrato de datos.
 
 El frontend no realizará transformaciones estadísticas propias del pipeline.
 
 ## Testing distribuido
 
-- Integrante 1: tests de carga, contrato de datos, transformaciones comunes, categorías desconocidas, nulos, límites y entradas incorrectas.
+- Integrante 1: tests de carga, contrato de datos y transformaciones comunes.
 - Integrante 2: tests de métricas, overfitting, comparación y regresión.
 - Integrante 3: tests de interfaz y flujo de usuario.
 - Integrante 4: tests de backend, integración, serialización, Docker y despliegue.

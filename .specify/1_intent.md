@@ -69,8 +69,6 @@ Cada pipeline podrá aplicar transformaciones específicas, pero no podrá redef
 
 Ser responsable de un área significa garantizar su resultado y coordinar sus contratos; no significa trabajar en aislamiento. Testing, documentación, integración y defensa son responsabilidades compartidas.
 
-El Integrante 1 mantiene la responsabilidad sobre la calidad y consistencia de los datos durante todo el ciclo, desde la auditoría del origen hasta la predicción y la recogida de feedback. Además de coordinar el EDA y entrenar el Modelo A, deberá mantener el diccionario y contrato de datos, proporcionar ejemplos válidos e inválidos para la aplicación y demostrar que entrenamiento e inferencia utilizan el mismo preprocesamiento. Su responsabilidad no finaliza con el cierre del EDA.
-
 ## Producto esperado
 
 La solución deberá permitir que un usuario introduzca datos compatibles con el modelo y reciba una clasificación. La interfaz concreta, el dominio, el dataset, el target y la arquitectura definitiva permanecen pendientes de aprobación.

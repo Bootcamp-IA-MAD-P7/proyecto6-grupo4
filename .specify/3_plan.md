@@ -26,10 +26,10 @@ El trabajo seguirá este orden:
 
 Responsable principal: Integrante 1.
 
-- Dataset, conexión, auditoría, EDA y limpieza comunes.
-- Diccionario, contrato, validación y ejemplos de datos.
-- Capa común de preprocesamiento + Pipeline A + Modelo A.
-- Coherencia de datos desde entrenamiento hasta inferencia, feedback y drift.
+- Dataset, conexión, EDA y limpieza comunes.
+- Contrato y validación de datos.
+- Pipeline A + Modelo A.
+- Coherencia de datos durante integración.
 
 ### Frente B — Evaluación + candidato B
 
@@ -92,7 +92,7 @@ Crear una base común, reproducible y aprobada para los cuatro experimentos.
 
 ### Trabajo paralelo
 
-- Integrante 1: conexión común, auditoría, consolidación del EDA, diccionario, contrato y capa común de preprocesamiento.
+- Integrante 1: conexión común, auditoría, consolidación del EDA y limpieza.
 - Integrante 2: particiones, métricas, fórmula de overfitting y formato de experimentos.
 - Integrante 3: mock de frontend y validación de inputs potenciales.
 - Integrante 4: stub de backend, mecanismo preliminar de carga y prueba temprana de entorno/Docker.
@@ -103,8 +103,7 @@ Crear una base común, reproducible y aprobada para los cuatro experimentos.
 - Dataset accesible sin duplicar mecanismos de carga.
 - EDA común.
 - Reglas de limpieza reproducibles.
-- Contrato de datos con rangos, categorías, obligatoriedad y ejemplos válidos e inválidos.
-- Capa común de preprocesamiento definida sin ajustar, preparada para ajustarse solo con entrenamiento tras congelar los splits y reutilizarse en inferencia.
+- Contrato de datos.
 - Splits congelados.
 - Contrato de experimentación.
 - Frontend y backend simulados cuando la arquitectura esté aprobada.
@@ -165,7 +164,7 @@ Seleccionar el Champion e integrarlo en un flujo completo de predicción.
 
 ### Trabajo paralelo
 
-- Integrante 1: validar pipeline y contrato de datos del candidato seleccionado con categorías desconocidas, nulos, límites y entradas incorrectas.
+- Integrante 1: validar pipeline y contrato de datos del candidato seleccionado.
 - Integrante 2: consolidar comparación, overfitting y análisis de errores.
 - Integrante 3: sustituir mocks por el contrato real y completar el flujo de usuario.
 - Integrante 4: cargar el artefacto real y completar el servicio de inferencia.
@@ -241,7 +240,7 @@ Añadir experimentación MLOps sin comprometer el sistema estable.
 
 ### Trabajo distribuido
 
-- Integrante 1: perfil estadístico de referencia y calidad de datos operativos y de feedback para drift.
+- Integrante 1: perfil de referencia y calidad de datos para drift.
 - Integrante 2: evaluación de red neuronal, A/B y reglas de promoción.
 - Integrante 3: visualización de feedback o monitorización.
 - Integrante 4: instrumentación, versionado y ejecución controlada.

@@ -120,9 +120,9 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Responsable: I1.
 - Revisor: I3.
 - Dependencias: T-1.1.
-- Acción: auditar tipos, nulos, duplicados, valores extremos y clases; documentar columnas, target, identificadores, rol, tipo, rango, categorías, obligatoriedad, disponibilidad y riesgos.
-- Criterio de aceptación: todas las variables tienen rol, descripción y contrato suficiente para validarlas durante entrenamiento e inferencia.
-- Evidencia: diccionario revisado y conjunto de ejemplos válidos e inválidos para frontend y backend.
+- Acción: documentar columnas, tipos, target, identificadores, disponibilidad y riesgos.
+- Criterio de aceptación: todas las variables tienen rol y descripción.
+- Evidencia: diccionario de datos revisado.
 
 ### [ ] T-1.3 Realizar EDA compartido
 
@@ -132,14 +132,14 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Criterio de aceptación: nulos, duplicados, distribuciones, target, relaciones, correlaciones y leakage analizados.
 - Evidencia: notebook o informe reproducible con interpretaciones.
 
-### [ ] T-1.4 Implementar limpieza y preprocesamiento comunes
+### [ ] T-1.4 Implementar limpieza común
 
 - Responsable: I1.
 - Revisores: I2 e I4.
 - Dependencias: T-1.3.
-- Acción: codificar las reglas aprobadas y definir, todavía sin ajustar, la capa común de validación, exclusiones y preprocesamiento sin alterar el dataset original ni duplicar transformaciones específicas de los candidatos.
-- Criterio de aceptación: limpieza determinista, documentada y probada; la interfaz del componente impide ajustar transformaciones con estado antes de disponer del conjunto de entrenamiento y permite reutilizarlas en inferencia.
-- Evidencia: tests, comparación antes/después y prueba con fixtures de que validación y test no intervienen en el ajuste.
+- Acción: codificar las reglas aprobadas sin alterar el dataset original.
+- Criterio de aceptación: limpieza determinista, documentada y probada.
+- Evidencia: tests y comparación antes/después.
 
 ### [ ] T-1.5 Congelar particiones comunes
 
@@ -183,7 +183,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Responsable: I1.
 - Revisor: I2.
 - Dependencias: T-1.8.
-- Acción: crear, entrenar, evaluar, serializar y documentar el candidato A registrando parámetros, tiempos, métricas y overfitting.
+- Acción: crear, entrenar, evaluar, serializar y documentar el candidato A.
 - Criterio de aceptación: cumple el contrato común de experimentación.
 - Evidencia: pipeline, artefacto, métricas, tests y registro.
 
@@ -238,9 +238,8 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Responsable: I1.
 - Revisores: I2 e I4.
 - Dependencias: T-2.6.
-- Acción: comprobar schema, transformaciones, categorías desconocidas, nulos, límites y entradas incorrectas.
-- Criterio de aceptación: entrenamiento e inferencia usan el mismo pipeline y los errores de datos se tratan de forma controlada.
-- Evidencia: pruebas reproducibles con los ejemplos válidos e inválidos del contrato de datos.
+- Acción: comprobar schema, transformaciones y casos límite.
+- Criterio de aceptación: entrenamiento e inferencia usan el mismo pipeline.
 
 ### [ ] T-3.2 Integrar Champion en backend
 
@@ -308,7 +307,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Responsable: I3 e I4.
 - Revisores: I1 e I2.
 - Dependencias: T-3.7.
-- Criterio de aceptación: feedback validado contra un schema acordado, recuperable y revisado por I1 desde la perspectiva de calidad de datos.
+- Criterio de aceptación: feedback validado y recuperable.
 
 ### [ ] T-4.4 Preparar ingestión de datos nuevos
 
@@ -363,7 +362,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 
 - Responsable: I1 e I4.
 - Dependencias: datos operativos suficientes.
-- Criterio de aceptación: referencia estadística preparada por I1; calidad de datos operativos verificada; método, umbrales y limitaciones documentados.
+- Criterio de aceptación: referencia, método, umbrales y limitaciones documentados.
 
 ### [ ] T-6.4 Implementar promoción condicionada
 
