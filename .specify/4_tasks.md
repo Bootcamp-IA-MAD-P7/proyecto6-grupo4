@@ -46,21 +46,23 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Criterio de aceptación: todos entienden el flujo común de datos y los cuatro pipelines individuales.
 - Evidencia: aprobación registrada por el equipo.
 
-### [ ] T-0.2 Evaluar datasets candidatos
+### [~] T-0.2 Evaluar datasets candidatos
 
 - Responsable: I1, con aportes de I2, I3 e I4.
 - Dependencias: T-0.1.
 - Acción: comparar candidatos por target, tamaño, licencia, leakage, interpretabilidad, balance y viabilidad de aplicación.
 - Criterio de aceptación: tabla de candidatos con ventajas, riesgos y recomendación.
 - Evidencia: decisión registrada en `2_spec.md`.
+- Avance 2026-07-22: LaLiga queda registrada como propuesta evaluada mediante `docs/decisions/0001-laliga-dataset-target-proposal.md`. Pendientes comparación formal con candidatos, licencia y aprobación cruzada.
 
-### [ ] T-0.3 Definir problema, usuarios y target
+### [~] T-0.3 Definir problema, usuarios y target
 
 - Responsable: todo el equipo; coordina I1.
 - Dependencias: T-0.2.
 - Acción: aprobar problema de negocio, usuario, unidad de predicción, target y clases.
 - Criterio de aceptación: el equipo puede explicar qué se predice, para quién y con qué utilidad.
 - Evidencia: `1_intent.md` y `2_spec.md` actualizados.
+- Avance 2026-07-22: propuesta prepartido y target multiclase `result_ft` documentados. Pendiente aprobación de todo el equipo.
 
 ### [ ] T-0.4 Definir protocolo de evaluación
 
@@ -106,7 +108,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 
 ## Fase 1 — Base común y `Data Ready`
 
-### [ ] T-1.1 Implementar conexión única al dataset
+### [~] T-1.1 Implementar conexión única al dataset
 
 - Responsable: I1.
 - Revisor: I4.
@@ -114,8 +116,9 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Acción: crear un mecanismo reproducible para cargar el dataset canónico sin modificar el original.
 - Criterio de aceptación: los cuatro integrantes pueden obtener la misma versión de datos.
 - Verificación: comprobar schema, dimensiones y huella o versión.
+- Evidencia provisional: `src/data/laliga_loader.py`, `reports/metrics/dataset_manifest.json` y tests unitarios. Pendiente revisión de I4 y cierre de dependencias.
 
-### [ ] T-1.2 Crear diccionario y auditoría de datos
+### [~] T-1.2 Crear diccionario y auditoría de datos
 
 - Responsable: I1.
 - Revisor: I3.
@@ -123,14 +126,16 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Acción: documentar columnas, tipos, target, identificadores, disponibilidad y riesgos.
 - Criterio de aceptación: todas las variables tienen rol y descripción.
 - Evidencia: diccionario de datos revisado.
+- Evidencia provisional: `reports/metrics/data_dictionary.csv`, `reports/metrics/missingness.csv` y `reports/metrics/eda_summary.json`. Pendiente revisión de I3.
 
-### [ ] T-1.3 Realizar EDA compartido
+### [~] T-1.3 Realizar EDA compartido
 
 - Responsable: todos; coordina I1.
 - Dependencias: T-1.1, T-1.2.
 - Acción: dividir preguntas de análisis entre los cuatro y consolidar un único EDA.
 - Criterio de aceptación: nulos, duplicados, distribuciones, target, relaciones, correlaciones y leakage analizados.
 - Evidencia: notebook o informe reproducible con interpretaciones.
+- Evidencia provisional: `notebooks/01_laliga_eda.ipynb`, `reports/laliga_eda.md` y nueve figuras en `reports/figures/`. Análisis técnico completo; pendiente revisión cruzada de los cuatro integrantes.
 
 ### [ ] T-1.4 Implementar limpieza común
 
