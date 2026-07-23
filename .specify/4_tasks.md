@@ -55,7 +55,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Evidencia: decisión registrada en `2_spec.md`.
 - Avance 2026-07-22: LaLiga queda registrada como propuesta evaluada mediante `docs/decisions/0001-laliga-dataset-target-proposal.md`. Pendientes comparación formal con candidatos, licencia y aprobación cruzada.
 
-### [~] T-0.3 Definir problema, usuarios y target
+### [x] T-0.3 Definir problema, usuarios y target
 
 - Responsable: todo el equipo; coordina I1.
 - Dependencias: T-0.2.
@@ -63,8 +63,9 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Criterio de aceptación: el equipo puede explicar qué se predice, para quién y con qué utilidad.
 - Evidencia: `1_intent.md` y `2_spec.md` actualizados.
 - Avance 2026-07-22: propuesta prepartido y target multiclase `result_ft` documentados. Pendiente aprobación de todo el equipo.
+- Cierre 2026-07-23: confirmada en sesión de trabajo para desbloquear T-0.4. Queda registrado que la confirmación se recibió de un representante del equipo, no como firma individual de cada integrante; si algún integrante objeta, debe reabrirse.
 
-### [ ] T-0.4 Definir protocolo de evaluación
+### [x] T-0.4 Definir protocolo de evaluación
 
 - Responsable: I2.
 - Revisor: I1.
@@ -72,6 +73,8 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Acción: proponer métrica principal, secundarias, splits, semilla y fórmula de overfitting.
 - Criterio de aceptación: protocolo aprobado por los cuatro integrantes.
 - Evidencia: contrato registrado en `2_spec.md`.
+- Avance 2026-07-23: propuesta registrada — métrica principal `macro-F1`, secundarias (accuracy, balanced accuracy, precisión/recall/F1 por clase, log loss, matriz de confusión), fórmula de overfitting (`gap < 0.05` sobre `macro-F1` train/validación) y partición cronológica por temporada con semilla `42`. Detalle y justificación en `docs/decisions/0002-evaluation-protocol-proposal.md`.
+- Cierre 2026-07-23: confirmada en sesión de trabajo. Misma salvedad que T-0.3: confirmación de representante del equipo, no firma individual de cada integrante.
 
 ### [ ] T-0.5 Elegir cuatro modelos candidatos
 
@@ -146,8 +149,9 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Criterio de aceptación: limpieza determinista, documentada y probada.
 - Evidencia: tests y comparación antes/después.
 - Evidencia provisional 2026-07-23: `notebooks/00_laliga_preprocessing.ipynb`, `data/processed/laliga_matches_clean.csv`, `reports/metrics/preprocessing_summary.json`, `reports/metrics/source_column_policy.csv` y pruebas unitarias/integración. Pendientes revisión de I2/I4 y cierre de dependencias.
+- Revisión I2 2026-07-23: dataset limpio auditado sin duplicados, targets nulos ni incoherencias marcador/resultado; `load_processed_dataset` valida el contrato de tipos y la suite de tests pasa (14/14). Aceptable como base para congelar particiones (T-1.5). Revisión de I4 sigue pendiente.
 
-### [ ] T-1.5 Congelar particiones comunes
+### [~] T-1.5 Congelar particiones comunes
 
 - Responsable: I2.
 - Revisor: I1.
@@ -155,6 +159,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Acción: generar y versionar train, validación y test mediante el protocolo aprobado.
 - Criterio de aceptación: los cuatro candidatos reciben los mismos registros.
 - Evidencia: índices, metadata o función reproducible; test final protegido.
+- Avance 2026-07-23: implementado `src/evaluation/splits.py` (partición cronológica por temporada, congelada como constante, sin aleatoriedad ni estratificación). Genera `data/processed/splits/laliga_splits.csv` (match_id, season, split) y `reports/metrics/split_manifest.json` (protocolo, semilla 42, conteos y fracciones). Resultado: train 9.607 filas (1995-96–2019-20), validación 1.197 filas (2020-21–2022-23), test 1.140 filas (2023-24–2025-26, protegido). Falla explícitamente si aparece una temporada no contemplada, en vez de reasignar en silencio. Pruebas: `tests/unit/test_splits.py` (5 casos), suite completa 14/14 en verde. Pendiente revisión de I1.
 
 ### [ ] T-1.6 Crear frontend simulado
 

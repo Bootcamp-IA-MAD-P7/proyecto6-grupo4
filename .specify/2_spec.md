@@ -4,7 +4,7 @@
 
 Este documento define el contrato técnico del proyecto. Toda implementación debe respetarlo o detenerse hasta que el equipo apruebe y documente un cambio.
 
-Estado actual: **EDA provisional autorizado y reproducible; entrenamiento, splits y aplicación bloqueados por decisiones pendientes**.
+Estado actual: **EDA, target, protocolo de evaluación y particiones congeladas aprobados (2026-07-23); entrenamiento de candidatos aún bloqueado hasta cerrar el gate `Data Ready` completo (T-1.8), incluida la licencia del dataset pendiente en T-0.2**.
 
 ## Requisitos obligatorios de la consigna
 
@@ -80,10 +80,12 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 | Dataset | Propuesta registrada; aprobación y licencia pendientes | Partidos de LaLiga 1995-96–2025-26, dos CSV locales combinados mediante loader único |
 | Problema de negocio | Propuesta registrada | Predicción prepartido del resultado final; no se inicia entrenamiento hasta aprobación |
 | Usuario principal | Propuesta registrada | Persona usuaria interesada en análisis deportivo prepartido |
-| Target | Propuesta registrada | `result_ft`: `H`, `D`, `A` |
-| Tipo de clasificación | Propuesta registrada | Multiclase de tres clases |
-| Métrica principal | Pendiente | No definida |
-| Fórmula de overfitting | Pendiente | Debe demostrar gap menor al 5 % |
+| Target | Aprobada 2026-07-23 | `result_ft`: `H`, `D`, `A` |
+| Tipo de clasificación | Aprobada 2026-07-23 | Multiclase de tres clases |
+| Métrica principal | Aprobada 2026-07-23 (T-0.4) | `macro-F1` |
+| Métricas secundarias | Aprobada 2026-07-23 (T-0.4) | Accuracy, balanced accuracy, precisión/recall/F1 por clase, log loss, matriz de confusión |
+| Fórmula de overfitting | Aprobada 2026-07-23 (T-0.4) | `gap = macro-F1(train) − macro-F1(validación)`, en puntos absolutos; umbral `< 0.05` sobre medias de CV |
+| Estrategia de partición | Aprobada 2026-07-23 (T-0.4/T-1.5) | Cronológica por temporada, congelada: train 1995-96–2019-20 (9.607 filas), validación 2020-21–2022-23 (1.197 filas), test 2023-24–2025-26 (1.140 filas, protegido); semilla `42` |
 | Modelos A, B, C y D | Pendiente | No seleccionados |
 | Tecnología frontend | Pendiente | No seleccionada |
 | Tecnología backend | Pendiente | No seleccionada |
