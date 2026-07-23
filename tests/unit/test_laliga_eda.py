@@ -22,3 +22,5 @@ def test_metrics_include_quality_target_and_market_baseline() -> None:
     assert metrics["quality"]["rows"] == 2
     assert sum(metrics["target"]["counts"].values()) == 2
     assert metrics["market_baseline"]["rows_with_complete_opening_odds"] == 1
+    assert len(metrics["target"]["majority_confusion_matrix"]) == 3
+    assert "home_goals_ft" in metrics["outliers_iqr"]

@@ -32,11 +32,12 @@ La predicción se define antes del inicio del encuentro. La clave de solapamient
 - Marcadores, tiros, tarjetas, faltas, córners y derivadas del partido actual son leakage crítico y se excluyen del modelado prepartido.
 - Las cuotas de apertura pueden ser features si la aplicación garantiza su disponibilidad. Las cuotas de cierre quedan condicionadas a la ventana de inferencia.
 - Se recomienda un split temporal y features históricas calculadas únicamente con partidos anteriores.
-- Los dos CSV raw se versionan en Git para facilitar la reproducción y revisión del EDA por parte del equipo, y no se alteran. La procedencia y la licencia definitivas siguen pendientes de validación.
+- Los dos CSV raw se versionan en Git para facilitar la reproducción y revisión del EDA por parte del equipo, y no se alteran. La procedencia se registra en `reports/metrics/source_provenance.json`; la aprobación de las condiciones de uso/licencia sigue pendiente.
+- El dataset canónico limpio se materializa en `data/processed/laliga_matches_clean.csv`; no sustituye a los raw y puede regenerarse determinísticamente.
 
 ## Pendientes antes de aprobar
 
-- Confirmar URL de origen, autoría y licencia de cada CSV.
+- Obtener aprobación del equipo sobre las condiciones de uso/licencia documentadas para cada CSV.
 - Validar problema, usuario y target con los cuatro integrantes.
 - Comparar formalmente con otros datasets candidatos o justificar que no aplica.
 - Aprobar métrica, splits, semilla, overfitting y modelos candidatos.

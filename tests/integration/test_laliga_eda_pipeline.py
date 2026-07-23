@@ -17,6 +17,6 @@ def test_full_eda_writes_reproducible_artifacts(tmp_path: Path) -> None:
     assert metrics["quality"]["rows"] == 2
     assert (reports / "laliga_eda.md").exists()
     assert (reports / "metrics/data_dictionary.csv").exists()
-    assert len(list((reports / "figures").glob("*.png"))) == 9
+    assert len(list((reports / "figures").glob("*.png"))) == 11
     persisted = json.loads((reports / "metrics/eda_summary.json").read_text(encoding="utf-8"))
     assert persisted["quality"]["duplicate_match_ids"] == 0

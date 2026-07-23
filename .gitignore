@@ -21,6 +21,9 @@ htmlcov/
 # Jupyter
 .ipynb_checkpoints/
 
+# Dependencias generadas dentro de carpetas de trabajo
+**/node_modules/
+
 # Editores y sistema operativo
 .idea/
 .vscode/
@@ -45,6 +48,9 @@ data/interim/*
 !data/interim/.gitkeep
 data/processed/*
 !data/processed/.gitkeep
+!data/processed/LaLiga_EDA_preparado.xlsx
+!data/processed/LaLiga_EDA_preparado.csv
+!data/processed/laliga_matches_clean.csv
 data/feedback/*
 !data/feedback/.gitkeep
 
@@ -55,3 +61,6 @@ models/**/*.joblib
 models/**/*.onnx
 models/**/*.h5
 models/**/*.keras
+
+# Planificación local de dailys
+docs/project_management/DAILYS.md
