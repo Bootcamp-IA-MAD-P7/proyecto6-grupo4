@@ -39,6 +39,8 @@ outputs/
 # Datos: se versionan contratos y marcadores, no datasets hasta aprobarlo
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/LaLiga_Matches.csv
+!data/raw/laliga_2025_2026_stats.csv
 data/interim/*
 !data/interim/.gitkeep
 data/processed/*
