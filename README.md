@@ -49,7 +49,7 @@ Después de los frentes iniciales, las ramas se crearán por ticket y se integra
 
 Se ha registrado una propuesta de dataset para clasificación multiclase de resultados (`result_ft`: H/D/A). El EDA es reproducible y está integrado, pero no cierra `Data Ready`: la procedencia/licencia, el target y el protocolo de evaluación requieren aprobación cruzada.
 
-Fuentes esperadas, sin modificar, dentro de `data/raw/`:
+Fuentes incluidas y versionadas sin modificar dentro de `data/raw/`:
 
 - `LaLiga_Matches.csv`.
 - `laliga_2025_2026_stats.csv`.

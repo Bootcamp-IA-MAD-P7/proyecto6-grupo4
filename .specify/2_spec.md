@@ -97,7 +97,7 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 La solicitud de 2026-07-22 autoriza implementar la carga, auditoría, diccionario y EDA para evaluar este dataset. Esta excepción resuelve la contradicción entre la petición de análisis y el estado inicial, pero no sustituye la aprobación cruzada exigida por el proyecto.
 
 - Dataset canónico provisional: `laliga_matches_1995_96_to_2025_26_v1`.
-- Fuentes raw locales: `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv`; se conservan inmutables y fuera de Git.
+- Fuentes raw locales: `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv`; se conservan inmutables y se versionan en Git para que el equipo pueda reproducir y revisar el EDA. La validación definitiva de su procedencia y licencia continúa pendiente.
 - Manifest con dimensiones y SHA-256: `reports/metrics/dataset_manifest.json`.
 - Target provisional: `result_ft` (`H`, `D`, `A`).
 - Resultado de auditoría: 11.944 filas, 54 columnas, 31 temporadas, 0 IDs duplicados, 0 targets nulos y 0 incoherencias marcador/resultado.
@@ -229,7 +229,7 @@ La estructura inicial es neutral respecto del dataset, los cuatro algoritmos y l
 
 Responsabilidades de las áreas principales:
 
-- `data/raw/`: dataset original inmutable; inicialmente ignorado por Git salvo marcador.
+- `data/raw/`: datasets originales inmutables; se versionan únicamente los dos CSV aprobados para el EDA y se ignora cualquier otra fuente raw.
 - `data/interim/`: resultados intermedios reproducibles.
 - `data/processed/`: base común posterior a las reglas aprobadas.
 - `src/data/`: conexión, auditoría y limpieza comunes.
