@@ -1,0 +1,23 @@
+{
+  "LaLiga_Matches.csv": {
+    "source_name": "La Liga Complete Dataset",
+    "publisher": "Kishan Kumar (Kaggle)",
+    "source_page_url": "https://www.kaggle.com/datasets/kishan305/la-liga-results-19952020",
+    "upstream_source_url": "https://www.football-data.co.uk/data.php",
+    "acquisition": "Descarga manual del CSV consolidado publicado en Kaggle.",
+    "license": "Data files © Original Authors (según la ficha de Kaggle).",
+    "license_status": "pending_team_approval",
+    "provenance_confidence": "confirmed_by_filename_schema_and_dataset_card"
+  },
+  "laliga_2025_2026_stats.csv": {
+    "source_name": "Football-Data Spain La Liga 2025/2026 (SP1.csv)",
+    "publisher": "Football-Data.co.uk",
+    "source_page_url": "https://www.football-data.co.uk/data.php",
+    "direct_download_url": "https://www.football-data.co.uk/mmz4281/2526/SP1.csv",
+    "column_notes_url": "https://www.football-data.co.uk/notes.txt",
+    "acquisition": "Descarga del CSV SP1 de la temporada 2025/2026 y renombrado local. La copia raw corresponde a una instantánea anterior a la versión actualmente publicada.",
+    "license": "Football-Data permite acceso gratuito y declara uso para predicción de partidos; no se ha verificado una licencia abierta explícita.",
+    "license_status": "pending_team_approval",
+    "provenance_confidence": "confirmed_by_url_schema_season_and_380_match_rows"
+  }
+}

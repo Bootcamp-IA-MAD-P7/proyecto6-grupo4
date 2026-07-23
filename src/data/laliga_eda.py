@@ -16,7 +16,13 @@ import seaborn as sns
 from scipy.stats import chi2_contingency
 from sklearn.metrics import confusion_matrix, log_loss
 
-from src.data.laliga_loader import TARGET_COLUMN, audit_dataset
+from src.data.laliga_loader import (
+    DETAILED_FILENAME,
+    HISTORICAL_FILENAME,
+    SOURCE_PROVENANCE,
+    TARGET_COLUMN,
+    audit_dataset,
+)
 
 
 RESULT_ORDER = ["H", "D", "A"]
@@ -185,6 +191,13 @@ def build_data_dictionary(frame: pd.DataFrame) -> pd.DataFrame:
 def calculate_eda_metrics(frame: pd.DataFrame) -> dict[str, Any]:
     target_counts = frame[TARGET_COLUMN].value_counts().reindex(RESULT_ORDER, fill_value=0)
     target_shares = (target_counts / len(frame)).reindex(RESULT_ORDER)
+    majority_class = str(target_counts.idxmax())
+    majority_predictions = np.full(len(frame), majority_class)
+    majority_confusion = confusion_matrix(
+        frame[TARGET_COLUMN],
+        majority_predictions,
+        labels=RESULT_ORDER,
+    )
     missingness = frame.isna().mean().sort_values(ascending=False)
     season_result = pd.crosstab(frame["season"], frame[TARGET_COLUMN], normalize="index").reindex(
         columns=RESULT_ORDER, fill_value=0
@@ -232,8 +245,9 @@ def calculate_eda_metrics(frame: pd.DataFrame) -> dict[str, Any]:
         "target": {
             "counts": {key: int(value) for key, value in target_counts.items()},
             "shares": {key: float(value) for key, value in target_shares.items()},
-            "majority_class": str(target_counts.idxmax()),
+            "majority_class": majority_class,
             "majority_baseline_accuracy": float(target_shares.max()),
+            "majority_confusion_matrix": majority_confusion.tolist(),
             "max_to_min_ratio": (
                 float(target_counts.max() / target_counts[target_counts.gt(0)].min())
                 if target_counts.gt(0).any()
@@ -288,7 +302,7 @@ def calculate_eda_metrics(frame: pd.DataFrame) -> dict[str, Any]:
 
 
 def _plot_target(frame: pd.DataFrame, figures_dir: Path) -> None:
-    counts = frame[TARGET_COLUMN].value_counts().reindex(RESULT_ORDER)
+    counts = frame[TARGET_COLUMN].value_counts().reindex(RESULT_ORDER, fill_value=0)
     fig, ax = plt.subplots(figsize=(8, 5))
     bars = ax.bar(
         [RESULT_LABELS[key] for key in RESULT_ORDER], counts.values,
@@ -455,6 +469,88 @@ def _plot_market_confusion(frame: pd.DataFrame, figures_dir: Path) -> None:
     _save(fig, figures_dir / "09_market_baseline_confusion.png")
 
 
+def _plot_majority_confusion(frame: pd.DataFrame, figures_dir: Path) -> None:
+    majority_class = frame[TARGET_COLUMN].value_counts().idxmax()
+    predictions = np.full(len(frame), majority_class)
+    matrix = confusion_matrix(
+        frame[TARGET_COLUMN],
+        predictions,
+        labels=RESULT_ORDER,
+        normalize="true",
+    )
+    fig, ax = plt.subplots(figsize=(7, 5.5))
+    sns.heatmap(
+        matrix,
+        annot=True,
+        fmt=".1%",
+        cmap="Blues",
+        vmin=0,
+        vmax=1,
+        cbar=False,
+        ax=ax,
+    )
+    ax.set(
+        title="Baseline descriptivo: predecir siempre la clase mayoritaria",
+        xlabel=f"Predicción de la regla fija ({RESULT_LABELS[majority_class]})",
+        ylabel="Resultado real",
+    )
+    labels = [RESULT_LABELS[key] for key in RESULT_ORDER]
+    ax.set_xticklabels(labels, rotation=20)
+    ax.set_yticklabels(labels, rotation=0)
+    _save(fig, figures_dir / "10_majority_baseline_confusion.png")
+
+
+def _plot_outlier_profile(frame: pd.DataFrame, figures_dir: Path) -> None:
+    columns = [
+        "home_goals_ft",
+        "away_goals_ft",
+        "total_goals",
+        "shots_home",
+        "shots_away",
+        "shots_on_target_home",
+        "shots_on_target_away",
+        "fouls_home",
+        "fouls_away",
+        "yellow_cards_home",
+        "yellow_cards_away",
+        "red_cards_home",
+        "red_cards_away",
+    ]
+    profile = pd.DataFrame(
+        [
+            {
+                "column": column,
+                **_iqr_outliers(frame[column]),
+            }
+            for column in columns
+        ]
+    ).sort_values("pct")
+    fig, ax = plt.subplots(figsize=(10, 7))
+    colors = [
+        "#2F75B5" if "goals" in column else "#D4A72C"
+        for column in profile["column"]
+    ]
+    bars = ax.barh(profile["column"], profile["pct"], color=colors)
+    ax.bar_label(
+        bars,
+        labels=[
+            f"{percentage:.1%} ({count})"
+            for percentage, count in zip(profile["pct"], profile["count"], strict=True)
+        ],
+        padding=4,
+        fontsize=8,
+    )
+    ax.set(
+        title="Valores extremos detectados por la regla IQR (1,5 × IQR)",
+        xlabel="Porcentaje sobre valores disponibles",
+        ylabel="",
+    )
+    ax.xaxis.set_major_formatter(lambda value, _: f"{value:.0%}")
+    ax.set_xlim(0, max(0.05, float(profile["pct"].max()) * 1.35))
+    sns.despine(ax=ax)
+    _save(fig, figures_dir / "11_outlier_profile.png")
+
+
 def generate_figures(frame: pd.DataFrame, figures_dir: str | Path) -> list[Path]:
     _configure_style()
     output = Path(figures_dir)
@@ -462,6 +558,7 @@ def generate_figures(frame: pd.DataFrame, figures_dir: str | Path) -> list[Path]
         _plot_target, _plot_season_trend, _plot_goals, _plot_home_advantage,
         _plot_team_performance, _plot_missingness, _plot_correlations,
         _plot_detailed_relationships, _plot_market_confusion,
+        _plot_majority_confusion, _plot_outlier_profile,
     ]
     for plotter in plotters:
         plotter(frame, output)
@@ -479,16 +576,49 @@ def render_markdown_report(metrics: dict[str, Any], report_path: str | Path) -> 
     detailed = metrics["detailed_subset"]
     market = metrics["market_baseline"]
     associations = metrics["associations"]
+    output = Path(report_path)
+    preprocessing_file = output.parent / "metrics" / "preprocessing_summary.json"
+    preprocessing = (
+        json.loads(preprocessing_file.read_text(encoding="utf-8"))
+        if preprocessing_file.exists()
+        else {}
+    )
+    join = preprocessing.get("join", {})
+    source_cleaning = preprocessing.get("source_cleaning", {})
+    historical_cleaning = source_cleaning.get(HISTORICAL_FILENAME, {})
+    detailed_cleaning = source_cleaning.get(DETAILED_FILENAME, {})
+    column_summary = preprocessing.get("column_policy_summary", {})
+    processed_output = preprocessing.get("output", {})
+    outlier_rows = "\n".join(
+        f"| `{column}` | {values['lower'] if values['lower'] is not None else 'N/A':} | "
+        f"{values['upper'] if values['upper'] is not None else 'N/A':} | "
+        f"{values['count']} | {_pct(values['pct'])} |"
+        for column, values in sorted(
+            metrics["outliers_iqr"].items(),
+            key=lambda item: item[1]["pct"],
+            reverse=True,
+        )
+    )
+    source_rows = "\n".join(
+        (
+            f"| `{filename}` | {metadata['source_name']} | "
+            f"{metadata['source_page_url']} | {metadata['acquisition']} | "
+            f"{metadata['license']} |"
+        )
+        for filename, metadata in SOURCE_PROVENANCE.items()
+    )
+    majority_matrix = target["majority_confusion_matrix"]
+    market_matrix = market.get("confusion_matrix", [[0, 0, 0] for _ in RESULT_ORDER])
     report = f"""# EDA completo — Partidos de LaLiga
 
 ## Estado del análisis
 
-Este EDA cubre el dataset canónico provisional de partidos de LaLiga y responde a T-1.3 de `.specify`. El target propuesto es `result_ft`: **H** (victoria local), **D** (empate) y **A** (victoria visitante). El análisis es reproducible, pero **no cierra el gate `Data Ready`**: la procedencia/licencia de las fuentes y la aprobación cruzada del equipo siguen pendientes.
+Este informe cubre el preprocesamiento T-1.4 y el EDA T-1.3 del dataset canónico provisional de LaLiga. El target propuesto es `result_ft`: **H** (victoria local), **D** (empate) y **A** (victoria visitante). El flujo es reproducible, pero **no cierra `Data Ready`**: la licencia, el protocolo de evaluación y la aprobación cruzada siguen pendientes.
 
 ## Resumen ejecutivo
 
 - Se analizaron **{quality['rows']:,} partidos**, **{quality['columns']} variables** y **{quality['season_count']} temporadas**, entre {quality['date_min']} y {quality['date_max']}.
-- La integración conserva una fila por partido: **{quality['duplicate_match_ids']} IDs duplicados**, **{quality['missing_target']} targets ausentes** y **{quality['full_time_result_inconsistencies']} incoherencias** entre goles y resultado.
+- La unión prioriza la fuente detallada en **{join.get('overlap_rows', quality['source_coverage'].get('both_sources', 0))} partidos solapados** y termina con **{quality['duplicate_match_ids']} IDs duplicados**, **{quality['missing_target']} targets ausentes** y **{quality['full_time_result_inconsistencies']} incoherencias.
 - El target está moderadamente desbalanceado: H={target['counts']['H']:,} ({_pct(target['shares']['H'])}), D={target['counts']['D']:,} ({_pct(target['shares']['D'])}) y A={target['counts']['A']:,} ({_pct(target['shares']['A'])}). La baseline mayoritaria es {_pct(target['majority_baseline_accuracy'])}.
 - La media es **{goals['mean_total']:.2f} goles/partido**; {_pct(goals['pct_over_2_5'])} supera 2,5 goles y {_pct(goals['pct_both_teams_scored'])} registra goles de ambos equipos.
 - Solo **{detailed['rows']} partidos** ({_pct(detailed['share_of_total'])}) contienen tiros, faltas, tarjetas y cuotas. Esta ausencia es estructural por temporada y no debe imputarse sobre el histórico.
@@ -496,16 +626,46 @@ Este EDA cubre el dataset canónico provisional de partidos de LaLiga y responde
 
 ![Distribución del target](figures/01_target_distribution.png)
 
-## 1. Alcance, unidad de análisis y target
+## 1. Fuentes y trazabilidad
 
-La unidad es un partido de Primera División. La tabla combina un histórico 1995-96–2025-26 con una fuente detallada completa para 2025-26. Los 100 partidos presentes en ambas fuentes se deduplican mediante fecha + local + visitante y se conserva la fila detallada.
+Los CSV originales se conservan sin modificación en `data/raw/` y sus SHA-256 están en `reports/metrics/dataset_manifest.json`.
 
-`result_ft` es adecuado como target categórico multiclase y no contiene nulos. Sin embargo, la utilidad de negocio y la ventana exacta de predicción deben aprobarse: este informe asume **predicción prepartido antes del inicio**.
+| Archivo raw | Fuente identificada | URL | Obtención | Licencia/uso |
+|---|---|---|---|---|
+{source_rows}
 
-## 2. Calidad de datos
+La procedencia está documentada; la aprobación de uso/licencia sigue abierta. El CSV detallado local es una instantánea anterior a la versión actualmente servida por Football-Data: coincide en temporada, 380 filas y 131 columnas, pero no byte a byte porque las cuotas se actualizan.
+
+## 2. Pipeline de combinación y política de columnas
+
+- Histórico: **{historical_cleaning.get('input', {}).get('rows', 11664):,} filas y {historical_cleaning.get('input', {}).get('columns', 10)} columnas**. Se conservan fecha, equipos, goles y resultados; `Season` solo valida y luego se deriva desde la fecha.
+- Detallado: **{detailed_cleaning.get('input', {}).get('rows', 380):,} filas y {detailed_cleaning.get('input', {}).get('columns', 131)} columnas**. Se conservan **{column_summary.get('detailed_columns_kept', 39)}** y se eliminan **{column_summary.get('detailed_columns_dropped', 92)}** cuotas específicas/máximas redundantes y con cobertura irregular.
+- La política completa, columna por columna, está en `reports/metrics/source_column_policy.csv`.
+- Clave de solapamiento: **fecha normalizada + equipo local recortado + equipo visitante recortado**.
+- Estrategia: unión vertical, descartando del histórico la clave repetida y conservando la fila detallada. Se usa porque ambas fuentes describen partidos, no entidades diferentes, y la fila detallada contiene el bloque mínimo más estadísticas y promedios de mercado.
+
+## 3. Limpieza y calidad final
+
+Reglas deterministas:
+
+1. Recortar texto y normalizar resultados a H/D/A.
+2. Convertir fechas y goles; retirar filas con clave, marcador o target crítico inválido.
+3. Eliminar duplicados exactos y duplicados de clave dentro de cada fuente.
+4. Resolver los {join.get('overlap_rows', 100)} solapamientos priorizando la fila detallada.
+5. Conservar los dos nulos de descanso porque son opcionales, posteriores al evento y no se usarán como feature prepartido.
+6. No imputar el bloque detallado ausente del histórico: el nulo es estructural.
+
+| Control de limpieza | Histórico | Detallado |
+|---|---:|---:|
+| Duplicados exactos eliminados | {historical_cleaning.get('exact_duplicate_rows_removed', 0)} | {detailed_cleaning.get('exact_duplicate_rows_removed', 0)} |
+| Filas críticas inválidas eliminadas | {historical_cleaning.get('invalid_rows_removed', 0)} | {detailed_cleaning.get('invalid_rows_removed', 0)} |
+| Claves duplicadas internas eliminadas | {historical_cleaning.get('duplicate_match_keys_removed', 0)} | {detailed_cleaning.get('duplicate_match_keys_removed', 0)} |
+| Filas tras limpieza de fuente | {historical_cleaning.get('rows_after_source_cleaning', 11664):,} | {detailed_cleaning.get('rows_after_source_cleaning', 380):,} |
 
 | Control | Resultado |
 |---|---:|
+| Filas finales | {quality['rows']:,} |
+| Columnas finales | {quality['columns']} |
 | Filas duplicadas completas | {quality['duplicate_rows']} |
 | IDs de partido duplicados | {quality['duplicate_match_ids']} |
 | Target ausente | {quality['missing_target']} |
@@ -514,11 +674,11 @@ La unidad es un partido de Primera División. La tabla combina un histórico 199
 | Equipos local y visitante iguales | {quality['same_team_rows']} |
 | Goles negativos | {quality['negative_goal_rows']} |
 
-Los dos nulos al descanso deben conservarse como desconocidos. No afectan al target, y eliminar esas filas reduciría datos sin beneficiar un modelo prepartido porque las variables de descanso están excluidas por leakage.
+Salida reproducible: `{processed_output.get('path', 'data/processed/laliga_matches_clean.csv')}`; SHA-256 `{processed_output.get('sha256', 'generado por el pipeline')}`.
 
 ![Perfil de valores ausentes](figures/06_missingness_profile.png)
 
-## 3. Distribución y balance del target
+## 4. Distribución y balance del target
 
 La clase H domina, seguida de A y D. El ratio entre clase mayoritaria y minoritaria es **{target['max_to_min_ratio']:.2f}**: existe desbalance moderado, no extremo. Accuracy por sí sola no será suficiente; el protocolo de evaluación debería considerar balanced accuracy y macro-F1, sujeto a T-0.4.
 
@@ -526,7 +686,7 @@ La mezcla de resultados cambia por temporada. La asociación temporada-target es
 
 ![Target por temporada](figures/02_target_by_season.png)
 
-## 4. Distribuciones, extremos y evolución temporal
+## 5. Distribuciones, evolución temporal y outliers
 
 Los goles son variables discretas con cola derecha. Los valores extremos identificados por IQR representan goleadas reales plausibles y no errores automáticos; deben validarse, no truncarse por defecto.
 
@@ -536,7 +696,15 @@ La tasa de victoria local y la diferencia media de goles fluctúan a lo largo de
 
 ![Ventaja local](figures/04_home_advantage_trend.png)
 
-## 5. Equipos y cardinalidad
+| Variable | Límite inferior IQR | Límite superior IQR | Outliers | Porcentaje |
+|---|---:|---:|---:|---:|
+{outlier_rows}
+
+![Perfil de outliers](figures/11_outlier_profile.png)
+
+Conclusión: los extremos de goles, tiros y tarjetas son observaciones deportivas plausibles. No se eliminan automáticamente; la limpieza retira errores lógicos, no partidos raros pero válidos.
+
+## 6. Equipos y cardinalidad
 
 Hay {metrics['cardinality']['home_teams']} equipos distintos en el rol local. `match_id` es único al {_pct(metrics['cardinality']['match_id_unique_pct'])} y debe tratarse exclusivamente como identificador. Los nombres de equipo sí pueden aportar señal, pero requieren una estrategia capaz de manejar ascensos, descensos y categorías no vistas. Una alternativa más robusta es derivar forma, Elo o promedios móviles usando solo el pasado.
 
@@ -544,7 +712,7 @@ La asociación bruta del equipo local con el target es V={associations['home_tea
 
 ![Rendimiento histórico de equipos](figures/05_team_performance.png)
 
-## 6. Relaciones entre variables y target
+## 7. Relaciones entre variables y target
 
 En 2025-26, tiros y tiros a puerta se relacionan con goles y resultado, como cabe esperar. Esa relación es **descriptiva y posterior al evento**: usarla para predecir el mismo partido produciría leakage crítico.
 
@@ -554,9 +722,31 @@ Las cuotas de apertura sí existen antes del partido y muestran señal predictiv
 
 ![Relaciones con el target](figures/08_relationships_with_target.png)
 
+## 8. Matrices de confusión descriptivas
+
+No se entrena ningún candidato porque `.specify` mantiene bloqueados splits y modelos. Se incluyen dos reglas de referencia:
+
+1. **Clase mayoritaria** sobre todo el dataset: siempre predice H y alcanza {_pct(target['majority_baseline_accuracy'])}. Evidencia que accuracy puede ocultar un fallo total en D y A.
+
+| Real \\ Predicha | H | D | A |
+|---|---:|---:|---:|
+| H | {majority_matrix[0][0]} | {majority_matrix[0][1]} | {majority_matrix[0][2]} |
+| D | {majority_matrix[1][0]} | {majority_matrix[1][1]} | {majority_matrix[1][2]} |
+| A | {majority_matrix[2][0]} | {majority_matrix[2][1]} | {majority_matrix[2][2]} |
+
+![Baseline mayoritaria](figures/10_majority_baseline_confusion.png)
+
+2. **Favorito de cuotas de apertura** sobre {market.get('rows_with_complete_opening_odds', 0)} partidos 2025-26: elige la mayor probabilidad implícita y acierta {_pct(market.get('favorite_accuracy', 0.0))}. No es un modelo entrenado ni una evaluación final.
+
+| Real \\ Favorito | H | D | A |
+|---|---:|---:|---:|
+| H | {market_matrix[0][0]} | {market_matrix[0][1]} | {market_matrix[0][2]} |
+| D | {market_matrix[1][0]} | {market_matrix[1][1]} | {market_matrix[1][2]} |
+| A | {market_matrix[2][0]} | {market_matrix[2][1]} | {market_matrix[2][2]} |
+
 ![Baseline de mercado](figures/09_market_baseline_confusion.png)
 
-## 7. Riesgo de leakage
+## 9. Riesgo de leakage
 
 Se deben excluir del entrenamiento prepartido del mismo encuentro:
 
@@ -568,13 +758,13 @@ Se deben excluir del entrenamiento prepartido del mismo encuentro:
 
 La fecha, temporada y equipos son inputs disponibles, pero no deben transformarse usando datos futuros. Las cuotas de cierre quedan condicionadas a definir la ventana de inferencia.
 
-## 8. Viabilidad para una aplicación
+## 10. Viabilidad para una aplicación
 
 Inputs directamente solicitables: equipo local, visitante, fecha/hora y, si existe una integración externa aprobada, cuotas prepartido. Para ofrecer valor sin depender de casas de apuestas, el pipeline debería generar forma reciente, fuerza ofensiva/defensiva y rating histórico a partir de partidos anteriores.
 
 No son inputs aceptables: goles, tiros, tarjetas o cualquier estadística ocurrida durante/después del partido que se intenta predecir.
 
-## 9. Reglas comunes propuestas
+## 11. Reglas comunes propuestas
 
 1. Mantener ambos CSV raw inmutables y verificar sus SHA-256.
 2. Deduplicar por fecha + local + visitante y priorizar la fila detallada.
@@ -585,28 +775,29 @@ No son inputs aceptables: goles, tiros, tarjetas o cualquier estadística ocurri
 7. Usar un split temporal; no congelarlo hasta aprobar T-0.4.
 8. Proteger el test final y ajustar transformaciones solo con train.
 
-## 10. Limitaciones y decisiones pendientes
+## 12. Limitaciones y decisiones pendientes
 
-- Falta confirmar y documentar URL de origen y licencia de los dos CSV.
+- Las URL y la trazabilidad ya están documentadas; falta que el equipo apruebe las condiciones de uso/licencia.
 - El target, el usuario y la ventana de predicción son propuestas que requieren aprobación del equipo.
 - El bloque detallado representa una única temporada y no permite asumir estabilidad histórica.
 - Las primeras temporadas contienen más partidos por cambios de tamaño de la liga; comparar conteos brutos sin normalizar puede inducir a error.
-- No se han creado splits ni entrenado modelos: hacerlo antes de T-0.4 y del gate `Data Ready` contradiría `.specify`.
+- Las matrices mostradas son reglas descriptivas; no se han creado splits ni entrenado candidatos.
 
 ## Reproducibilidad
 
 ```powershell
 python -m venv .venv
 .\\.venv\\Scripts\\python.exe -m pip install -r requirements-eda.txt
+.\\.venv\\Scripts\\python.exe scripts\\run_laliga_preprocessing.py
 .\\.venv\\Scripts\\python.exe scripts\\run_laliga_eda.py
+.\\.venv\\Scripts\\python.exe scripts\\create_preprocessing_notebook.py
 .\\.venv\\Scripts\\python.exe scripts\\create_eda_notebook.py
 .\\.venv\\Scripts\\python.exe scripts\\execute_eda_notebook.py
 .\\.venv\\Scripts\\python.exe -m pytest
 ```
 
-Los artefactos métricos se guardan en `reports/metrics/`, las figuras en `reports/figures/` y el dataset procesado local en `data/processed/` (ignorado por Git).
+Los artefactos métricos se guardan en `reports/metrics/`, las figuras en `reports/figures/` y el dataset limpio versionable en `data/processed/laliga_matches_clean.csv`.
 """
-    output = Path(report_path)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(report, encoding="utf-8")
     return output

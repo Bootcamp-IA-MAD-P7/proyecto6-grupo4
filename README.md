@@ -59,7 +59,9 @@ Ejecución en PowerShell:
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-eda.txt
+.\.venv\Scripts\python.exe scripts\run_laliga_preprocessing.py
 .\.venv\Scripts\python.exe scripts\run_laliga_eda.py
+.\.venv\Scripts\python.exe scripts\create_preprocessing_notebook.py
 .\.venv\Scripts\python.exe scripts\create_eda_notebook.py
 .\.venv\Scripts\python.exe scripts\execute_eda_notebook.py
 .\.venv\Scripts\python.exe -m pytest
@@ -68,7 +70,9 @@ python -m venv .venv
 Entregables principales:
 
 - `reports/laliga_eda.md`: informe interpretado.
-- `notebooks/01_laliga_eda.ipynb`: entrada interactiva.
-- `reports/figures/`: nueve visualizaciones.
-- `reports/metrics/`: manifest, auditoría, diccionario y resúmenes.
+- `notebooks/00_laliga_preprocessing.ipynb`: fuentes, columnas, limpieza y combinación.
+- `notebooks/01_laliga_eda.ipynb`: EDA ejecutado desde el dataset limpio.
+- `data/processed/laliga_matches_clean.csv`: dataset canónico limpio.
+- `reports/figures/`: once visualizaciones persistentes.
+- `reports/metrics/`: manifest, procedencia, política de columnas, auditoría, diccionario y resúmenes.
 - `src/data/laliga_loader.py`: mecanismo único de carga y combinación.

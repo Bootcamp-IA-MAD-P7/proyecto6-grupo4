@@ -116,7 +116,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Acción: crear un mecanismo reproducible para cargar el dataset canónico sin modificar el original.
 - Criterio de aceptación: los cuatro integrantes pueden obtener la misma versión de datos.
 - Verificación: comprobar schema, dimensiones y huella o versión.
-- Evidencia provisional: `src/data/laliga_loader.py`, `reports/metrics/dataset_manifest.json` y tests unitarios. Pendiente revisión de I4 y cierre de dependencias.
+- Evidencia provisional: `src/data/laliga_loader.py`, `scripts/run_laliga_preprocessing.py`, `reports/metrics/dataset_manifest.json`, `reports/metrics/source_provenance.json` y tests unitarios. Pendiente revisión de I4 y cierre de dependencias.
 
 ### [~] T-1.2 Crear diccionario y auditoría de datos
 
@@ -135,9 +135,9 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Acción: dividir preguntas de análisis entre los cuatro y consolidar un único EDA.
 - Criterio de aceptación: nulos, duplicados, distribuciones, target, relaciones, correlaciones y leakage analizados.
 - Evidencia: notebook o informe reproducible con interpretaciones.
-- Evidencia provisional: `notebooks/01_laliga_eda.ipynb`, `reports/laliga_eda.md` y nueve figuras en `reports/figures/`. Análisis técnico completo; pendiente revisión cruzada de los cuatro integrantes.
+- Evidencia provisional: `notebooks/01_laliga_eda.ipynb`, `reports/laliga_eda.md` y once figuras persistentes en `reports/figures/`, incluidas outliers y dos matrices de confusión descriptivas. Análisis técnico completo; pendiente revisión cruzada de los cuatro integrantes.
 
-### [ ] T-1.4 Implementar limpieza común
+### [~] T-1.4 Implementar limpieza común
 
 - Responsable: I1.
 - Revisores: I2 e I4.
@@ -145,6 +145,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Acción: codificar las reglas aprobadas sin alterar el dataset original.
 - Criterio de aceptación: limpieza determinista, documentada y probada.
 - Evidencia: tests y comparación antes/después.
+- Evidencia provisional 2026-07-23: `notebooks/00_laliga_preprocessing.ipynb`, `data/processed/laliga_matches_clean.csv`, `reports/metrics/preprocessing_summary.json`, `reports/metrics/source_column_policy.csv` y pruebas unitarias/integración. Pendientes revisión de I2/I4 y cierre de dependencias.
 
 ### [ ] T-1.5 Congelar particiones comunes
 

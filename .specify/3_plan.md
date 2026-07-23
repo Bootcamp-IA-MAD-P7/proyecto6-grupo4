@@ -10,6 +10,10 @@ Restricción temporal: ocho días hábiles.
 
 Se ejecuta en la rama `feature/t-1.3-laliga-eda` un incremento conjunto de T-1.1, T-1.2 y T-1.3 para evaluar la propuesta LaLiga. El incremento produce loader único, huellas de fuentes, auditoría, contrato provisional, notebook, informe y visualizaciones. No crea splits, no entrena modelos y no habilita fases posteriores. El avance solo podrá marcarse terminado cuando se confirmen las dependencias y revisiones de `4_tasks.md`.
 
+## Registro de ampliación provisional — 2026-07-23
+
+La petición incorpora T-1.4 al incremento: se formalizan procedencia, política columna a columna, limpieza de críticos y duplicados, prioridad de fuente en solapamientos y persistencia del dataset limpio. El EDA se regenera únicamente desde `data/processed/laliga_matches_clean.csv`, con dos notebooks ejecutados, once gráficas persistentes, outliers IQR y matrices de confusión de reglas fijas. Se mantiene el bloqueo de splits, entrenamiento y selección de candidatos.
+
 ## Regla de prioridad
 
 El trabajo seguirá este orden:

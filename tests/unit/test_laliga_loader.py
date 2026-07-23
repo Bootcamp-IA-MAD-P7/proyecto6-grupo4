@@ -1,8 +1,17 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pandas as pd
 
-from src.data.laliga_loader import audit_dataset, build_canonical_dataset
+from src.data.laliga_loader import (
+    DETAILED_FILENAME,
+    audit_dataset,
+    build_canonical_dataset,
+    build_source_column_policy,
+    load_processed_dataset,
+    preprocess_sources,
+)
 
 
 def _historical() -> pd.DataFrame:
@@ -56,3 +65,52 @@ def test_audit_rejects_no_valid_rows() -> None:
     assert audit["duplicate_match_ids"] == 0
     assert audit["full_time_result_inconsistencies"] == 0
     assert audit["missing_target"] == 0
+
+
+def test_preprocessing_reports_overlap_and_column_policy() -> None:
+    detailed = _detailed().assign(B365H=2.1)
+
+    result, report = preprocess_sources(_historical(), detailed)
+    policy = build_source_column_policy(_historical(), detailed)
+
+    assert len(result) == 2
+    assert report["join"]["overlap_rows"] == 1
+    assert report["column_policy_summary"]["detailed_columns_dropped"] == 1
+    dropped = policy.loc[
+        policy["source_file"].eq(DETAILED_FILENAME)
+        & policy["source_column"].eq("B365H")
+    ].iloc[0]
+    assert dropped["action"] == "drop"
+
+
+def test_preprocessing_removes_exact_duplicate_and_invalid_rows() -> None:
+    historical = pd.concat(
+        [
+            _historical(),
+            _historical().iloc[[0]],
+            pd.DataFrame(
+                [["2024-25", "20-05-2025", "Bad", "Bad", 1, 0, "H", 0, 0, "D"]],
+                columns=_historical().columns,
+            ),
+        ],
+        ignore_index=True,
+    )
+
+    result, report = preprocess_sources(historical, _detailed())
+
+    cleaning = report["source_cleaning"]["LaLiga_Matches.csv"]
+    assert len(result) == 2
+    assert cleaning["exact_duplicate_rows_removed"] == 1
+    assert cleaning["invalid_rows_removed"] == 1
+
+
+def test_processed_csv_round_trip_preserves_contract(tmp_path: Path) -> None:
+    expected = build_canonical_dataset(_historical(), _detailed())
+    path = tmp_path / "clean.csv"
+    expected.to_csv(path, index=False, date_format="%Y-%m-%d")
+
+    loaded = load_processed_dataset(path)
+
+    assert loaded.shape == expected.shape
+    assert audit_dataset(loaded)["duplicate_match_ids"] == 0
+    assert loaded["has_detailed_stats"].dtype.name == "boolean"

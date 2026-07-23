@@ -92,16 +92,19 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 | Gestión del equipo | Pendiente | Trello u otra herramienta |
 | Estrategia Git | Aprobada | `main` estable, `develop` integración y ramas `feature/` por ticket |
 
-### Excepción provisional controlada para T-1.1–T-1.3
+### Excepción provisional controlada para T-1.1–T-1.4
 
-La solicitud de 2026-07-22 autoriza implementar la carga, auditoría, diccionario y EDA para evaluar este dataset. Esta excepción resuelve la contradicción entre la petición de análisis y el estado inicial, pero no sustituye la aprobación cruzada exigida por el proyecto.
+Las solicitudes de 2026-07-22 y 2026-07-23 autorizan implementar la carga, auditoría, diccionario, limpieza reproducible y EDA para evaluar este dataset. Esta excepción resuelve la contradicción entre la petición de análisis y el estado inicial, pero no sustituye la aprobación cruzada exigida por el proyecto.
 
 - Dataset canónico provisional: `laliga_matches_1995_96_to_2025_26_v1`.
-- Fuentes raw locales: `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv`; se conservan inmutables y se versionan en Git para que el equipo pueda reproducir y revisar el EDA. La validación definitiva de su procedencia y licencia continúa pendiente.
+- Fuentes raw locales: `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv`; se conservan inmutables y se versionan en Git para que el equipo pueda reproducir y revisar el EDA. Las URL y huellas están documentadas; la aprobación definitiva de las condiciones de uso/licencia continúa pendiente.
 - Manifest con dimensiones y SHA-256: `reports/metrics/dataset_manifest.json`.
+- Dataset limpio canónico: `data/processed/laliga_matches_clean.csv`, generado únicamente desde los dos raw por `scripts/run_laliga_preprocessing.py`.
+- Evidencia del preprocesamiento: `notebooks/00_laliga_preprocessing.ipynb`, `reports/metrics/preprocessing_summary.json` y `reports/metrics/source_column_policy.csv`.
 - Target provisional: `result_ft` (`H`, `D`, `A`).
 - Resultado de auditoría: 11.944 filas, 54 columnas, 31 temporadas, 0 IDs duplicados, 0 targets nulos y 0 incoherencias marcador/resultado.
-- EDA reproducible: `reports/laliga_eda.md` y `notebooks/01_laliga_eda.ipynb`.
+- EDA reproducible: `reports/laliga_eda.md`, `notebooks/01_laliga_eda.ipynb` y once figuras persistentes.
+- Las matrices de confusión de esta fase corresponden exclusivamente a reglas descriptivas fijas (clase mayoritaria y favorito de apertura); no son candidatos entrenados ni sustituyen T-0.4.
 - Procedencia y licencia: pendientes de confirmación; el gate `Data Ready` permanece abierto.
 
 ## Estrategia Git aprobada

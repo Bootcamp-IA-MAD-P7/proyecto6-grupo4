@@ -33,6 +33,23 @@
     },
     "majority_class": "H",
     "majority_baseline_accuracy": 0.47228734092431346,
+    "majority_confusion_matrix": [
+      [
+        5641,
+        0,
+        0
+      ],
+      [
+        3058,
+        0,
+        0
+      ],
+      [
+        3245,
+        0,
+        0
+      ]
+    ],
     "max_to_min_ratio": 1.8446697187704382
   },
   "missingness": {
