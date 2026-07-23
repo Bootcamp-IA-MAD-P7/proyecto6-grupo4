@@ -1,6 +1,6 @@
-# ADR 0001 — Propuesta de dataset y target de LaLiga
+# ADR 0001 — Dataset y target de LaLiga
 
-- Estado: propuesta pendiente de aprobación cruzada.
+- Estado: aceptada técnicamente el 22/07/2026; condiciones de uso pendientes.
 - Fecha: 2026-07-22.
 - Tareas relacionadas: T-0.2, T-0.3, T-1.1, T-1.2 y T-1.3.
 
@@ -8,9 +8,9 @@
 
 El proyecto necesita un único dataset de clasificación con target comprensible, suficiente histórico y viabilidad de aplicación. Se proporcionaron dos CSV: un histórico de resultados y una fuente detallada de 2025-26.
 
-## Decisión propuesta
+## Decisión
 
-Combinar ambas fuentes en una tabla canónica por partido y usar provisionalmente `result_ft` como target multiclase:
+Combinar ambas fuentes en una tabla canónica por partido y usar `result_ft` como target multiclase:
 
 - `H`: victoria local.
 - `D`: empate.
@@ -35,11 +35,10 @@ La predicción se define antes del inicio del encuentro. La clave de solapamient
 - Los dos CSV raw se versionan en Git para facilitar la reproducción y revisión del EDA por parte del equipo, y no se alteran. La procedencia se registra en `reports/metrics/source_provenance.json`; la aprobación de las condiciones de uso/licencia sigue pendiente.
 - El dataset canónico limpio se materializa en `data/processed/laliga_matches_clean.csv`; no sustituye a los raw y puede regenerarse determinísticamente.
 
-## Pendientes antes de aprobar
+## Pendientes antes de cerrar `Data Ready`
 
 - Obtener aprobación del equipo sobre las condiciones de uso/licencia documentadas para cada CSV.
-- Validar problema, usuario y target con los cuatro integrantes.
 - Comparar formalmente con otros datasets candidatos o justificar que no aplica.
 - Aprobar métrica, splits, semilla, overfitting y modelos candidatos.
 
-Hasta resolver estos puntos no se cierra `Data Ready` ni se inicia entrenamiento.
+La selección técnica, el usuario, la unidad partido y el target constan aprobados en la daily del 22/07/2026. Hasta resolver las condiciones de uso y el resto de gates no se cierra `Data Ready` ni se inicia entrenamiento.
