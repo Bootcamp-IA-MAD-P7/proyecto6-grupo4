@@ -87,5 +87,8 @@ def test_freeze_splits_writes_reproducible_outputs(tmp_path: Path) -> None:
         "2025-26": "test",
     }
     assert manifest["seed"] == SPLIT_SEED
+    assert manifest["status"] == "frozen_i1_approved_pending_i3_i4_cross_review"
+    assert manifest["technical_approvals"]["I1"]["status"] == "approved"
+    assert manifest["required_cross_reviewers_pending"] == ["I3", "I4"]
     assert manifest["row_counts"] == {"train": 1, "validation": 1, "test": 1}
     assert manifest["source_dataset"]["rows"] == 3

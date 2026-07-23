@@ -12,7 +12,7 @@ Antes de proponer o modificar código es obligatorio leer completamente:
 4. `.specify/3_plan.md`.
 5. `.specify/4_tasks.md`.
 
-La carpeta `.specify/` es la fuente central de verdad. El equipo ha aprobado técnicamente LaLiga, la predicción prepartido y el target multiclase `result_ft` (`H`, `D`, `A`). Siguen pendientes las condiciones de uso y redistribución de las fuentes, el protocolo de evaluación, las features comunes, los cuatro algoritmos y la arquitectura de aplicación.
+La carpeta `.specify/` es la fuente central de verdad. El equipo ha aprobado técnicamente LaLiga, la predicción prepartido, el target multiclase `result_ft` (`H`, `D`, `A`) y el protocolo de evaluación. La revisión I1 concluye que la redistribución pública de los CSV no está autorizada de forma explícita; quedan pendientes la ratificación y remediación de T-0.2b, la revisión cruzada de las particiones, las features comunes, los cuatro algoritmos y la arquitectura de aplicación.
 
 ## Estrategia de datos y modelos
 
@@ -48,12 +48,14 @@ Después de los frentes iniciales, las ramas se crearán por ticket y se integra
 
 ## Base de datos y EDA de LaLiga
 
-La selección técnica y el target están aprobados. El preprocesamiento y el EDA son reproducibles y están integrados, pero no cierran `Data Ready`: falta aprobar las condiciones de uso, el protocolo temporal, las features comunes, los candidatos y las revisiones indicadas en el backlog.
+La selección técnica, el target y el protocolo temporal están aprobados. El preprocesamiento, el EDA y las particiones son reproducibles y están integrados, pero no cierran `Data Ready`: falta ratificar la política de no redistribución, retirar o autorizar los datos actualmente publicados, completar las revisiones cruzadas, implementar las features comunes y elegir los candidatos.
 
-Fuentes incluidas y versionadas sin modificar dentro de `data/raw/`:
+Fuentes requeridas localmente dentro de `data/raw/`, pero no redistribuibles en nuevos commits sin permiso explícito:
 
 - `LaLiga_Matches.csv`.
 - `laliga_2025_2026_stats.csv`.
+
+Consulta `docs/data_acquisition.md` para obtenerlas localmente, verificar sus huellas y regenerar los derivados. Los CSV que todavía aparecen versionados son deuda de remediación de T-0.2b y deberán retirarse mediante un PR revisado o quedar cubiertos por permiso escrito.
 
 Ejecución en PowerShell:
 

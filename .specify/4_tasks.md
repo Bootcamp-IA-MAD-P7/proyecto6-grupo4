@@ -41,7 +41,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 |---|---|---|
 | Alineación | En progreso | T-0.1: aprobar SDD reconciliado |
 | Dataset técnico | Cerrado | Daily 22/07, ADR-0001, loader y manifest |
-| Licencia | Bloqueado | T-0.2b: condiciones de uso y redistribución |
+| Licencia | Bloqueado tras revisión I1 | T-0.2b: redistribución no demostrada; faltan ratificación y remediación del repositorio |
 | Evaluación | Pendiente | T-0.4: métrica, gap y ventanas temporales |
 | Aplicación | En progreso | T-0.6: arquitectura y contrato definitivo |
 | `Data Ready` | Abierto | T-1.8 y checklist de `2_spec.md` |
@@ -67,6 +67,22 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Acción: evaluar target, tamaño, leakage, interpretabilidad, balance y viabilidad de aplicación.
 - Criterio de aceptación: selección técnica, unidad partido, usuario y target explicables.
 - Evidencia: daily 22/07/2026, `docs/decisions/0001-laliga-dataset-target-proposal.md`, EDA y manifest.
+
+### [!] T-0.2b Verificar condiciones de uso y redistribución del dataset
+
+- Prioridad: **P0 — bloqueante para `Data Ready`**.
+- Responsable: I1.
+- Revisores: I2, I3 e I4.
+- Dependencias: T-0.2a.
+- Requisitos: DEC-01, DEC-02 y RNF-01.
+- Acción: verificar para `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv` la fuente original, autor o entidad responsable, condiciones de uso, permiso de redistribución y compatibilidad con un repositorio público. Registrar URL, fecha de consulta y evidencia verificable; distinguir acceso gratuito de licencia abierta.
+- Criterio de aceptación: cada fuente tiene procedencia y condiciones documentadas, una decisión explícita sobre si sus copias raw y derivadas pueden permanecer versionadas, y aprobación fechada de los cuatro integrantes. Si la redistribución no está permitida o no puede demostrarse, se define una adquisición reproducible sin publicar los datos o se sustituye la fuente antes de cerrar el gate.
+- Verificación: contrastar `reports/metrics/source_provenance.json`, las fuentes publicadas y los archivos versionados mediante `git ls-files data/raw data/processed`.
+- Evidencia: `reports/metrics/source_provenance.json`, `docs/decisions/0001-laliga-dataset-target-proposal.md`, GitHub issue #41 y aprobación fechada en daily o PR.
+- Apertura 2026-07-23: tarea formalizada como prioridad inmediata en GitHub issue #41, asignada a I1, añadida a `Proyecto6-Grupo4`, con prioridad `Urgent` y estado `In progress`. La procedencia técnica está identificada, pero no consta una licencia abierta explícita para ambas fuentes ni la aprobación del equipo sobre redistribución. Hasta resolverlo, `T-1.1` y `T-1.8` no pueden cerrarse.
+- Revisión I1 2026-07-23: la ficha de Kaggle declara `Data files © Original Authors`; Football-Data ofrece descarga gratuita y declara la finalidad de predicción de partidos, pero ninguna fuente publica una licencia abierta o una autorización explícita para redistribuir los archivos. Decisión I1: uso local para el proyecto compatible con la finalidad indicada; publicación de raw y derivados fila a fila **no autorizada mientras no exista permiso escrito**.
+- Estado tras revisión I1: resultado y verificación 15/15 publicados en el issue #41; ocho comprobaciones completadas y estado del Project cambiado a `In review`. El issue permanece abierto y la aprobación I2/I3/I4 continúa sin marcar.
+- Remediación requerida: ratificación de I2/I3/I4; retirar en un PR revisado `data/raw/*.csv` y los datasets fila a fila de `data/processed/` del estado público de Git, conservando manifests, contratos y scripts; o adjuntar permiso explícito de redistribución. La adquisición local queda documentada en `docs/data_acquisition.md`.
 
 ### [x] T-0.3 Definir problema, usuarios y target
 
@@ -182,6 +198,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: los cuatro candidatos reciben los mismos registros.
 - Evidencia: índices, metadata o función reproducible; test final protegido.
 - Avance 2026-07-23: implementado `src/evaluation/splits.py` (partición cronológica por temporada, congelada como constante, sin aleatoriedad ni estratificación). Genera `data/processed/splits/laliga_splits.csv` (match_id, season, split) y `reports/metrics/split_manifest.json` (protocolo, semilla 42, conteos y fracciones). Resultado: train 9.607 filas (1995-96–2019-20), validación 1.197 filas (2020-21–2022-23), test 1.140 filas (2023-24–2025-26, protegido). Falla explícitamente si aparece una temporada no contemplada, en vez de reasignar en silencio. Pruebas: `tests/unit/test_splits.py` (5 casos), suite completa 14/14 en verde. Pendiente revisión de I1.
+- Aprobación técnica I1 2026-07-23: verificados el SHA-256 del dataset canónico, la asignación cronológica, la regeneración local de 11.944 índices sin IDs duplicados o ausentes, los conteos 9.607/1.197/1.140 y la protección del test. Suite completa: 14/14 pruebas aprobadas. La asignación queda versionada mediante la constante y el manifest; el CSV regenerable permanece excluido por la política general de `data/processed/*`. T-1.5 continúa en `[~]` hasta obtener la revisión cruzada de I3 e I4 y la ratificación completa del equipo.
 
 ### [ ] T-1.6 Crear frontend simulado
 

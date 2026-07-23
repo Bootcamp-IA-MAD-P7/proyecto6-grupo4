@@ -39,18 +39,14 @@ Thumbs.db
 # Artefactos locales generados fuera de reports/
 outputs/
 
-# Datos: se versionan contratos y marcadores, no datasets hasta aprobarlo
+# Datos: contratos, manifests y marcadores sí; datasets fila a fila solo locales
+# hasta disponer de permiso explícito de redistribución.
 data/raw/*
 !data/raw/.gitkeep
-!data/raw/LaLiga_Matches.csv
-!data/raw/laliga_2025_2026_stats.csv
 data/interim/*
 !data/interim/.gitkeep
 data/processed/*
 !data/processed/.gitkeep
-!data/processed/LaLiga_EDA_preparado.xlsx
-!data/processed/LaLiga_EDA_preparado.csv
-!data/processed/laliga_matches_clean.csv
 data/feedback/*
 !data/feedback/.gitkeep
 
