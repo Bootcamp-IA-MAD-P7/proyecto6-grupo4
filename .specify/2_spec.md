@@ -4,7 +4,7 @@
 
 Este documento define el contrato técnico del proyecto y está subordinado a `0_constitution.md` y `1_intent.md`. Toda implementación debe respetarlo o detenerse hasta que el equipo apruebe y documente un cambio.
 
-Estado actual: **EDA, target, protocolo de evaluación y particiones congeladas aprobados (2026-07-23); entrenamiento de candidatos aún bloqueado hasta cerrar el gate `Data Ready` completo (T-1.8), incluida la licencia del dataset pendiente en T-0.2**.
+Estado actual: **EDA, target, protocolo de evaluación y particiones congeladas aprobados (2026-07-23); entrenamiento de candidatos aún bloqueado hasta cerrar el gate `Data Ready` completo (T-1.8). La revisión I1 de T-0.2b no demuestra autorización de redistribución pública y requiere ratificación del equipo y remediación de los CSV versionados**.
 
 ## Requisitos obligatorios de la consigna
 
@@ -78,7 +78,7 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 
 | Decisión | Estado | Valor |
 |---|---|---|
-| Dataset | Propuesta registrada; aprobación y licencia pendientes | Partidos de LaLiga 1995-96–2025-26, dos CSV locales combinados mediante loader único |
+| Dataset | Selección técnica aprobada; redistribución pública bloqueada | Partidos de LaLiga 1995-96–2025-26, dos CSV locales combinados mediante loader único; uso local y sin publicar raw o derivados fila a fila salvo permiso escrito |
 | Problema de negocio | Propuesta registrada | Predicción prepartido del resultado final; no se inicia entrenamiento hasta aprobación |
 | Usuario principal | Propuesta registrada | Persona usuaria interesada en análisis deportivo prepartido |
 | Target | Aprobada 2026-07-23 | `result_ft`: `H`, `D`, `A` |
@@ -100,7 +100,7 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 Las solicitudes de 2026-07-22 y 2026-07-23 autorizaron carga, auditoría, diccionario, limpieza reproducible y EDA antes de cerrar todos los gates. Este trabajo se clasifica como spike exploratorio: produce evidencia para decidir, pero no habilita splits ni entrenamiento y no altera la regla general de dependencias.
 
 - Dataset canónico aprobado técnicamente: `laliga_matches_1995_96_to_2025_26_v1`.
-- Fuentes raw locales: `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv`; se conservan inmutables y se versionan en Git para que el equipo pueda reproducir y revisar el EDA. Las URL y huellas están documentadas; la aprobación definitiva de las condiciones de uso/licencia continúa pendiente.
+- Fuentes raw locales: `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv`; se conservan inmutables fuera del repositorio público. Las URL, huellas y adquisición local reproducible están documentadas en `docs/data_acquisition.md`. Las copias actualmente rastreadas son deuda de remediación y deben retirarse mediante un PR revisado, salvo que se obtenga permiso escrito de redistribución.
 - Manifest con dimensiones y SHA-256: `reports/metrics/dataset_manifest.json`.
 - Dataset limpio canónico: `data/processed/laliga_matches_clean.csv`, generado únicamente desde los dos raw por `scripts/run_laliga_preprocessing.py`.
 - Evidencia del preprocesamiento: `notebooks/00_laliga_preprocessing.ipynb`, `reports/metrics/preprocessing_summary.json` y `reports/metrics/source_column_policy.csv`.
@@ -108,7 +108,7 @@ Las solicitudes de 2026-07-22 y 2026-07-23 autorizaron carga, auditoría, diccio
 - Resultado de auditoría: 11.944 filas, 54 columnas, 31 temporadas, 0 IDs duplicados, 0 targets nulos y 0 incoherencias marcador/resultado.
 - EDA reproducible: `reports/laliga_eda.md`, `notebooks/01_laliga_eda.ipynb` y once figuras persistentes.
 - Las matrices de confusión de esta fase corresponden exclusivamente a reglas descriptivas fijas (clase mayoritaria y favorito de apertura); no son candidatos entrenados ni sustituyen T-0.4.
-- Procedencia documentada y condiciones de uso pendientes de aprobación; el gate `Data Ready` permanece abierto.
+- Procedencia y revisión I1 documentadas: el uso analítico local encaja con la finalidad declarada, pero no se demuestra permiso de redistribución pública. El gate `Data Ready` permanece abierto hasta la ratificación I2/I3/I4 y la remediación.
 
 ## Estrategia Git aprobada
 
@@ -236,7 +236,7 @@ La estructura inicial es neutral respecto del dataset, los cuatro algoritmos y l
 
 Responsabilidades de las áreas principales:
 
-- `data/raw/`: datasets originales inmutables; se versionan únicamente los dos CSV aprobados para el EDA y se ignora cualquier otra fuente raw.
+- `data/raw/`: datasets originales inmutables y locales; Git solo conserva `.gitkeep`. Los CSV raw no se publican sin permiso escrito de redistribución.
 - `data/interim/`: resultados intermedios reproducibles.
 - `data/processed/`: base común posterior a las reglas aprobadas.
 - `src/data/`: conexión, auditoría y limpieza comunes.

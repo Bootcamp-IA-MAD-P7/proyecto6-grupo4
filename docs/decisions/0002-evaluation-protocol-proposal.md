@@ -1,6 +1,6 @@
 # ADR 0002 — Propuesta de protocolo de evaluación (T-0.4)
 
-- Estado: propuesta pendiente de aprobación cruzada de I1, I3 e I4 (T-0.3 confirmada por representante del equipo en sesión de 2026-07-23; falta ratificación explícita de I1/I3/I4 sobre esta propuesta concreta).
+- Estado: protocolo aprobado en T-0.4; implementación de particiones de T-1.5 aprobada técnicamente por I1 el 23/07/2026. Pendiente revisión cruzada de I3 e I4 antes de cerrar T-1.5 y ratificación completa del equipo antes de `Data Ready`.
 - Fecha: 2026-07-23.
 - Responsable: I2.
 - Revisor: I1.
@@ -62,10 +62,10 @@ Esto implica una desviación respecto a la estratificación "cuando resulte apro
 - El test final se evalúa una sola vez tras seleccionar el Champion (T-2.6); no se reutiliza para tuning.
 - Si el equipo rechaza la partición cronológica, esta ADR debe corregirse antes de ejecutar T-1.5.
 
-## Pendientes antes de aprobar
+## Seguimiento antes de cerrar T-1.5 y `Data Ready`
 
-- Ratificación explícita de I1, I3 e I4 sobre métrica, overfitting y partición.
-- Validar los cortes de temporada con conteos reales de filas al construir T-1.5.
+- Obtener revisión cruzada explícita de I3 e I4 sobre la partición y la protección del test.
+- Ratificar el protocolo completo con los cuatro integrantes antes de cerrar `Data Ready`.
 - Confirmar que T-0.2 (licencia del dataset) no obliga a cambiar de dataset, lo que invalidaría esta propuesta.
 
-Hasta resolver estos puntos, T-0.4 permanece en `[~]` y no se inicia T-1.5 ni el entrenamiento de candidatos.
+Los cortes fueron validados al implementar T-1.5: train 9.607 filas, validación 1.197 y test protegido 1.140. I1 verificó el 23/07/2026 el SHA-256 del dataset, la regeneración de los 11.944 índices, la ausencia de IDs duplicados o ausentes y la suite completa 14/14. Hasta resolver las revisiones restantes y T-0.2b no se cierra `Data Ready` ni se inicia el entrenamiento de candidatos.

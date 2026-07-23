@@ -6,6 +6,7 @@ import pandas as pd
 
 from src.data.laliga_loader import (
     DETAILED_FILENAME,
+    SOURCE_PROVENANCE,
     audit_dataset,
     build_canonical_dataset,
     build_source_column_policy,
@@ -114,3 +115,15 @@ def test_processed_csv_round_trip_preserves_contract(tmp_path: Path) -> None:
     assert loaded.shape == expected.shape
     assert audit_dataset(loaded)["duplicate_match_ids"] == 0
     assert loaded["has_detailed_stats"].dtype.name == "boolean"
+
+
+def test_source_policy_rejects_public_redistribution_without_permission() -> None:
+    assert set(SOURCE_PROVENANCE) == {
+        "LaLiga_Matches.csv",
+        "laliga_2025_2026_stats.csv",
+    }
+    for source in SOURCE_PROVENANCE.values():
+        assert source["license_checked_at"] == "2026-07-23"
+        assert source["open_license_identifier"] is None
+        assert source["redistribution_status"] == "not_authorized_without_explicit_permission"
+        assert source["repository_policy"] == "local_only_no_public_raw_or_row_level_derivatives"

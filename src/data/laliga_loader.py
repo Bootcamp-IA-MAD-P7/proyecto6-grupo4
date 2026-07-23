@@ -30,7 +30,19 @@ SOURCE_PROVENANCE = {
         "upstream_source_url": "https://www.football-data.co.uk/data.php",
         "acquisition": "Descarga manual del CSV consolidado publicado en Kaggle.",
         "license": "Data files © Original Authors (según la ficha de Kaggle).",
-        "license_status": "pending_team_approval",
+        "license_evidence_url": (
+            "https://www.kaggle.com/datasets/kishan305/la-liga-results-19952020"
+        ),
+        "license_checked_at": "2026-07-23",
+        "license_status": "no_open_license_public_redistribution_not_demonstrated",
+        "open_license_identifier": None,
+        "usage_assessment": (
+            "El uso analítico para predicción de partidos es compatible con la finalidad "
+            "declarada por la fuente aguas arriba, pero la ficha no concede una licencia "
+            "abierta ni permiso explícito de redistribución."
+        ),
+        "redistribution_status": "not_authorized_without_explicit_permission",
+        "repository_policy": "local_only_no_public_raw_or_row_level_derivatives",
         "provenance_confidence": "confirmed_by_filename_schema_and_dataset_card",
     },
     DETAILED_FILENAME: {
@@ -44,10 +56,20 @@ SOURCE_PROVENANCE = {
             "La copia raw corresponde a una instantánea anterior a la versión actualmente publicada."
         ),
         "license": (
-            "Football-Data permite acceso gratuito y declara uso para predicción de partidos; "
-            "no se ha verificado una licencia abierta explícita."
+            "Football-Data ofrece acceso gratuito y declara los datos para predicción de "
+            "partidos de liga; no publica una licencia abierta ni un permiso explícito de "
+            "redistribución."
         ),
-        "license_status": "pending_team_approval",
+        "license_evidence_url": "https://www.football-data.co.uk/data.php",
+        "license_checked_at": "2026-07-23",
+        "license_status": "no_open_license_public_redistribution_not_demonstrated",
+        "open_license_identifier": None,
+        "usage_assessment": (
+            "El proyecto de predicción prepartido encaja con la finalidad publicada. Esto "
+            "no equivale a autorización para republicar los archivos."
+        ),
+        "redistribution_status": "not_authorized_without_explicit_permission",
+        "repository_policy": "local_only_no_public_raw_or_row_level_derivatives",
         "provenance_confidence": "confirmed_by_url_schema_season_and_380_match_rows",
     },
 }
@@ -649,7 +671,10 @@ def build_dataset_manifest(
         "generated_from": sources,
         "preprocessing": preprocessing_report or {},
         "canonical_audit": audit_dataset(canonical),
-        "provenance_status": "source_urls_documented_license_approval_pending",
+        "provenance_status": (
+            "i1_review_complete_public_redistribution_not_demonstrated_"
+            "pending_team_approval_and_repository_remediation"
+        ),
     }
 
 

@@ -72,10 +72,17 @@ def build_split_manifest(
     total = sum(counts.values())
     return {
         "protocol_reference": PROTOCOL_REFERENCE,
-        "status": "frozen_pending_full_team_ratification",
+        "status": "frozen_i1_approved_pending_i3_i4_cross_review",
         "frozen_at": "2026-07-23",
-        "responsible": "I2",
-        "reviewer": "I1",
+        "responsible": ["I1", "I2"],
+        "technical_approvals": {
+            "I1": {
+                "status": "approved",
+                "date": "2026-07-23",
+                "scope": "dataset_hash_season_assignment_counts_reproducibility_test_protection",
+            }
+        },
+        "required_cross_reviewers_pending": ["I3", "I4"],
         "seed": SPLIT_SEED,
         "strategy": "chronological_by_season_no_shuffle_no_stratification",
         "rationale": (
