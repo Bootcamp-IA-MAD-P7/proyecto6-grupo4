@@ -4,38 +4,7 @@
 
 Este documento define el contrato técnico del proyecto y está subordinado a `0_constitution.md` y `1_intent.md`. Toda implementación debe respetarlo o detenerse hasta que el equipo apruebe y documente un cambio.
 
-Estado actual: **LaLiga, problema prepartido, target H/D/A y split temporal aprobados; preprocesamiento y EDA reproducibles; entrenamiento bloqueado por licencia, protocolo de evaluación, features comunes, splits exactos y candidatos pendientes**.
-
-## Convención de requisitos
-
-- `RF-xx`: requisito funcional del producto.
-- `ML-xx`: requisito de datos, modelado o evaluación.
-- `RNF-xx`: requisito no funcional.
-- `DEC-xx`: decisión técnica con estado explícito.
-
-Cada tarea de `4_tasks.md` deberá indicar los IDs que implementa o verifica. Un requisito no se considera cumplido sin evidencia enlazada.
-
-## Requisitos funcionales del Nivel Esencial
-
-| ID | Requisito | Criterio verificable |
-|---|---|---|
-| RF-01 | La aplicación permite seleccionar equipo local, equipo visitante y fecha del partido. | Rechaza equipos iguales, campos ausentes y formatos inválidos. |
-| RF-02 | El backend genera las features históricas comunes sin solicitar información posterior al inicio. | Una prueba temporal demuestra que cada feature usa únicamente partidos anteriores. |
-| RF-03 | La aplicación devuelve clase `H`, `D` o `A`, probabilidades por clase y versión del modelo. | Las probabilidades son finitas, están entre 0 y 1 y suman 1 con tolerancia numérica. |
-| RF-04 | La respuesta explica que la predicción es probabilística y no causal. | Mensaje visible en resultado y documentación. |
-| RF-05 | Entradas desconocidas o sin historial suficiente producen una respuesta controlada. | No hay error interno ni predicción silenciosa con datos inválidos. |
-| RF-06 | Frontend y backend consumen un único contrato versionado. | Prueba de contrato con el mismo fixture en ambos componentes. |
-
-## Requisitos de machine learning del Nivel Esencial
-
-| ID | Requisito | Criterio verificable |
-|---|---|---|
-| ML-01 | Los datos y features comunes respetan la causalidad temporal. | Tests de no-leakage, schema y versión aprobados antes de entrenar. |
-| ML-02 | Se entrenan cuatro candidatos diversos con datos y evaluación comunes. | Cuatro registros completos y comparables. |
-| ML-03 | El Champion se selecciona por validación, cumple el gap y supera la baseline aprobada. | Decisión colegiada antes de abrir el test final. |
-| ML-04 | El test final se usa una sola vez tras la selección. | Evidencia fechada y resultado final no reutilizado para tuning. |
-| ML-05 | El pipeline serializado contiene todas las transformaciones necesarias. | Paridad demostrada entre evaluación e inferencia. |
-| ML-06 | El informe incluye macro-F1, balanced accuracy, métricas por clase, matriz de confusión, errores y limitaciones. | Cifras trazables a los artefactos de evaluación. |
+Estado actual: **EDA, target, protocolo de evaluación y particiones congeladas aprobados (2026-07-23); entrenamiento de candidatos aún bloqueado hasta cerrar el gate `Data Ready` completo (T-1.8), incluida la licencia del dataset pendiente en T-0.2**.
 
 ## Requisitos obligatorios de la consigna
 
@@ -109,15 +78,15 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 
 | Decisión | Estado | Valor |
 |---|---|---|
-| DEC-01 Dataset | Aprobada técnicamente; licencia pendiente | Partidos de LaLiga 1995-96–2025-26, dos CSV combinados mediante loader único |
-| DEC-02 Fuente y condiciones de uso | Bloqueada | Procedencia documentada; falta aprobación de uso y redistribución de ambas fuentes |
-| DEC-03 Problema de negocio | Aprobada | Predicción prepartido del resultado final |
-| DEC-04 Usuario principal | Aprobada | Persona interesada en análisis deportivo prepartido |
-| DEC-05 Target | Aprobada | `result_ft`: `H`, `D`, `A` |
-| DEC-06 Tipo de clasificación | Aprobada | Multiclase de tres clases |
-| DEC-07 Partición | Aprobada en principio; ventanas exactas pendientes | Separación cronológica; queda prohibido el split aleatorio por filas como evaluación principal |
-| DEC-08 Métrica principal | Propuesta pendiente de T-0.4 | `macro-F1` |
-| DEC-09 Fórmula de overfitting | Propuesta pendiente de T-0.4 | `max(0, F1_macro_train - F1_macro_validation) < 0.05` |
+| Dataset | Propuesta registrada; aprobación y licencia pendientes | Partidos de LaLiga 1995-96–2025-26, dos CSV locales combinados mediante loader único |
+| Problema de negocio | Propuesta registrada | Predicción prepartido del resultado final; no se inicia entrenamiento hasta aprobación |
+| Usuario principal | Propuesta registrada | Persona usuaria interesada en análisis deportivo prepartido |
+| Target | Aprobada 2026-07-23 | `result_ft`: `H`, `D`, `A` |
+| Tipo de clasificación | Aprobada 2026-07-23 | Multiclase de tres clases |
+| Métrica principal | Aprobada 2026-07-23 (T-0.4) | `macro-F1` |
+| Métricas secundarias | Aprobada 2026-07-23 (T-0.4) | Accuracy, balanced accuracy, precisión/recall/F1 por clase, log loss, matriz de confusión |
+| Fórmula de overfitting | Aprobada 2026-07-23 (T-0.4) | `gap = macro-F1(train) − macro-F1(validación)`, en puntos absolutos; umbral `< 0.05` sobre medias de CV |
+| Estrategia de partición | Aprobada 2026-07-23 (T-0.4/T-1.5) | Cronológica por temporada, congelada: train 1995-96–2019-20 (9.607 filas), validación 2020-21–2022-23 (1.197 filas), test 2023-24–2025-26 (1.140 filas, protegido); semilla `42` |
 | Modelos A, B, C y D | Pendiente | No seleccionados |
 | Tecnología frontend | Pendiente | No seleccionada |
 | Tecnología backend | Pendiente | No seleccionada |

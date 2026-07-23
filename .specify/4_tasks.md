@@ -68,17 +68,6 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: selección técnica, unidad partido, usuario y target explicables.
 - Evidencia: daily 22/07/2026, `docs/decisions/0001-laliga-dataset-target-proposal.md`, EDA y manifest.
 
-### [!] T-0.2b Confirmar condiciones de uso y redistribución
-
-- Responsable: I1.
-- Revisores: I2 e I4.
-- Dependencias: T-0.2a.
-- Requisito: DEC-02.
-- Acción: confirmar términos aplicables a cada CSV, atribución y si puede versionarse o debe adquirirse mediante script/instrucciones.
-- Criterio de aceptación: evidencia oficial enlazada y decisión `aprobada` en `2_spec.md`; si una fuente no es utilizable, se sustituye antes de entrenar.
-- Evidencia actual: `reports/metrics/source_provenance.json`.
-- Bloqueo: no se ha verificado una licencia abierta explícita para ambas fuentes.
-
 ### [x] T-0.3 Definir problema, usuarios y target
 
 - Responsable: todo el equipo; coordina I1.
@@ -86,9 +75,11 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Requisitos: DEC-03–DEC-06.
 - Acción: aprobar problema de negocio, usuario, unidad de predicción, target y clases.
 - Criterio de aceptación: el equipo puede explicar qué se predice, para quién y con qué utilidad.
-- Evidencia: daily 22/07/2026, `1_intent.md` y `2_spec.md`.
+- Evidencia: `1_intent.md` y `2_spec.md` actualizados.
+- Avance 2026-07-22: propuesta prepartido y target multiclase `result_ft` documentados. Pendiente aprobación de todo el equipo.
+- Cierre 2026-07-23: confirmada en sesión de trabajo para desbloquear T-0.4. Queda registrado que la confirmación se recibió de un representante del equipo, no como firma individual de cada integrante; si algún integrante objeta, debe reabrirse.
 
-### [ ] T-0.4 Definir protocolo de evaluación
+### [x] T-0.4 Definir protocolo de evaluación
 
 - Responsable: I2.
 - Revisor: I1.
@@ -96,8 +87,9 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Requisitos: DEC-07–DEC-09, ML-03, ML-04, ML-06.
 - Acción: aprobar macro-F1 o alternativa justificada, métricas secundarias, ventanas temporales, baselines, semilla algorítmica y fórmula de overfitting.
 - Criterio de aceptación: protocolo aprobado por los cuatro integrantes.
-- Verificación: fixture temporal demuestra ausencia de solapamiento y que test no interviene en selección.
-- Evidencia: contrato registrado en `2_spec.md` y artefacto de splits cuando corresponda.
+- Evidencia: contrato registrado en `2_spec.md`.
+- Avance 2026-07-23: propuesta registrada — métrica principal `macro-F1`, secundarias (accuracy, balanced accuracy, precisión/recall/F1 por clase, log loss, matriz de confusión), fórmula de overfitting (`gap < 0.05` sobre `macro-F1` train/validación) y partición cronológica por temporada con semilla `42`. Detalle y justificación en `docs/decisions/0002-evaluation-protocol-proposal.md`.
+- Cierre 2026-07-23: confirmada en sesión de trabajo. Misma salvedad que T-0.3: confirmación de representante del equipo, no firma individual de cada integrante.
 
 ### [ ] T-0.5 Elegir cuatro modelos candidatos
 
@@ -179,17 +171,17 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: limpieza determinista, documentada y probada.
 - Evidencia: tests y comparación antes/después.
 - Evidencia provisional 2026-07-23: `notebooks/00_laliga_preprocessing.ipynb`, `data/processed/laliga_matches_clean.csv`, `reports/metrics/preprocessing_summary.json`, `reports/metrics/source_column_policy.csv` y pruebas unitarias/integración. Pendientes revisión de I2/I4 y cierre de dependencias.
+- Revisión I2 2026-07-23: dataset limpio auditado sin duplicados, targets nulos ni incoherencias marcador/resultado; `load_processed_dataset` valida el contrato de tipos y la suite de tests pasa (14/14). Aceptable como base para congelar particiones (T-1.5). Revisión de I4 sigue pendiente.
 
-### [ ] T-1.5 Implementar features comunes y congelar particiones temporales
+### [~] T-1.5 Congelar particiones comunes
 
 - Responsables: I1 e I2.
 - Revisores: I3 e I4.
 - Dependencias: T-1.4, T-0.4.
-- Requisitos: DEC-07, ML-01, ML-04.
-- Acción: implementar el generador común de features históricas con `shift(1)` y generar train, validación y test cronológicos mediante el protocolo aprobado.
-- Criterio de aceptación: los cuatro candidatos reciben las mismas columnas y registros; ninguna feature usa el partido actual o futuro.
-- Verificación: tests de causalidad temporal, schema, ausencia de solapamiento y test final protegido.
-- Evidencia: generador, índices o metadata, versión y SHA-256.
+- Acción: generar y versionar train, validación y test mediante el protocolo aprobado.
+- Criterio de aceptación: los cuatro candidatos reciben los mismos registros.
+- Evidencia: índices, metadata o función reproducible; test final protegido.
+- Avance 2026-07-23: implementado `src/evaluation/splits.py` (partición cronológica por temporada, congelada como constante, sin aleatoriedad ni estratificación). Genera `data/processed/splits/laliga_splits.csv` (match_id, season, split) y `reports/metrics/split_manifest.json` (protocolo, semilla 42, conteos y fracciones). Resultado: train 9.607 filas (1995-96–2019-20), validación 1.197 filas (2020-21–2022-23), test 1.140 filas (2023-24–2025-26, protegido). Falla explícitamente si aparece una temporada no contemplada, en vez de reasignar en silencio. Pruebas: `tests/unit/test_splits.py` (5 casos), suite completa 14/14 en verde. Pendiente revisión de I1.
 
 ### [ ] T-1.6 Crear frontend simulado
 
