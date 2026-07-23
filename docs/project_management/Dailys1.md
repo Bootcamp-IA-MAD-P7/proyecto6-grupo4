@@ -44,8 +44,8 @@ Este documento se actualizará al finalizar cada daily. Solo contendrá informac
 
 ### Arnaldo
 
-- Realizado: avanzó `T-0.2` y `T-0.3` con la propuesta documentada del dataset de LaLiga, la predicción prepartido y el target multiclase `result_ft`; dejó evidencia provisional de `T-1.1`, `T-1.2` y `T-1.3` mediante el loader común, la auditoría, el diccionario de datos, el notebook, el informe del EDA y sus pruebas.
-- Siguiente: cerrar la comparación y aprobación de dataset, problema, usuario y target de `T-0.2` y `T-0.3`; consolidar en `T-1.1` una carga reproducible con schema, dimensiones y huellas verificadas; completar la auditoría y el contrato de datos de `T-1.2`; y coordinar la revisión cruzada del EDA compartido de `T-1.3`.
+- Realizado: consolidó la selección técnica ya aprobada de LaLiga, la predicción prepartido y el target multiclase `result_ft`; dejó evidencia provisional de `T-1.1`, `T-1.2` y `T-1.3` mediante el loader común, la auditoría, el diccionario de datos, el notebook, el informe del EDA y sus pruebas.
+- Siguiente: cerrar las condiciones de uso y redistribución en `T-0.2b`; consolidar en `T-1.1` una carga reproducible con schema, dimensiones y huellas verificadas; completar la auditoría y el contrato de datos de `T-1.2`; y coordinar la revisión cruzada del EDA compartido de `T-1.3`.
 - Bloqueos: están pendientes la confirmación de licencia y fuentes del dataset y las revisiones cruzadas. La ausencia de César retrasa su revisión como I3 del diccionario y contrato de datos de `T-1.2`.
 
 ### Johans
@@ -68,7 +68,7 @@ Este documento se actualizará al finalizar cada daily. Solo contendrá informac
 
 ### Decisiones y evidencias
 
-- Decisiones: se mantiene LaLiga como dataset canónico. César consta como ausente por motivos personales y sus dependencias inmediatas deberán replanificarse sin iniciar trabajo incompatible con un contrato todavía no aprobado.
+- Decisiones: se confirma la aprobación técnica de LaLiga como dataset canónico, la unidad partido, el enfoque prepartido y `result_ft` H/D/A. Las condiciones de uso y redistribución siguen abiertas y bloquean `Data Ready`. César consta como ausente por motivos personales y sus dependencias inmediatas deberán replanificarse sin iniciar trabajo incompatible con un contrato todavía no aprobado.
 - Issues o PR relacionados: PR #2 del EDA de LaLiga; rama `feature/i4-backend-mock`; evidencias provisionales de `T-1.1`, `T-1.2` y `T-1.3` registradas en `.specify/4_tasks.md`; GitHub Project `Proyecto6-Grupo4`.
 
 ## Próximas dailys

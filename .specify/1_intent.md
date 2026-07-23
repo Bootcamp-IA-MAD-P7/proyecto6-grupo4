@@ -1,5 +1,7 @@
 # SPEC 1 — Intención del proyecto
 
+> **Metodología SDD:** este documento define el qué y el porqué. Está gobernado por `0_constitution.md`; los requisitos verificables, el diseño de ejecución y el backlog viven en `2_spec.md`, `3_plan.md` y `4_tasks.md`.
+
 ## Propósito
 
 Construir en equipo una solución de machine learning para un problema de clasificación supervisada. La solución deberá analizar un conjunto de datos, entrenar y comparar cuatro modelos candidatos, seleccionar un modelo final con evidencia reproducible y productivizarlo en una aplicación que reciba datos y devuelva una predicción comprensible.
@@ -12,6 +14,7 @@ La carpeta `.specify/` constituye el contrato común del proyecto y debe leerse 
 
 Sus documentos cumplen estas funciones:
 
+- `0_constitution.md`: reglas invariantes, precedencia y control de cambios.
 - `1_intent.md`: propósito, problema, alcance y principios.
 - `2_spec.md`: requisitos, restricciones, contratos y criterios de aceptación.
 - `3_plan.md`: estrategia de ejecución, fases, dependencias y gates.
@@ -71,7 +74,11 @@ Ser responsable de un área significa garantizar su resultado y coordinar sus co
 
 ## Producto esperado
 
-La solución deberá permitir que un usuario introduzca datos compatibles con el modelo y reciba una clasificación. La interfaz concreta, el dominio, el dataset, el target y la arquitectura definitiva permanecen pendientes de aprobación.
+El producto es una aplicación de análisis deportivo que estima, antes del inicio de un partido de LaLiga, si el resultado final será victoria local (`H`), empate (`D`) o victoria visitante (`A`).
+
+La persona usuaria principal es alguien interesado en análisis deportivo prepartido. Introducirá o seleccionará los equipos y la fecha del encuentro; la aplicación devolverá la clase estimada, las probabilidades de `H`, `D` y `A`, la versión del modelo y un mensaje comprensible sobre la incertidumbre.
+
+Las features históricas se calcularán en backend a partir de partidos anteriores. El usuario no introducirá goles, tiros, faltas, córners, tarjetas ni ninguna información del partido actual que todavía no exista en el momento de inferencia.
 
 La separación entre frontend y backend deberá existir al menos de forma lógica:
 
@@ -80,15 +87,47 @@ La separación entre frontend y backend deberá existir al menos de forma lógic
 
 La decisión de construir servicios separados o una única aplicación modular deberá registrarse en `2_spec.md` antes de implementarse.
 
-## Propuesta de dominio registrada para revisión — LaLiga
+## Dominio y target aprobados — LaLiga
 
-Fecha de registro: 2026-07-22.
+Fecha de decisión del equipo: 2026-07-22.
 
-Para reducir las decisiones pendientes sin iniciar todavía el entrenamiento, se adopta como hipótesis de trabajo el dataset combinado de partidos de LaLiga 1995-96–2025-26. La unidad de análisis es un partido y el target provisional es `result_ft`, con tres clases: `H` (victoria local), `D` (empate) y `A` (victoria visitante).
+El dataset de trabajo combina partidos de LaLiga 1995-96–2025-26. La unidad de análisis es un partido y el target es `result_ft`, con tres clases: `H` (victoria local), `D` (empate) y `A` (victoria visitante).
 
-Problema propuesto: estimar antes del inicio el resultado final de un partido para una persona usuaria interesada en análisis deportivo. Los únicos inputs admisibles serán datos disponibles antes del partido. Marcadores, tiros, faltas, córners, tarjetas y cualquier variable derivada del encuentro actual se consideran posteriores al evento y quedan excluidos por leakage.
+El problema aprobado es estimar antes del inicio el resultado final. Los únicos inputs admisibles son datos disponibles en ese momento. Marcadores, tiros, faltas, córners, tarjetas y cualquier variable derivada del encuentro actual se consideran posteriores al evento y quedan excluidos por leakage.
 
-Esta propuesta permite ejecutar la carga, auditoría y EDA compartidos para evaluar viabilidad. No equivale a aprobación del equipo ni cierra `Data Ready`. Siguen pendientes la fuente/licencia, la ventana exacta de inferencia, la métrica, los splits, los cuatro candidatos y los contratos de aplicación.
+La selección técnica, el problema y el target constan como aprobados en la daily del 22/07/2026. La validación de las condiciones de uso y redistribución de las fuentes sigue pendiente y bloquea el cierre de `Data Ready`. También permanecen pendientes el protocolo de evaluación, los cuatro candidatos y la arquitectura definitiva.
+
+## Alcance del MVP
+
+Incluye:
+
+- Carga y preparación reproducibles del histórico.
+- Features comunes calculadas únicamente con información anterior a cada partido.
+- Cuatro modelos candidatos comparables.
+- Selección de un Champion mediante validación temporal.
+- Aplicación con formulario prepartido y probabilidades por clase.
+- API o backend con validación, inferencia y versionado.
+- Informe técnico, análisis de errores y pruebas esenciales.
+
+## Fuera de alcance del MVP
+
+- Predicción en directo una vez iniciado el partido.
+- Uso de estadísticas del encuentro actual.
+- Recomendaciones de apuestas o promesas de rentabilidad.
+- Integración obligatoria con proveedores de cuotas.
+- Reentrenamiento automático, A/B testing o drift antes de cerrar el Nivel Esencial.
+- Interpretaciones causales de las variables.
+
+## Criterios de éxito del producto
+
+El MVP será satisfactorio cuando:
+
+- Un usuario pueda seleccionar un partido válido y obtener `H`, `D` o `A` con probabilidades y versión del modelo.
+- El pipeline de features demuestre que solo usa partidos anteriores.
+- Los cuatro candidatos se evalúen con la misma partición temporal y el mismo protocolo.
+- El Champion supere la baseline aprobada en la métrica principal y cumpla el gap de overfitting.
+- El flujo completo pueda reproducirse desde un clon limpio mediante instrucciones documentadas.
+- Los errores de entrada y categorías no conocidas se traten de forma controlada.
 
 ## Principios de trabajo
 
@@ -108,19 +147,15 @@ Esta propuesta permite ejecutar la carga, auditoría y EDA compartidos para eval
 
 Antes de implementar componentes dependientes de ellas, el equipo deberá aprobar:
 
-- Dataset y licencia o fuente de uso.
-- Problema de negocio y usuarios.
-- Variable objetivo y clases.
-- Clasificación binaria o multiclase.
+- Condiciones de uso y redistribución de las dos fuentes.
 - Métrica principal y métricas secundarias.
 - Fórmula operativa del overfitting inferior al 5 %.
-- Estrategia de partición y semilla.
+- Ventanas temporales exactas de train, validación y test.
+- Contrato definitivo de features históricas.
 - Cuatro algoritmos candidatos.
 - Tecnología y arquitectura de la aplicación.
 - Estrategia de persistencia.
 - Plataforma de despliegue.
-- Estrategia Git, ramas y Pull Requests.
-- Herramienta de organización del equipo.
 - Nivel de entrega comprometido más allá del Nivel Esencial.
 
 ## Estado deseado al finalizar
@@ -136,3 +171,12 @@ Una persona ajena al desarrollo deberá poder:
 - Ejecutar las pruebas documentadas.
 - Revisar métricas, overfitting, errores y limitaciones.
 - Identificar con claridad qué niveles se alcanzaron realmente.
+
+## Estado del documento
+
+| Campo | Valor |
+|---|---|
+| Estado | v1.0 — dominio, usuario, target y alcance reconciliados |
+| Fecha | 23/07/2026 |
+| Evidencia de decisión | `docs/project_management/Dailys1.md`, daily 22/07/2026 |
+| Pendiente | Aprobación formal de T-0.1 y decisiones listadas arriba |

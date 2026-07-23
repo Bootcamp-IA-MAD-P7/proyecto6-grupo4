@@ -6,7 +6,7 @@ Antes de comenzar una tarea:
 
 1. Leer completamente `.specify/`.
 2. Confirmar que las dependencias están satisfechas.
-3. Confirmar responsable, revisor y archivos afectados.
+3. Confirmar responsable, revisor, requisitos y archivos afectados.
 4. Usar la estrategia Git aprobada.
 5. No ampliar el alcance sin actualizar la tarea.
 
@@ -18,6 +18,8 @@ Antes de marcarla como terminada:
 4. Obtener la revisión cruzada.
 5. Confirmar que no se rompe el Nivel Esencial.
 
+Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos afectados, comando de verificación y ruta de evidencia. Un adelanto solo es válido si se identifica como **spike exploratorio autorizado**.
+
 ## Estados
 
 - `[ ]`: pendiente.
@@ -28,37 +30,49 @@ Antes de marcarla como terminada:
 
 ## Roles
 
-- I1: Datos y ciclo de vida del dato + Pipeline A + Modelo A.
-- I2: Evaluación y ciclo de vida del modelo + Pipeline B + Modelo B.
-- I3: Frontend y producto + Pipeline C + Modelo C.
-- I4: Backend, integración y despliegue + Pipeline D + Modelo D.
+- I1 — Arnaldo: Datos y ciclo de vida del dato + Pipeline A + Modelo A.
+- I2 — Johans: Evaluación y ciclo de vida del modelo + Pipeline B + Modelo B.
+- I3 — César: Frontend y producto + Pipeline C + Modelo C.
+- I4 — Fernanda: Backend, integración y despliegue + Pipeline D + Modelo D.
 
-Los nombres de las personas se incorporarán cuando el equipo confirme la asignación.
+## Tablero de gates
+
+| Gate | Estado | Bloqueo o evidencia principal |
+|---|---|---|
+| Alineación | En progreso | T-0.1: aprobar SDD reconciliado |
+| Dataset técnico | Cerrado | Daily 22/07, ADR-0001, loader y manifest |
+| Licencia | Bloqueado | T-0.2b: condiciones de uso y redistribución |
+| Evaluación | Pendiente | T-0.4: métrica, gap y ventanas temporales |
+| Aplicación | En progreso | T-0.6: arquitectura y contrato definitivo |
+| `Data Ready` | Abierto | T-1.8 y checklist de `2_spec.md` |
+| Nivel Esencial | No iniciado | Requiere `Data Ready` |
 
 ## Fase 0 — Decisiones bloqueantes
 
-### [ ] T-0.1 Revisar y aprobar `.specify/`
+### [~] T-0.1 Revisar y aprobar `.specify/`
 
 - Responsable: todo el equipo.
 - Revisor: todo el equipo.
 - Dependencias: ninguna.
-- Acción: leer los cuatro documentos, registrar dudas y aprobar o corregir el contrato inicial.
-- Criterio de aceptación: todos entienden el flujo común de datos y los cuatro pipelines individuales.
-- Evidencia: aprobación registrada por el equipo.
+- Requisitos: todos los `DEC`.
+- Acción: leer `0_constitution.md` y los cuatro documentos SPEC, registrar dudas y aprobar o corregir el contrato.
+- Criterio de aceptación: los cuatro integrantes aprueban dominio, gates, flujo común de datos, contratos y cuatro pipelines.
+- Evidencia: aprobación fechada en daily o PR.
 
-### [~] T-0.2 Evaluar datasets candidatos
+### [x] T-0.2a Evaluar y seleccionar técnicamente el dataset
 
 - Responsable: I1, con aportes de I2, I3 e I4.
-- Dependencias: T-0.1.
-- Acción: comparar candidatos por target, tamaño, licencia, leakage, interpretabilidad, balance y viabilidad de aplicación.
-- Criterio de aceptación: tabla de candidatos con ventajas, riesgos y recomendación.
-- Evidencia: decisión registrada en `2_spec.md`.
-- Avance 2026-07-22: LaLiga queda registrada como propuesta evaluada mediante `docs/decisions/0001-laliga-dataset-target-proposal.md`. Pendientes comparación formal con candidatos, licencia y aprobación cruzada.
+- Dependencias: ninguna; spike de decisión previo al SDD definitivo.
+- Requisitos: DEC-01, DEC-03–DEC-06.
+- Acción: evaluar target, tamaño, leakage, interpretabilidad, balance y viabilidad de aplicación.
+- Criterio de aceptación: selección técnica, unidad partido, usuario y target explicables.
+- Evidencia: daily 22/07/2026, `docs/decisions/0001-laliga-dataset-target-proposal.md`, EDA y manifest.
 
 ### [x] T-0.3 Definir problema, usuarios y target
 
 - Responsable: todo el equipo; coordina I1.
-- Dependencias: T-0.2.
+- Dependencias: T-0.2a.
+- Requisitos: DEC-03–DEC-06.
 - Acción: aprobar problema de negocio, usuario, unidad de predicción, target y clases.
 - Criterio de aceptación: el equipo puede explicar qué se predice, para quién y con qué utilidad.
 - Evidencia: `1_intent.md` y `2_spec.md` actualizados.
@@ -70,7 +84,8 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Responsable: I2.
 - Revisor: I1.
 - Dependencias: T-0.3.
-- Acción: proponer métrica principal, secundarias, splits, semilla y fórmula de overfitting.
+- Requisitos: DEC-07–DEC-09, ML-03, ML-04, ML-06.
+- Acción: aprobar macro-F1 o alternativa justificada, métricas secundarias, ventanas temporales, baselines, semilla algorítmica y fórmula de overfitting.
 - Criterio de aceptación: protocolo aprobado por los cuatro integrantes.
 - Evidencia: contrato registrado en `2_spec.md`.
 - Avance 2026-07-23: propuesta registrada — métrica principal `macro-F1`, secundarias (accuracy, balanced accuracy, precisión/recall/F1 por clase, log loss, matriz de confusión), fórmula de overfitting (`gap < 0.05` sobre `macro-F1` train/validación) y partición cronológica por temporada con semilla `42`. Detalle y justificación en `docs/decisions/0002-evaluation-protocol-proposal.md`.
@@ -80,34 +95,36 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 
 - Responsable: todo el equipo; coordina I2.
 - Dependencias: T-0.3, T-0.4.
+- Requisito: ML-02.
 - Acción: asignar un algoritmo a cada integrante y justificar diversidad y viabilidad.
 - Criterio de aceptación: candidatos A, B, C y D registrados sin duplicación injustificada.
 - Evidencia: tabla de decisiones de `2_spec.md` actualizada.
 
-### [ ] T-0.6 Definir aplicación y contratos preliminares
+### [~] T-0.6 Definir aplicación y contratos preliminares
 
 - Responsable: I3 e I4.
 - Revisores: I1 e I2.
 - Dependencias: T-0.3.
-- Acción: aprobar tecnología, separación lógica o física y primer contrato de entrada/salida.
+- Requisitos: RF-01–RF-06, RNF-02–RNF-06.
+- Acción: aprobar tecnología, separación lógica o física, endpoints, entrada, salida, errores, latencia y versionado.
 - Criterio de aceptación: frontend y backend pueden avanzar con mocks compatibles.
-- Evidencia: arquitectura y contratos registrados en `2_spec.md`.
+- Evidencia actual: contrato JSON preliminar en `2_spec.md`; faltan ruta, códigos HTTP y decisión de arquitectura.
 
 ### [x] T-0.7 Definir estrategia Git
 
 - Responsable: todo el equipo.
-- Dependencias: T-0.1.
+- Dependencias: ninguna; decisión de bootstrap.
 - Acción: acordar ramas, PR, revisiones y commits.
 - Criterio de aceptación: existen rama de integración y cuatro ramas iniciales; el flujo está documentado.
 - Evidencia: estrategia registrada en `2_spec.md`, estructura inicial y ramas publicadas en GitHub.
 
-### [ ] T-0.8 Elegir herramienta organizativa
+### [x] T-0.8 Elegir herramienta organizativa
 
 - Responsable: todo el equipo.
-- Dependencias: T-0.1.
-- Acción: elegir Trello u otra herramienta, crear el tablero y registrar el enlace.
+- Dependencias: ninguna; decisión de bootstrap.
+- Acción: elegir herramienta, crear el tablero y registrar su referencia.
 - Criterio de aceptación: backlog visible y estados de trabajo acordados.
-- Evidencia: enlace registrado en `2_spec.md` y README.
+- Evidencia: GitHub Project `Proyecto6-Grupo4`, issues #3–#35 y daily 22/07/2026.
 
 ## Fase 1 — Base común y `Data Ready`
 
@@ -115,7 +132,9 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 
 - Responsable: I1.
 - Revisor: I4.
-- Dependencias: T-0.2, T-0.3.
+- Dependencias para iniciar spike: T-0.2a, T-0.3.
+- Dependencia para completar: T-0.2b.
+- Requisitos: DEC-01, DEC-02, ML-01, RNF-01.
 - Acción: crear un mecanismo reproducible para cargar el dataset canónico sin modificar el original.
 - Criterio de aceptación: los cuatro integrantes pueden obtener la misma versión de datos.
 - Verificación: comprobar schema, dimensiones y huella o versión.
@@ -126,6 +145,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Responsable: I1.
 - Revisor: I3.
 - Dependencias: T-1.1.
+- Requisito: ML-01.
 - Acción: documentar columnas, tipos, target, identificadores, disponibilidad y riesgos.
 - Criterio de aceptación: todas las variables tienen rol y descripción.
 - Evidencia: diccionario de datos revisado.
@@ -135,6 +155,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 
 - Responsable: todos; coordina I1.
 - Dependencias: T-1.1, T-1.2.
+- Requisitos: ML-01, ML-06.
 - Acción: dividir preguntas de análisis entre los cuatro y consolidar un único EDA.
 - Criterio de aceptación: nulos, duplicados, distribuciones, target, relaciones, correlaciones y leakage analizados.
 - Evidencia: notebook o informe reproducible con interpretaciones.
@@ -145,6 +166,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Responsable: I1.
 - Revisores: I2 e I4.
 - Dependencias: T-1.3.
+- Requisito: ML-01.
 - Acción: codificar las reglas aprobadas sin alterar el dataset original.
 - Criterio de aceptación: limpieza determinista, documentada y probada.
 - Evidencia: tests y comparación antes/después.
@@ -153,8 +175,8 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 
 ### [~] T-1.5 Congelar particiones comunes
 
-- Responsable: I2.
-- Revisor: I1.
+- Responsables: I1 e I2.
+- Revisores: I3 e I4.
 - Dependencias: T-1.4, T-0.4.
 - Acción: generar y versionar train, validación y test mediante el protocolo aprobado.
 - Criterio de aceptación: los cuatro candidatos reciben los mismos registros.
@@ -166,6 +188,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Responsable: I3.
 - Revisor: I4.
 - Dependencias: T-0.6, T-1.2.
+- Requisitos: RF-01, RF-03–RF-06.
 - Acción: implementar o diseñar el flujo con respuestas mock según la arquitectura aprobada.
 - Criterio de aceptación: formulario, resultado y error pueden demostrarse sin modelo definitivo.
 - Evidencia: prueba visual o test de interfaz.
@@ -175,14 +198,16 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Responsable: I4.
 - Revisor: I3.
 - Dependencias: T-0.6, T-1.2.
-- Acción: implementar o diseñar una respuesta mock y mecanismo preliminar de carga.
+- Requisitos: RF-01–RF-06, RNF-02–RNF-06.
+- Acción: implementar el contrato mock con `home_team`, `away_team` y `match_date`; devolver `H/D/A`, probabilidades, versiones, latencia y errores uniformes.
 - Criterio de aceptación: contrato consumible por frontend.
-- Evidencia: prueba de contrato o llamada reproducible.
+- Verificación: fixtures válidos e inválidos compartidos con I3.
+- Evidencia: prueba de contrato o llamada reproducible, comandos y resultados.
 
-### [ ] T-1.8 Verificar gate `Data Ready`
+### [ ] T-1.8 / T-1.INT Verificar gate `Data Ready`
 
 - Responsable: todo el equipo; coordina I2.
-- Dependencias: T-1.1 a T-1.7.
+- Dependencias: T-0.1, T-0.2b, T-0.4, T-0.5 y T-1.1 a T-1.7.
 - Acción: completar la checklist de `2_spec.md`.
 - Criterio de aceptación: no quedan decisiones de datos, evaluación o candidatos que bloqueen el entrenamiento.
 - Evidencia: checklist completada y revisión cruzada.
@@ -238,9 +263,18 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 
 - Responsable: todo el equipo; coordina I2.
 - Dependencias: T-2.5.
-- Acción: aplicar los criterios de selección y evaluar una vez el test final.
+- Requisitos: ML-03–ML-05.
+- Acción: seleccionar con validación, congelar la decisión y solo después evaluar una vez el test final.
 - Criterio de aceptación: Champion cumple overfitting, integración y métricas aprobadas.
 - Evidencia: decisión, metadata, métricas finales y artefacto completo.
+
+### [ ] T-2.INT Verificar comparabilidad y selección
+
+- Responsable: todo el equipo.
+- Dependencias: T-2.1 a T-2.6.
+- Acción: verificar versiones de datos, features, splits, métricas, gap, artefactos y uso único del test.
+- Criterio de aceptación: ninguna diferencia no aprobada invalida la comparación y el Champion tiene acta de selección.
+- Evidencia: checklist firmada y tabla de experimentos consolidada.
 
 ## Fase 3 — Integración y Nivel Esencial
 
@@ -248,7 +282,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 
 - Responsable: I1.
 - Revisores: I2 e I4.
-- Dependencias: T-2.6.
+- Dependencias: T-2.INT.
 - Acción: comprobar schema, transformaciones y casos límite.
 - Criterio de aceptación: entrenamiento e inferencia usan el mismo pipeline.
 
@@ -256,7 +290,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 
 - Responsable: I4.
 - Revisores: I1 e I2.
-- Dependencias: T-2.6, T-1.7.
+- Dependencias: T-2.INT, T-1.7.
 - Acción: cargar el artefacto real y responder según el contrato.
 - Criterio de aceptación: predicción reproducible, versionada y con errores controlados.
 
@@ -279,7 +313,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 ### [ ] T-3.5 Redactar informe técnico inicial
 
 - Responsable: todos; coordina I2.
-- Dependencias: T-2.6.
+- Dependencias: T-2.INT.
 - Acción: documentar EDA, candidatos, Champion, métricas, overfitting, errores y limitaciones.
 - Criterio de aceptación: cifras coherentes con artefactos y pruebas.
 
@@ -291,7 +325,7 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Acción: ejecutar flujo completo con casos válidos e inválidos.
 - Criterio de aceptación: aplicación funcional y evidencia registrada.
 
-### [ ] T-3.7 Verificar cierre del Nivel Esencial
+### [ ] T-3.7 / T-3.INT Verificar cierre del Nivel Esencial
 
 - Responsable: todo el equipo.
 - Dependencias: T-3.1 a T-3.6.
@@ -407,3 +441,12 @@ Los nombres de las personas se incorporarán cuando el equipo confirme la asigna
 - Responsable: todos.
 - Dependencias: T-7.1 a T-7.3.
 - Criterio de aceptación: app, GitHub, informe, presentaciones, herramienta organizativa y niveles alcanzados están verificados.
+
+## Estado del documento
+
+| Campo | Valor |
+|---|---|
+| Estado | v1.0 — dependencias, spikes, gates y trazabilidad reconciliados |
+| Fecha | 23/07/2026 |
+| Siguiente trabajo bloqueante | T-0.1, T-0.2b, T-0.4, T-0.5 y T-0.6 |
+| Regla | Marcar `[x]` solo con verificación, evidencia y revisión cruzada |
