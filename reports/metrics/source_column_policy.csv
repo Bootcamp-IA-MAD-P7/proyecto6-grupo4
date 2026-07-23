@@ -1,0 +1,142 @@
+source_file,source_column,action,canonical_column,reason
+LaLiga_Matches.csv,Season,validate_then_derive,season_validation_only,Se usa para comprobar la temporada original; la salida se deriva de la fecha para aplicar una regla única a ambas fuentes.
+LaLiga_Matches.csv,Date,keep_and_rename,match_date,"Campo mínimo necesario para identificar el partido, el marcador o el target."
+LaLiga_Matches.csv,HomeTeam,keep_and_rename,home_team,"Campo mínimo necesario para identificar el partido, el marcador o el target."
+LaLiga_Matches.csv,AwayTeam,keep_and_rename,away_team,"Campo mínimo necesario para identificar el partido, el marcador o el target."
+LaLiga_Matches.csv,FTHG,keep_and_rename,home_goals_ft,"Campo mínimo necesario para identificar el partido, el marcador o el target."
+LaLiga_Matches.csv,FTAG,keep_and_rename,away_goals_ft,"Campo mínimo necesario para identificar el partido, el marcador o el target."
+LaLiga_Matches.csv,FTR,keep_and_rename,result_ft,"Campo mínimo necesario para identificar el partido, el marcador o el target."
+LaLiga_Matches.csv,HTHG,keep_and_rename,home_goals_ht,"Campo mínimo necesario para identificar el partido, el marcador o el target."
+LaLiga_Matches.csv,HTAG,keep_and_rename,away_goals_ht,"Campo mínimo necesario para identificar el partido, el marcador o el target."
+LaLiga_Matches.csv,HTR,keep_and_rename,result_ht,"Campo mínimo necesario para identificar el partido, el marcador o el target."
+laliga_2025_2026_stats.csv,Div,keep_and_rename,league_code,"Identificación, orden temporal o metadato mínimo del partido."
+laliga_2025_2026_stats.csv,Date,keep_and_rename,match_date,"Identificación, orden temporal o metadato mínimo del partido."
+laliga_2025_2026_stats.csv,Time,keep_and_rename,match_time,"Identificación, orden temporal o metadato mínimo del partido."
+laliga_2025_2026_stats.csv,HomeTeam,keep_and_rename,home_team,"Identificación, orden temporal o metadato mínimo del partido."
+laliga_2025_2026_stats.csv,AwayTeam,keep_and_rename,away_team,"Identificación, orden temporal o metadato mínimo del partido."
+laliga_2025_2026_stats.csv,FTHG,keep_and_rename,home_goals_ft,Marcador y resultado necesarios para auditoría descriptiva y target.
+laliga_2025_2026_stats.csv,FTAG,keep_and_rename,away_goals_ft,Marcador y resultado necesarios para auditoría descriptiva y target.
+laliga_2025_2026_stats.csv,FTR,keep_and_rename,result_ft,Marcador y resultado necesarios para auditoría descriptiva y target.
+laliga_2025_2026_stats.csv,HTHG,keep_and_rename,home_goals_ht,Marcador y resultado necesarios para auditoría descriptiva y target.
+laliga_2025_2026_stats.csv,HTAG,keep_and_rename,away_goals_ht,Marcador y resultado necesarios para auditoría descriptiva y target.
+laliga_2025_2026_stats.csv,HTR,keep_and_rename,result_ht,Marcador y resultado necesarios para auditoría descriptiva y target.
+laliga_2025_2026_stats.csv,HS,keep_and_rename,shots_home,Estadística agregada seleccionada para EDA; se marca como postpartido y queda excluida del modelado prepartido.
+laliga_2025_2026_stats.csv,AS,keep_and_rename,shots_away,Estadística agregada seleccionada para EDA; se marca como postpartido y queda excluida del modelado prepartido.
+laliga_2025_2026_stats.csv,HST,keep_and_rename,shots_on_target_home,Estadística agregada seleccionada para EDA; se marca como postpartido y queda excluida del modelado prepartido.
+laliga_2025_2026_stats.csv,AST,keep_and_rename,shots_on_target_away,Estadística agregada seleccionada para EDA; se marca como postpartido y queda excluida del modelado prepartido.
+laliga_2025_2026_stats.csv,HF,keep_and_rename,fouls_home,Estadística agregada seleccionada para EDA; se marca como postpartido y queda excluida del modelado prepartido.
+laliga_2025_2026_stats.csv,AF,keep_and_rename,fouls_away,Estadística agregada seleccionada para EDA; se marca como postpartido y queda excluida del modelado prepartido.
+laliga_2025_2026_stats.csv,HC,keep_and_rename,corners_home,Estadística agregada seleccionada para EDA; se marca como postpartido y queda excluida del modelado prepartido.
+laliga_2025_2026_stats.csv,AC,keep_and_rename,corners_away,Estadística agregada seleccionada para EDA; se marca como postpartido y queda excluida del modelado prepartido.
+laliga_2025_2026_stats.csv,HY,keep_and_rename,yellow_cards_home,Estadística agregada seleccionada para EDA; se marca como postpartido y queda excluida del modelado prepartido.
+laliga_2025_2026_stats.csv,AY,keep_and_rename,yellow_cards_away,Estadística agregada seleccionada para EDA; se marca como postpartido y queda excluida del modelado prepartido.
+laliga_2025_2026_stats.csv,HR,keep_and_rename,red_cards_home,Estadística agregada seleccionada para EDA; se marca como postpartido y queda excluida del modelado prepartido.
+laliga_2025_2026_stats.csv,AR,keep_and_rename,red_cards_away,Estadística agregada seleccionada para EDA; se marca como postpartido y queda excluida del modelado prepartido.
+laliga_2025_2026_stats.csv,B365H,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,B365D,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,B365A,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BFDH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BFDD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BFDA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BMGMH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BMGMD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BMGMA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BVH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BVD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BVA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BWH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BWD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BWA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,CLH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,CLD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,CLA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,LBH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,LBD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,LBA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,PSH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,PSD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,PSA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,MaxH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,MaxD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,MaxA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,AvgH,keep_and_rename,odds_avg_home_open,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,AvgD,keep_and_rename,odds_avg_draw_open,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,AvgA,keep_and_rename,odds_avg_away_open,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,BFEH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BFED,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BFEA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,B365>2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,B365<2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,P>2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,P<2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,Max>2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,Max<2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,Avg>2.5,keep_and_rename,odds_avg_over_2_5_open,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,Avg<2.5,keep_and_rename,odds_avg_under_2_5_open,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,BFE>2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BFE<2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,AHh,keep_and_rename,asian_handicap_line_open,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,B365AHH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,B365AHA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,PAHH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,PAHA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,MaxAHH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,MaxAHA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,AvgAHH,keep_and_rename,odds_avg_asian_home_open,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,AvgAHA,keep_and_rename,odds_avg_asian_away_open,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,BFEAHH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BFEAHA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,B365CH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,B365CD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,B365CA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BFDCH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BFDCD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BFDCA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BMGMCH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BMGMCD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BMGMCA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BVCH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BVCD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BVCA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BWCH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BWCD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BWCA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,CLCH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,CLCD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,CLCA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,LBCH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,LBCD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,LBCA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,PSCH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,PSCD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,PSCA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,MaxCH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,MaxCD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,MaxCA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,AvgCH,keep_and_rename,odds_avg_home_close,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,AvgCD,keep_and_rename,odds_avg_draw_close,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,AvgCA,keep_and_rename,odds_avg_away_close,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,BFECH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BFECD,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BFECA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,B365C>2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,B365C<2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,PC>2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,PC<2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,MaxC>2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,MaxC<2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,AvgC>2.5,keep_and_rename,odds_avg_over_2_5_close,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,AvgC<2.5,keep_and_rename,odds_avg_under_2_5_close,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,BFEC>2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BFEC<2.5,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,AHCh,keep_and_rename,asian_handicap_line_close,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,B365CAHH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,B365CAHA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,PCAHH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,PCAHA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,MaxCAHH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,MaxCAHA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,AvgCAHH,keep_and_rename,odds_avg_asian_home_close,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,AvgCAHA,keep_and_rename,odds_avg_asian_away_close,Promedio de mercado seleccionado para evitar conservar decenas de cuotas redundantes por casa de apuestas.
+laliga_2025_2026_stats.csv,BFECAHH,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."
+laliga_2025_2026_stats.csv,BFECAHA,drop,,"Cuota específica, máxima o de exchange redundante respecto a los promedios seleccionados; aumenta dimensionalidad y presenta cobertura irregular."

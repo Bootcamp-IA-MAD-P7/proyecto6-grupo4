@@ -6,12 +6,13 @@ Repositorio inicial para construir una solución de machine learning de clasific
 
 Antes de proponer o modificar código es obligatorio leer completamente:
 
-1. `.specify/1_intent.md`.
-2. `.specify/2_spec.md`.
-3. `.specify/3_plan.md`.
-4. `.specify/4_tasks.md`.
+1. `.specify/0_constitution.md`.
+2. `.specify/1_intent.md`.
+3. `.specify/2_spec.md`.
+4. `.specify/3_plan.md`.
+5. `.specify/4_tasks.md`.
 
-La carpeta `.specify/` es la fuente central de verdad. El dataset, el target, los cuatro algoritmos y las tecnologías concretas de aplicación todavía no están seleccionados.
+La carpeta `.specify/` es la fuente central de verdad. El equipo ha aprobado técnicamente LaLiga, la predicción prepartido y el target multiclase `result_ft` (`H`, `D`, `A`). Siguen pendientes las condiciones de uso y redistribución de las fuentes, el protocolo de evaluación, las features comunes, los cuatro algoritmos y la arquitectura de aplicación.
 
 ## Estrategia de datos y modelos
 
@@ -45,4 +46,34 @@ Después de los frentes iniciales, las ramas se crearán por ticket y se integra
 - `tests/`: pruebas unitarias, de integración y end-to-end.
 - `docs/`: documentación y presentaciones.
 
-Las instrucciones de instalación y ejecución se añadirán cuando el equipo apruebe el stack técnico.
+## Base de datos y EDA de LaLiga
+
+La selección técnica y el target están aprobados. El preprocesamiento y el EDA son reproducibles y están integrados, pero no cierran `Data Ready`: falta aprobar las condiciones de uso, el protocolo temporal, las features comunes, los candidatos y las revisiones indicadas en el backlog.
+
+Fuentes incluidas y versionadas sin modificar dentro de `data/raw/`:
+
+- `LaLiga_Matches.csv`.
+- `laliga_2025_2026_stats.csv`.
+
+Ejecución en PowerShell:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-eda.txt
+.\.venv\Scripts\python.exe scripts\run_laliga_preprocessing.py
+.\.venv\Scripts\python.exe scripts\run_laliga_eda.py
+.\.venv\Scripts\python.exe scripts\create_preprocessing_notebook.py
+.\.venv\Scripts\python.exe scripts\create_eda_notebook.py
+.\.venv\Scripts\python.exe scripts\execute_eda_notebook.py
+.\.venv\Scripts\python.exe -m pytest
+```
+
+Entregables principales:
+
+- `reports/laliga_eda.md`: informe interpretado.
+- `notebooks/00_laliga_preprocessing.ipynb`: fuentes, columnas, limpieza y combinación.
+- `notebooks/01_laliga_eda.ipynb`: EDA ejecutado desde el dataset limpio.
+- `data/processed/laliga_matches_clean.csv`: dataset canónico limpio.
+- `reports/figures/`: once visualizaciones persistentes.
+- `reports/metrics/`: manifest, procedencia, política de columnas, auditoría, diccionario y resúmenes.
+- `src/data/laliga_loader.py`: mecanismo único de carga y combinación.

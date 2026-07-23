@@ -2,9 +2,34 @@
 
 ## Naturaleza del plan
 
-Este documento define la secuencia y las dependencias del proyecto. El calendario diario definitivo se cerrará cuando se aprueben dataset, arquitectura y modelos candidatos. La estrategia Git y la estructura inicial ya están definidas en `2_spec.md`.
+Este documento define la secuencia, dependencias, riesgos y calendario. Se interpreta bajo `0_constitution.md`; las decisiones técnicas vigentes están en `2_spec.md` y las tareas ejecutables en `4_tasks.md`.
 
 Restricción temporal: ocho días hábiles.
+
+## Registro de avance provisional — 2026-07-22
+
+Se ejecuta en la rama `feature/t-1.3-laliga-eda` un incremento conjunto de T-1.1, T-1.2 y T-1.3 para evaluar la propuesta LaLiga. El incremento produce loader único, huellas de fuentes, auditoría, contrato provisional, notebook, informe y visualizaciones. No crea splits, no entrena modelos y no habilita fases posteriores. El avance solo podrá marcarse terminado cuando se confirmen las dependencias y revisiones de `4_tasks.md`.
+
+## Registro de ampliación provisional — 2026-07-23
+
+La petición incorpora T-1.4 al incremento: se formalizan procedencia, política columna a columna, limpieza de críticos y duplicados, prioridad de fuente en solapamientos y persistencia del dataset limpio. El EDA se regenera únicamente desde `data/processed/laliga_matches_clean.csv`, con dos notebooks ejecutados, once gráficas persistentes, outliers IQR y matrices de confusión de reglas fijas. Se mantiene el bloqueo de splits, entrenamiento y selección de candidatos.
+
+## Decisiones de ejecución resumidas
+
+| ADR | Decisión | Estado |
+|---|---|---|
+| ADR-01 | LaLiga prepartido, unidad partido y target `result_ft` H/D/A | Aprobada técnicamente |
+| ADR-02 | Separación temporal; prohibido split aleatorio por filas como evaluación principal | Aprobada; ventanas exactas pendientes |
+| ADR-03 | Features históricas comunes, cerradas al pasado y calculadas en backend | Contrato preliminar |
+| ADR-04 | `macro-F1` principal y gap absoluto `< 0.05` | Propuesta para T-0.4 |
+| ADR-05 | Contrato de aplicación con local, visitante y fecha; salida H/D/A + probabilidades | Propuesta para T-0.6 |
+| ADR-06 | Cuotas no obligatorias en el MVP por cobertura limitada | Aprobada en `2_spec.md` |
+
+Fallbacks:
+
+- Si las condiciones de uso impiden redistribuir una fuente, el equipo documentará un mecanismo legítimo de adquisición o sustituirá la fuente antes de entrenar.
+- Si un equipo carece de historial suficiente, el backend devolverá un estado controlado o aplicará una regla común aprobada; cada candidato no podrá resolverlo de forma distinta.
+- Si frontend y backend separados ponen en riesgo el Nivel Esencial, se permite una aplicación modular única siempre que conserve contratos, validación y pipeline serializado.
 
 ## Regla de prioridad
 
@@ -69,7 +94,7 @@ Resolver las decisiones que bloquean el inicio técnico.
 - Integrante 1: coordinar criterios y revisión de datasets candidatos.
 - Integrante 2: proponer protocolo de métricas y overfitting según los candidatos.
 - Integrante 3: analizar qué variables de cada dataset serían utilizables por una persona usuaria.
-- Integrante 4: analizar viabilidad de productivización, carga y despliegue; para LSE, estimar límites de imagen, latencia, memoria y tamaño del artefacto.
+- Integrante 4: concretar arquitectura, contrato de predicción prepartido, validaciones, carga del artefacto, latencia, Docker y despliegue.
 
 ### Entregables
 
@@ -82,7 +107,7 @@ Resolver las decisiones que bloquean el inicio técnico.
 
 ### Gate
 
-No se programa una solución dependiente de estas decisiones hasta registrarlas en `2_spec.md`.
+No se programa una solución dependiente de estas decisiones hasta registrarlas en `2_spec.md`. Los únicos adelantos permitidos son spikes identificados expresamente en `4_tasks.md`, sin splits ni entrenamiento.
 
 ## Fase 1 — Dataset común y `Data Ready`
 
@@ -95,7 +120,7 @@ Crear una base común, reproducible y aprobada para los cuatro experimentos.
 - Integrante 1: conexión común, auditoría, consolidación del EDA y limpieza.
 - Integrante 2: particiones, métricas, fórmula de overfitting y formato de experimentos.
 - Integrante 3: mock de frontend y validación de inputs potenciales.
-- Integrante 4: stub de backend para una imagen, validación preliminar del payload y prueba temprana de carga del modelo, entorno y Docker.
+- Integrante 4: stub de backend para `home_team`, `away_team` y `match_date`, validación del payload, respuesta mock versionada y prueba temprana de entorno/Docker.
 - Todos: EDA dividido por preguntas y revisión de decisiones de limpieza.
 
 ### Entregables
@@ -114,10 +139,11 @@ Debe completarse toda la checklist `Data Ready` de `2_spec.md`.
 
 ### Riesgos
 
-- Los archivos completos de Zenodo ocupan 24,9 GB; descargar ambas resoluciones puede consumir tiempo y almacenamiento sin aportar valor al Nivel Esencial.
-- Las tres representaciones y las dos resoluciones pueden derivar de las mismas capturas; separarlas entre train, validación y test produciría leakage.
-- Un split aleatorio por imagen puede sobreestimar la generalización si una misma persona o sesión aparece en varias particiones.
-- Las letras dinámicas y el reconocimiento continuo quedan fuera del alcance del conjunto de 23 signos estáticos descrito por la aplicación asociada.
+- Las condiciones de uso y redistribución de las fuentes todavía no están aprobadas.
+- Las cuotas y estadísticas detalladas solo cubren 380 partidos y no representan el histórico completo.
+- Un split aleatorio por filas sobreestimaría la generalización temporal.
+- Las features agregadas sin `shift(1)` filtrarían el resultado del partido actual.
+- Equipos ascendidos o categorías no vistas pueden romper codificación e inferencia.
 - Elegir variables que no existirían durante una predicción real.
 - Introducir leakage durante limpieza o partición.
 - Permitir que cada candidato utilice datos diferentes.
@@ -279,11 +305,28 @@ Después del freeze solo se aceptarán correcciones verificadas que no amplíen 
 
 ## Planificación de los ocho días
 
-La asignación diaria definitiva está pendiente. Al aprobarla deberá cumplir:
+| Día | Fecha | Objetivo de cierre |
+|---:|---|---|
+| 1 | 21/07 | Bootstrap, ramas, roles y Specify inicial |
+| 2 | 22/07 | Selección técnica LaLiga, loader, auditoría y EDA |
+| 3 | 23/07 | Preprocesamiento reproducible, reconciliación SDD y procedencia |
+| 4 | 24/07 | Licencia, protocolo de evaluación, features, splits, candidatos y contrato de aplicación |
+| 5 | 27/07 | `Data Ready` y cuatro candidatos mínimos en paralelo |
+| 6 | 28/07 | Comparación, selección del Champion y primera integración |
+| 7 | 29/07 | Aplicación esencial, tests, informe y correcciones |
+| 8 | 30/07 | Smoke test, freeze, README, presentaciones y defensa |
 
-- Los cuatro integrantes activos desde el primer día.
-- Trabajo en paralelo siempre que sea posible.
-- `Data Ready` temprano.
-- Primera versión esencial completa antes de dedicar esfuerzo significativo a niveles superiores.
-- Tiempo reservado para integración, pruebas, correcciones y defensa.
-- Ningún frente crítico asignado a una sola persona sin revisión.
+Reglas del calendario:
+
+- Si `Data Ready` no cierra el 24/07, se replantea alcance o fuente; no se compensa entrenando con decisiones abiertas.
+- Los cuatro integrantes permanecen activos y todo frente crítico tiene revisor.
+- El primer flujo esencial completo precede cualquier esfuerzo significativo de niveles superiores.
+- La tarde del 29/07 y el 30/07 se reservan para integración, correcciones y defensa.
+
+## Estado del documento
+
+| Campo | Valor |
+|---|---|
+| Estado | v1.0 — plan reconciliado con LaLiga y fecha de entrega |
+| Fecha | 23/07/2026 |
+| Próximo gate | Decisiones T-0.2b, T-0.4, T-0.5 y T-0.6 |
