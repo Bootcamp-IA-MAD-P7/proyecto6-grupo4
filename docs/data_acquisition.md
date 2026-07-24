@@ -9,6 +9,8 @@ Los datos se descargan para ejecutar localmente el proyecto de predicción de pa
 - sí se versionarán código, schemas, diccionarios, manifests, huellas y métricas agregadas;
 - cualquier publicación de los datos requerirá permiso escrito de la fuente.
 
+El 24/07/2026 se confirmó que los CSV se conservan dentro del directorio de trabajo para ejecutar el proyecto localmente. Esta conservación no es una autorización de redistribución: antes de publicar el repositorio o cambiar su visibilidad debe existir permiso escrito de las fuentes o los datos deben trasladarse a un almacenamiento privado con control de acceso. Esta condición no sustituye la aprobación fechada de I2, I3 e I4 requerida para cerrar T-0.2b.
+
 Esta política es una decisión conservadora del proyecto y no constituye asesoramiento jurídico.
 
 ## Fuentes verificadas el 23/07/2026

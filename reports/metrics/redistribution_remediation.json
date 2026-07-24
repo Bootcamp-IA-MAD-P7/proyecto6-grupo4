@@ -1,0 +1,23 @@
+{
+  "task": "T-0.2b",
+  "recorded_at": "2026-07-24",
+  "decision": "local_only_no_public_raw_or_row_level_derivatives",
+  "license_assessment": "No open license or explicit permission for public redistribution was demonstrated for either source.",
+  "repository_remediation": {
+    "status": "not_completed_csv_retained_for_local_execution",
+    "retained_paths": [
+      "data/raw/LaLiga_Matches.csv",
+      "data/raw/laliga_2025_2026_stats.csv",
+      "data/processed/LaLiga_EDA_preparado.csv",
+      "data/processed/laliga_matches_clean.csv"
+    ],
+    "public_repository_requirement": "Written redistribution permission for both sources, or migration of the row-level datasets to private access-controlled storage."
+  },
+  "remaining_gate_requirements": [
+    "Dated ratification from I2",
+    "Dated ratification from I3",
+    "Dated ratification from I4",
+    "Reviewed pull request"
+  ],
+  "task_status": "blocked_pending_cross_review"
+}
