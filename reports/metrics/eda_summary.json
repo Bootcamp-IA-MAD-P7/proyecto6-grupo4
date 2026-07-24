@@ -1,10 +1,10 @@
 {
   "quality": {
-    "rows": 11944,
+    "rows": 10804,
     "columns": 54,
-    "season_count": 31,
+    "season_count": 28,
     "date_min": "1995-09-02",
-    "date_max": "2026-05-24",
+    "date_max": "2023-06-04",
     "duplicate_rows": 0,
     "duplicate_match_ids": 0,
     "missing_target": 0,
@@ -13,69 +13,67 @@
     "invalid_target_values": [],
     "same_team_rows": 0,
     "negative_goal_rows": 0,
-    "detailed_rows": 380,
+    "detailed_rows": 0,
     "source_coverage": {
-      "historical_only": 11564,
-      "detailed_only": 280,
-      "both_sources": 100
+      "historical_only": 10804
     }
   },
   "target": {
     "counts": {
-      "H": 5641,
-      "D": 3058,
-      "A": 3245
+      "H": 5119,
+      "D": 2761,
+      "A": 2924
     },
     "shares": {
-      "H": 0.47228734092431346,
-      "D": 0.2560281312793034,
-      "A": 0.27168452779638314
+      "H": 0.4738059977786005,
+      "D": 0.25555349870418365,
+      "A": 0.27064050351721586
     },
     "majority_class": "H",
-    "majority_baseline_accuracy": 0.47228734092431346,
+    "majority_baseline_accuracy": 0.4738059977786005,
     "majority_confusion_matrix": [
       [
-        5641,
+        5119,
         0,
         0
       ],
       [
-        3058,
+        2761,
         0,
         0
       ],
       [
-        3245,
+        2924,
         0,
         0
       ]
     ],
-    "max_to_min_ratio": 1.8446697187704382
+    "max_to_min_ratio": 1.8540383918869974
   },
   "missingness": {
     "columns_with_missing": 32,
     "columns_over_90_pct_missing": 29,
     "top": {
-      "asian_handicap_line_open": 0.9685197588747488,
-      "match_time": 0.9681848626925653,
-      "odds_avg_over_2_5_close": 0.9681848626925653,
-      "odds_avg_away_close": 0.9681848626925653,
-      "odds_avg_draw_close": 0.9681848626925653,
-      "odds_avg_over_2_5_open": 0.9681848626925653,
-      "fouls_home": 0.9681848626925653,
-      "odds_avg_home_open": 0.9681848626925653,
-      "odds_avg_away_open": 0.9681848626925653,
-      "odds_avg_draw_open": 0.9681848626925653,
-      "red_cards_away": 0.9681848626925653,
-      "red_cards_home": 0.9681848626925653,
-      "yellow_cards_away": 0.9681848626925653,
-      "yellow_cards_home": 0.9681848626925653,
-      "shots_home": 0.9681848626925653,
-      "fouls_away": 0.9681848626925653,
-      "corners_home": 0.9681848626925653,
-      "corners_away": 0.9681848626925653,
-      "shots_on_target_home": 0.9681848626925653,
-      "shots_away": 0.9681848626925653
+      "match_time": 1.0,
+      "odds_avg_under_2_5_open": 1.0,
+      "odds_avg_over_2_5_close": 1.0,
+      "odds_avg_away_close": 1.0,
+      "odds_avg_draw_close": 1.0,
+      "odds_avg_home_close": 1.0,
+      "odds_avg_home_open": 1.0,
+      "odds_avg_draw_open": 1.0,
+      "odds_avg_away_open": 1.0,
+      "odds_avg_over_2_5_open": 1.0,
+      "red_cards_away": 1.0,
+      "red_cards_home": 1.0,
+      "yellow_cards_away": 1.0,
+      "yellow_cards_home": 1.0,
+      "fouls_home": 1.0,
+      "fouls_away": 1.0,
+      "corners_home": 1.0,
+      "corners_away": 1.0,
+      "shots_home": 1.0,
+      "shots_away": 1.0
     }
   },
   "temporal": {
@@ -331,33 +329,6 @@
         "away_win_rate": 0.2868421052631579,
         "avg_total_goals": 2.513157894736842,
         "avg_home_goal_diff": 0.3973684210526316
-      },
-      {
-        "season": "2023-24",
-        "matches": 380,
-        "home_win_rate": 0.4394736842105263,
-        "draw_rate": 0.28157894736842104,
-        "away_win_rate": 0.2789473684210526,
-        "avg_total_goals": 2.6447368421052633,
-        "avg_home_goal_diff": 0.3236842105263158
-      },
-      {
-        "season": "2024-25",
-        "matches": 380,
-        "home_win_rate": 0.44473684210526315,
-        "draw_rate": 0.25526315789473686,
-        "away_win_rate": 0.3,
-        "avg_total_goals": 2.6184210526315788,
-        "avg_home_goal_diff": 0.2868421052631579
-      },
-      {
-        "season": "2025-26",
-        "matches": 380,
-        "home_win_rate": 0.48947368421052634,
-        "draw_rate": 0.24473684210526317,
-        "away_win_rate": 0.2657894736842105,
-        "avg_total_goals": 2.694736842105263,
-        "avg_home_goal_diff": 0.45263157894736844
       }
     ],
     "result_share_by_season": [
@@ -528,152 +499,132 @@
         "H": 0.4789473684210526,
         "D": 0.23421052631578948,
         "A": 0.2868421052631579
-      },
-      {
-        "season": "2023-24",
-        "H": 0.4394736842105263,
-        "D": 0.28157894736842104,
-        "A": 0.2789473684210526
-      },
-      {
-        "season": "2024-25",
-        "H": 0.44473684210526315,
-        "D": 0.25526315789473686,
-        "A": 0.3
-      },
-      {
-        "season": "2025-26",
-        "H": 0.48947368421052634,
-        "D": 0.24473684210526317,
-        "A": 0.2657894736842105
       }
     ]
   },
   "goals": {
-    "mean_total": 2.667113194909578,
+    "mean_total": 2.6686412439837097,
     "median_total": 2.0,
-    "pct_over_2_5": 0.4951440053583389,
-    "pct_both_teams_scored": 0.5167448091091762,
-    "mean_home": 1.548476222371065,
-    "mean_away": 1.118636972538513
+    "pct_over_2_5": 0.49648278415401703,
+    "pct_both_teams_scored": 0.5149018881895594,
+    "mean_home": 1.5532210292484265,
+    "mean_away": 1.1154202147352832
   },
   "associations": {
-    "season_vs_target_cramers_v": 0.024853209026686873,
-    "home_team_vs_target_cramers_v": 0.17107579385648755,
-    "away_team_vs_target_cramers_v": 0.1833116954956561
+    "season_vs_target_cramers_v": 0.027748823866429555,
+    "home_team_vs_target_cramers_v": 0.16788680901049544,
+    "away_team_vs_target_cramers_v": 0.17961658967724187
   },
   "cardinality": {
     "match_id_unique_pct": 1.0,
     "home_teams": 48,
     "away_teams": 48,
-    "seasons": 31
+    "seasons": 28
   },
   "detailed_subset": {
-    "rows": 380,
-    "share_of_total": 0.031815137307434696,
-    "opening_odds_coverage_within_subset": 1.0
+    "rows": 0,
+    "share_of_total": 0.0,
+    "opening_odds_coverage_within_subset": NaN
   },
   "market_baseline": {
-    "rows_with_complete_opening_odds": 380,
-    "favorite_accuracy": 0.5447368421052632,
-    "multiclass_log_loss": 0.9641034157339412,
-    "mean_overround": 0.06461268272095255,
+    "rows_with_complete_opening_odds": 0,
     "confusion_matrix": [
       [
-        160,
         0,
-        26
+        0,
+        0
       ],
       [
-        62,
         0,
-        31
+        0,
+        0
       ],
       [
-        54,
         0,
-        47
+        0,
+        0
       ]
-    ]
+    ],
+    "status": "not_available_without_development_opening_odds"
   },
   "outliers_iqr": {
     "home_goals_ft": {
-      "count": 973,
-      "pct": 0.081463496316142,
+      "count": 891,
+      "pct": 0.08246945575712698,
       "lower": -0.5,
       "upper": 3.5
     },
     "away_goals_ft": {
-      "count": 31,
-      "pct": 0.002595445411922304,
+      "count": 30,
+      "pct": 0.0027767493520918177,
       "lower": -3.0,
       "upper": 5.0
     },
     "total_goals": {
       "count": 21,
-      "pct": 0.0017582049564634963,
+      "pct": 0.0019437245464642725,
       "lower": -3.5,
       "upper": 8.5
     },
     "shots_home": {
-      "count": 3,
-      "pct": 0.007894736842105263,
-      "lower": -0.5,
-      "upper": 27.5
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
     },
     "shots_away": {
-      "count": 12,
-      "pct": 0.031578947368421054,
-      "lower": -1.0,
-      "upper": 23.0
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
     },
     "shots_on_target_home": {
       "count": 0,
       "pct": 0.0,
-      "lower": -3.0,
-      "upper": 13.0
+      "lower": null,
+      "upper": null
     },
     "shots_on_target_away": {
-      "count": 9,
-      "pct": 0.02368421052631579,
-      "lower": -2.5,
-      "upper": 9.5
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
     },
     "fouls_home": {
-      "count": 3,
-      "pct": 0.007894736842105263,
-      "lower": 2.5,
-      "upper": 22.5
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
     },
     "fouls_away": {
       "count": 0,
       "pct": 0.0,
-      "lower": 1.0,
-      "upper": 25.0
+      "lower": null,
+      "upper": null
     },
     "yellow_cards_home": {
-      "count": 1,
-      "pct": 0.002631578947368421,
-      "lower": -2.0,
-      "upper": 6.0
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
     },
     "yellow_cards_away": {
-      "count": 8,
-      "pct": 0.021052631578947368,
-      "lower": -2.0,
-      "upper": 6.0
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
     },
     "red_cards_home": {
-      "count": 42,
-      "pct": 0.11052631578947368,
-      "lower": 0.0,
-      "upper": 0.0
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
     },
     "red_cards_away": {
-      "count": 49,
-      "pct": 0.12894736842105264,
-      "lower": 0.0,
-      "upper": 0.0
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
     }
   },
   "leakage": {

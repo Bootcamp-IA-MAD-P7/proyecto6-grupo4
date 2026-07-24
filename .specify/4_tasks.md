@@ -160,6 +160,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: los cuatro integrantes pueden obtener la misma versión de datos.
 - Verificación: comprobar schema, dimensiones y huella o versión.
 - Evidencia provisional: `src/data/laliga_loader.py`, `scripts/run_laliga_preprocessing.py`, `reports/metrics/dataset_manifest.json`, `reports/metrics/source_provenance.json` y tests unitarios. Pendiente revisión de I4 y cierre de dependencias.
+- Cierre técnico I1 2026-07-24: regenerados desde raw el dataset canónico y su manifest; contrato validado con 11.944 filas, 54 columnas, SHA-256 `6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c`, 0 IDs duplicados y 0 targets nulos. Preparado para revisión de I4.
 
 ### [~] T-1.2 Crear diccionario y auditoría de datos
 
@@ -171,6 +172,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: todas las variables tienen rol y descripción.
 - Evidencia: diccionario de datos revisado.
 - Evidencia provisional: `reports/metrics/data_dictionary.csv`, `reports/metrics/missingness.csv` y `reports/metrics/eda_summary.json`. Pendiente revisión de I3.
+- Cierre técnico I1 2026-07-24: diccionario regenerado para las 54 columnas, con tipo, rol, disponibilidad, tratamiento de nulos y riesgo de leakage. La evidencia queda lista para revisión de I3.
 
 ### [~] T-1.3 Realizar EDA compartido
 
@@ -181,6 +183,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: nulos, duplicados, distribuciones, target, relaciones, correlaciones y leakage analizados.
 - Evidencia: notebook o informe reproducible con interpretaciones.
 - Evidencia provisional: `notebooks/01_laliga_eda.ipynb`, `reports/laliga_eda.md` y once figuras persistentes en `reports/figures/`, incluidas outliers y dos matrices de confusión descriptivas. Análisis técnico completo; pendiente revisión cruzada de los cuatro integrantes.
+- Cierre técnico I1 2026-07-24: EDA regenerado con 11 figuras, auditoría de nulos/duplicados/target, análisis temporal, outliers, baseline descriptivo y matriz de leakage. El EDA usa exclusivamente train+validación (10.804 filas); el test 2023-24–2025-26 queda excluido. Verificación registrada en `reports/metrics/eda_verification.md`; pendiente revisión cruzada humana.
 
 ### [~] T-1.4 Implementar limpieza común
 
@@ -193,6 +196,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Evidencia: tests y comparación antes/después.
 - Evidencia provisional 2026-07-23: `notebooks/00_laliga_preprocessing.ipynb`, `data/processed/laliga_matches_clean.csv`, `reports/metrics/preprocessing_summary.json`, `reports/metrics/source_column_policy.csv` y pruebas unitarias/integración. Pendientes revisión de I2/I4 y cierre de dependencias.
 - Revisión I2 2026-07-23: dataset limpio auditado sin duplicados, targets nulos ni incoherencias marcador/resultado; `load_processed_dataset` valida el contrato de tipos y la suite de tests pasa (14/14). Aceptable como base para congelar particiones (T-1.5). Revisión de I4 sigue pendiente.
+- Cierre técnico I1 2026-07-24: limpieza determinista regenerada sin modificar raw, con política de columnas, reporte antes/después y 0 incoherencias marcador/target. Se añadió `verify_preprocessing_split_contract` para asegurar que dataset, `match_id`, huella y conteos coinciden con las particiones congeladas; 15/15 pruebas en verde. Todo cambio de limpieza obliga a regenerar preprocesamiento, splits y esta verificación antes de entrenar. Pendiente revisión de I4.
 
 ### [x] T-1.5 Congelar particiones comunes
 
@@ -205,6 +209,8 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Avance 2026-07-23: implementado `src/evaluation/splits.py` (partición cronológica por temporada, congelada como constante, sin aleatoriedad ni estratificación). Genera `data/processed/splits/laliga_splits.csv` (match_id, season, split) y `reports/metrics/split_manifest.json` (protocolo, semilla 42, conteos y fracciones). Resultado: train 9.607 filas (1995-96–2019-20), validación 1.197 filas (2020-21–2022-23), test 1.140 filas (2023-24–2025-26, protegido). Falla explícitamente si aparece una temporada no contemplada, en vez de reasignar en silencio. Pruebas: `tests/unit/test_splits.py` (5 casos), suite completa 14/14 en verde. Pendiente revisión de I1.
 - Aprobación técnica I1 2026-07-23: verificados el SHA-256 del dataset canónico, la asignación cronológica, la regeneración local de 11.944 índices sin IDs duplicados o ausentes, los conteos 9.607/1.197/1.140 y la protección del test. Suite completa: 14/14 pruebas aprobadas. La asignación queda versionada mediante la constante y el manifest; el CSV regenerable permanece excluido por la política general de `data/processed/*`.
 - Cierre 2026-07-24: revisión cruzada de I3 e I4 confirmada por el equipo en daily. Misma salvedad que otras confirmaciones de representante: si I3 o I4 objetan al ver el detalle, la tarea se reabre.
+- Regla acordada 2026-07-24: cualquier cambio en las reglas de limpieza de T-1.4 (o en los CSV raw) invalida el SHA-256 registrado y obliga a reejecutar `scripts/run_laliga_preprocessing.py` + `python -m src.evaluation.splits`, reconfirmando hash, 11.944 `match_id`, cortes por temporada y conteos 9.607/1.197/1.140 antes de que T-1.5 siga vigente. Detalle en `docs/decisions/0002-evaluation-protocol-proposal.md`.
+- Reverificación 2026-07-24: reejecutados `scripts/run_laliga_preprocessing.py` y `python -m src.evaluation.splits`. SHA-256 idéntico (`6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c`), 11.944 filas y 11.944 `match_id` únicos, mismos cortes por temporada (train 1995-96–2019-20, validación 2020-21–2022-23, test 2023-24–2025-26) y mismos conteos 9.607/1.197/1.140. Suite completa 15/15 en verde. Pendiente como criterio permanente de revisión en T-2.1–T-2.4: ningún pipeline debe leer filas `split == "test"` salvo en T-2.6.
 
 ### [ ] T-1.6 Crear frontend simulado
 

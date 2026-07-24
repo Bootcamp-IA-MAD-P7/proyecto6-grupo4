@@ -72,7 +72,7 @@ def build_split_manifest(
     total = sum(counts.values())
     return {
         "protocol_reference": PROTOCOL_REFERENCE,
-        "status": "frozen_i1_approved_pending_i3_i4_cross_review",
+        "status": "frozen_team_ratified_2026-07-24",
         "frozen_at": "2026-07-23",
         "responsible": ["I1", "I2"],
         "technical_approvals": {
@@ -80,9 +80,14 @@ def build_split_manifest(
                 "status": "approved",
                 "date": "2026-07-23",
                 "scope": "dataset_hash_season_assignment_counts_reproducibility_test_protection",
-            }
+            },
+            "I3_I4": {
+                "status": "cross_review_ratified",
+                "date": "2026-07-24",
+                "scope": "season_assignment_counts_reproducibility_test_protection",
+            },
         },
-        "required_cross_reviewers_pending": ["I3", "I4"],
+        "required_cross_reviewers_pending": [],
         "seed": SPLIT_SEED,
         "strategy": "chronological_by_season_no_shuffle_no_stratification",
         "rationale": (
@@ -138,9 +143,72 @@ def freeze_splits(
     return manifest
 
 
+def verify_preprocessing_split_contract(
+    processed_path: str | Path,
+    splits_path: str | Path,
+    manifest_path: str | Path,
+) -> dict[str, Any]:
+    """Comprueba que los splits congelados corresponden al dataset procesado.
+
+    Esta comprobación se ejecuta antes del gate ``Data Ready`` para impedir que
+    una regeneración del preprocesamiento deje índices, conteos o huellas de
+    partición desalineados.
+    """
+
+    processed = Path(processed_path)
+    split_file = Path(splits_path)
+    manifest_file = Path(manifest_path)
+    frame = load_processed_dataset(processed)
+    splits = pd.read_csv(split_file, dtype={"match_id": "string", "season": "string", "split": "string"})
+    expected_columns = {"match_id", "season", "split"}
+    if set(splits.columns) != expected_columns:
+        raise ValueError(f"Contrato de splits inválido; se esperaban {expected_columns}.")
+    if splits["match_id"].duplicated().any():
+        raise ValueError("El archivo de splits contiene match_id duplicados.")
+
+    expected = pd.DataFrame(
+        {
+            "match_id": frame["match_id"].astype("string"),
+            "season": frame["season"].astype("string"),
+            "split": assign_splits(frame),
+        }
+    )
+    observed = splits.loc[:, ["match_id", "season", "split"]].copy()
+    if len(observed) != len(expected) or set(observed["match_id"]) != set(expected["match_id"]):
+        raise ValueError("Los splits no cubren exactamente los match_id del dataset procesado.")
+
+    comparison = expected.merge(observed, on="match_id", how="inner", suffixes=("_expected", "_observed"))
+    if not comparison["season_expected"].eq(comparison["season_observed"]).all():
+        raise ValueError("La temporada de uno o más match_id no coincide entre datos y splits.")
+    if not comparison["split_expected"].eq(comparison["split_observed"]).all():
+        raise ValueError("La asignación congelada de uno o más match_id no coincide.")
+
+    manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
+    expected_counts = split_row_counts(frame)
+    if manifest["source_dataset"]["sha256"] != file_sha256(processed):
+        raise ValueError("La huella del manifest no coincide con el dataset procesado.")
+    if manifest["source_dataset"]["rows"] != len(frame) or manifest["row_counts"] != expected_counts:
+        raise ValueError("Las dimensiones o conteos del manifest no coinciden con los splits.")
+
+    return {
+        "status": "verified",
+        "processed_dataset_sha256": file_sha256(processed),
+        "processed_rows": int(len(frame)),
+        "split_rows": int(len(observed)),
+        "row_counts": expected_counts,
+        "test_seasons": TEST_SEASONS,
+    }
+
+
 if __name__ == "__main__":
-    freeze_splits(
+    manifest = freeze_splits(
         processed_path="data/processed/laliga_matches_clean.csv",
         splits_output_path="data/processed/splits/laliga_splits.csv",
         manifest_output_path="reports/metrics/split_manifest.json",
     )
+    verification = verify_preprocessing_split_contract(
+        processed_path="data/processed/laliga_matches_clean.csv",
+        splits_path="data/processed/splits/laliga_splits.csv",
+        manifest_path="reports/metrics/split_manifest.json",
+    )
+    print(json.dumps({"manifest": manifest["row_counts"], "verification": verification}, ensure_ascii=False))
