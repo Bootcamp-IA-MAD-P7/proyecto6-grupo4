@@ -39,7 +39,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 
 | Gate | Estado | Bloqueo o evidencia principal |
 |---|---|---|
-| Alineación | En progreso | T-0.1: aprobar SDD reconciliado |
+| Alineación | Cerrado | T-0.1: SDD reconciliado y aprobado por I1–I4 |
 | Dataset técnico | Cerrado | Daily 22/07, ADR-0001, loader y manifest |
 | Licencia | Cerrado | T-0.2b: ratificado por el equipo en daily 2026-07-24; uso local aceptado, incluida la permanencia de los CSV ya trackeados en Git |
 | Evaluación | Cerrado | T-0.4/T-1.5: métrica, gap, ventanas temporales y particiones ratificados por el equipo en daily 2026-07-24 |
@@ -50,7 +50,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 
 ## Fase 0 — Decisiones bloqueantes
 
-### [~] T-0.1 Revisar y aprobar `.specify/`
+### [x] T-0.1 Revisar y aprobar `.specify/`
 
 - Responsable: todo el equipo.
 - Revisor: todo el equipo.
@@ -59,6 +59,8 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Acción: leer `0_constitution.md` y los cuatro documentos SPEC, registrar dudas y aprobar o corregir el contrato.
 - Criterio de aceptación: los cuatro integrantes aprueban dominio, gates, flujo común de datos, contratos y cuatro pipelines.
 - Evidencia: aprobación fechada en daily o PR.
+- Reconciliación 2026-07-24: la fuente de verdad para T-0.4 fija las ventanas canónicas en `2_spec.md`: train 1995-96–2019-20, validación 2020-21–2022-23 y test protegido 2023-24–2025-26. La propuesta alternativa queda retirada. T-0.4 permanece en progreso hasta la ratificación individual; una confirmación de representante no permite cerrarla.
+- Cierre 2026-07-24: aprobación y visto bueno explícitos de I1 Arnaldo `[x]`, I2 Johans `[x]`, I3 César `[x]` e I4 Fernanda `[x]`. Evidencia: confirmación conjunta del equipo registrada en la daily 24/07/2026. Se cumplen el criterio de aceptación y la revisión cruzada.
 
 ### [x] T-0.2a Evaluar y seleccionar técnicamente el dataset
 
@@ -107,7 +109,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: protocolo aprobado por los cuatro integrantes.
 - Evidencia: contrato registrado en `2_spec.md`.
 - Avance 2026-07-23: propuesta registrada — métrica principal `macro-F1`, secundarias (accuracy, balanced accuracy, precisión/recall/F1 por clase, log loss, matriz de confusión), fórmula de overfitting (`gap < 0.05` sobre `macro-F1` train/validación) y partición cronológica por temporada con semilla `42`. Detalle y justificación en `docs/decisions/0002-evaluation-protocol-proposal.md`.
-- Cierre 2026-07-23: confirmada en sesión de trabajo. Misma salvedad que T-0.3: confirmación de representante del equipo, no firma individual de cada integrante.
+- Cierre 2026-07-24: I1, I2, I3 e I4 aprueban el contrato, incluidas métricas, gap, semilla y ventanas canónicas. Evidencia: confirmación conjunta del equipo registrada en la daily 24/07/2026 y acta de T-0.1.
 
 ### [x] T-0.5 Elegir cuatro modelos candidatos
 
@@ -158,6 +160,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: los cuatro integrantes pueden obtener la misma versión de datos.
 - Verificación: comprobar schema, dimensiones y huella o versión.
 - Evidencia provisional: `src/data/laliga_loader.py`, `scripts/run_laliga_preprocessing.py`, `reports/metrics/dataset_manifest.json`, `reports/metrics/source_provenance.json` y tests unitarios. Pendiente revisión de I4 y cierre de dependencias.
+- Cierre técnico I1 2026-07-24: regenerados desde raw el dataset canónico y su manifest; contrato validado con 11.944 filas, 54 columnas, SHA-256 `6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c`, 0 IDs duplicados y 0 targets nulos. Preparado para revisión de I4.
 
 ### [~] T-1.2 Crear diccionario y auditoría de datos
 
@@ -169,6 +172,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: todas las variables tienen rol y descripción.
 - Evidencia: diccionario de datos revisado.
 - Evidencia provisional: `reports/metrics/data_dictionary.csv`, `reports/metrics/missingness.csv` y `reports/metrics/eda_summary.json`. Pendiente revisión de I3.
+- Cierre técnico I1 2026-07-24: diccionario regenerado para las 54 columnas, con tipo, rol, disponibilidad, tratamiento de nulos y riesgo de leakage. La evidencia queda lista para revisión de I3.
 
 ### [~] T-1.3 Realizar EDA compartido
 
@@ -179,6 +183,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: nulos, duplicados, distribuciones, target, relaciones, correlaciones y leakage analizados.
 - Evidencia: notebook o informe reproducible con interpretaciones.
 - Evidencia provisional: `notebooks/01_laliga_eda.ipynb`, `reports/laliga_eda.md` y once figuras persistentes en `reports/figures/`, incluidas outliers y dos matrices de confusión descriptivas. Análisis técnico completo; pendiente revisión cruzada de los cuatro integrantes.
+- Cierre técnico I1 2026-07-24: EDA regenerado con 11 figuras, auditoría de nulos/duplicados/target, análisis temporal, outliers, baseline descriptivo y matriz de leakage. El EDA usa exclusivamente train+validación (10.804 filas); el test 2023-24–2025-26 queda excluido. Verificación registrada en `reports/metrics/eda_verification.md`; pendiente revisión cruzada humana.
 
 ### [~] T-1.4 Implementar limpieza común
 
@@ -191,6 +196,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Evidencia: tests y comparación antes/después.
 - Evidencia provisional 2026-07-23: `notebooks/00_laliga_preprocessing.ipynb`, `data/processed/laliga_matches_clean.csv`, `reports/metrics/preprocessing_summary.json`, `reports/metrics/source_column_policy.csv` y pruebas unitarias/integración. Pendientes revisión de I2/I4 y cierre de dependencias.
 - Revisión I2 2026-07-23: dataset limpio auditado sin duplicados, targets nulos ni incoherencias marcador/resultado; `load_processed_dataset` valida el contrato de tipos y la suite de tests pasa (14/14). Aceptable como base para congelar particiones (T-1.5). Revisión de I4 sigue pendiente.
+- Cierre técnico I1 2026-07-24: limpieza determinista regenerada sin modificar raw, con política de columnas, reporte antes/después y 0 incoherencias marcador/target. Se añadió `verify_preprocessing_split_contract` para asegurar que dataset, `match_id`, huella y conteos coinciden con las particiones congeladas; 15/15 pruebas en verde. Todo cambio de limpieza obliga a regenerar preprocesamiento, splits y esta verificación antes de entrenar. Pendiente revisión de I4.
 
 ### [x] T-1.5 Congelar particiones comunes
 
@@ -471,5 +477,5 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 |---|---|
 | Estado | v1.0 — T-0.2b, T-0.4, T-0.5 y T-1.5 ratificados en daily 2026-07-24 |
 | Fecha | 24/07/2026 |
-| Siguiente trabajo bloqueante | T-0.1 y T-0.6; T-1.1–T-1.4, T-1.6–T-1.7 antes de `T-1.8` |
+| Siguiente trabajo bloqueante | T-0.6; T-1.1–T-1.4 y T-1.6–T-1.7 antes de `T-1.8` |
 | Regla | Marcar `[x]` solo con verificación, evidencia y revisión cruzada |
