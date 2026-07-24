@@ -287,6 +287,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Acción: verificar comparabilidad y registrar resultados de los cuatro candidatos.
 - Criterio de aceptación: ninguna comparación usa datos, métricas o reglas diferentes sin explicarlo.
 - Evidencia: tabla completa y observaciones de calidad.
+- Adelanto 2026-07-24 (spike, no cierra la tarea): plantilla vacía preparada en `reports/experiments/experiments_table.csv` (filas A–D en `status=pending`, sin resultados) y `reports/experiments/README.md` con el significado de cada columna y las reglas heredadas de `2_spec.md`/`0_constitution.md` (no usar el split de test, mismo `data_version_sha256` para los cuatro candidatos, no editar `candidate_id`/`member`/`algorithm` sin actualizar la ADR 0003). Sigue en `[ ]`: no hay resultados porque T-2.1–T-2.4 no han empezado.
 
 ### [ ] T-2.6 Seleccionar y versionar Champion
 

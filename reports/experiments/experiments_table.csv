@@ -1,0 +1,5 @@
+candidate_id,member,algorithm,data_version_sha256,split_manifest_reference,features_version,transformations_summary,hyperparameters,seed,train_macro_f1,validation_macro_f1,overfitting_gap_macro_f1,train_accuracy,validation_accuracy,validation_balanced_accuracy,validation_log_loss,cv_summary_reference,confusion_matrix_reference,training_time_seconds,inference_time_ms,artifact_path,evidence_path,limitations_and_errors,status
+A,I1,,,,,,,,,,,,,,,,,,,,,,pending
+B,I2,,,,,,,,,,,,,,,,,,,,,,pending
+C,I3,,,,,,,,,,,,,,,,,,,,,,pending
+D,I4,,,,,,,,,,,,,,,,,,,,,,pending
