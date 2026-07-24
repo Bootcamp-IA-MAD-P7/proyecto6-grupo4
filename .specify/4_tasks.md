@@ -41,8 +41,9 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 |---|---|---|
 | Alineación | En progreso | T-0.1: aprobar SDD reconciliado |
 | Dataset técnico | Cerrado | Daily 22/07, ADR-0001, loader y manifest |
-| Licencia | Bloqueado tras revisión I1 | T-0.2b: los CSV se conservan para ejecución local; su publicación requiere permiso escrito o un repositorio privado con acceso controlado |
-| Evaluación | Pendiente | T-0.4: métrica, gap y ventanas temporales |
+| Licencia | Cerrado | T-0.2b: ratificado por el equipo en daily 2026-07-24; uso local aceptado, incluida la permanencia de los CSV ya trackeados en Git |
+| Evaluación | Cerrado | T-0.4/T-1.5: métrica, gap, ventanas temporales y particiones ratificados por el equipo en daily 2026-07-24 |
+| Candidatos | Cerrado | T-0.5: cuatro algoritmos asignados, ver `docs/decisions/0003-four-candidate-models.md` |
 | Aplicación | En progreso | T-0.6: arquitectura y contrato definitivo |
 | `Data Ready` | Abierto | T-1.8 y checklist de `2_spec.md` |
 | Nivel Esencial | No iniciado | Requiere `Data Ready` |
@@ -68,7 +69,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: selección técnica, unidad partido, usuario y target explicables.
 - Evidencia: daily 22/07/2026, `docs/decisions/0001-laliga-dataset-target-proposal.md`, EDA y manifest.
 
-### [!] T-0.2b Verificar condiciones de uso y redistribución del dataset
+### [x] T-0.2b Verificar condiciones de uso y redistribución del dataset
 
 - Prioridad: **P0 — bloqueante para `Data Ready`**.
 - Responsable: I1.
@@ -82,7 +83,8 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Apertura 2026-07-23: tarea formalizada como prioridad inmediata en GitHub issue #41, asignada a I1, añadida a `Proyecto6-Grupo4`, con prioridad `Urgent` y estado `In progress`. La procedencia técnica está identificada, pero no consta una licencia abierta explícita para ambas fuentes ni la aprobación del equipo sobre redistribución. Hasta resolverlo, `T-1.1` y `T-1.8` no pueden cerrarse.
 - Revisión I1 2026-07-23: la ficha de Kaggle declara `Data files © Original Authors`; Football-Data ofrece descarga gratuita y declara la finalidad de predicción de partidos, pero ninguna fuente publica una licencia abierta o una autorización explícita para redistribuir los archivos. Decisión I1: uso local para el proyecto compatible con la finalidad indicada; publicación de raw y derivados fila a fila **no autorizada mientras no exista permiso escrito**.
 - Estado tras revisión I1: resultado y verificación 15/15 publicados en el issue #41; ocho comprobaciones completadas y estado del Project cambiado a `In review`. El issue permanece abierto y la aprobación I2/I3/I4 continúa sin marcar.
-- Decisión de conservación 2026-07-24: los CSV raw y los derivados fila a fila se mantienen dentro del directorio de trabajo para ejecución local y reproducibilidad. Esta decisión **no autoriza** su redistribución pública: mientras no exista permiso escrito, los datos solo pueden mantenerse en una copia local o en un repositorio privado con acceso controlado. Antes de cualquier publicación o cambio de visibilidad se debe adjuntar el permiso explícito de ambas fuentes o retirar los archivos. Queda pendiente la ratificación fechada de I2/I3/I4; por ello T-0.2b continúa bloqueada y no se marca como completada.
+- Decisión de conservación 2026-07-24: los CSV raw y los derivados fila a fila se mantienen dentro del directorio de trabajo para ejecución local y reproducibilidad. Esta decisión **no autoriza** su redistribución pública: mientras no exista permiso escrito, los datos solo pueden mantenerse en una copia local o en un repositorio privado con acceso controlado. Antes de cualquier publicación o cambio de visibilidad se debe adjuntar el permiso explícito de ambas fuentes o retirar los archivos.
+- Cierre 2026-07-24: ratificado por el equipo en daily. Misma salvedad que T-0.3/T-0.4: confirmación de representante del equipo en esta sesión, no firma individual archivada de cada integrante; si algún integrante objeta, debe reabrirse. El equipo revisó que `LaLiga_Matches.csv`, `laliga_2025_2026_stats.csv` y `laliga_matches_clean.csv` siguen trackeados en el historial de Git y decidió explícitamente aceptar esa situación sin remediación adicional; no queda ninguna acción pendiente sobre este punto.
 
 ### [x] T-0.3 Definir problema, usuarios y target
 
@@ -107,7 +109,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Avance 2026-07-23: propuesta registrada — métrica principal `macro-F1`, secundarias (accuracy, balanced accuracy, precisión/recall/F1 por clase, log loss, matriz de confusión), fórmula de overfitting (`gap < 0.05` sobre `macro-F1` train/validación) y partición cronológica por temporada con semilla `42`. Detalle y justificación en `docs/decisions/0002-evaluation-protocol-proposal.md`.
 - Cierre 2026-07-23: confirmada en sesión de trabajo. Misma salvedad que T-0.3: confirmación de representante del equipo, no firma individual de cada integrante.
 
-### [ ] T-0.5 Elegir cuatro modelos candidatos
+### [x] T-0.5 Elegir cuatro modelos candidatos
 
 - Responsable: todo el equipo; coordina I2.
 - Dependencias: T-0.3, T-0.4.
@@ -115,6 +117,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Acción: asignar un algoritmo a cada integrante y justificar diversidad y viabilidad.
 - Criterio de aceptación: candidatos A, B, C y D registrados sin duplicación injustificada.
 - Evidencia: tabla de decisiones de `2_spec.md` actualizada.
+- Cierre 2026-07-24: confirmado por el equipo (representante de sesión). Candidato A (I1): regresión logística multinomial. Candidato B (I2): gradient boosting (HistGradientBoostingClassifier/XGBoost/LightGBM). Candidato C (I3): random forest. Candidato D (I4): SVM con kernel RBF y probabilidades. Diversidad cubierta: lineal, boosting de árboles, bagging de árboles y margen. Detalle y justificación en `docs/decisions/0003-four-candidate-models.md`.
 
 ### [~] T-0.6 Definir aplicación y contratos preliminares
 
@@ -189,7 +192,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Evidencia provisional 2026-07-23: `notebooks/00_laliga_preprocessing.ipynb`, `data/processed/laliga_matches_clean.csv`, `reports/metrics/preprocessing_summary.json`, `reports/metrics/source_column_policy.csv` y pruebas unitarias/integración. Pendientes revisión de I2/I4 y cierre de dependencias.
 - Revisión I2 2026-07-23: dataset limpio auditado sin duplicados, targets nulos ni incoherencias marcador/resultado; `load_processed_dataset` valida el contrato de tipos y la suite de tests pasa (14/14). Aceptable como base para congelar particiones (T-1.5). Revisión de I4 sigue pendiente.
 
-### [~] T-1.5 Congelar particiones comunes
+### [x] T-1.5 Congelar particiones comunes
 
 - Responsables: I1 e I2.
 - Revisores: I3 e I4.
@@ -198,7 +201,8 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: los cuatro candidatos reciben los mismos registros.
 - Evidencia: índices, metadata o función reproducible; test final protegido.
 - Avance 2026-07-23: implementado `src/evaluation/splits.py` (partición cronológica por temporada, congelada como constante, sin aleatoriedad ni estratificación). Genera `data/processed/splits/laliga_splits.csv` (match_id, season, split) y `reports/metrics/split_manifest.json` (protocolo, semilla 42, conteos y fracciones). Resultado: train 9.607 filas (1995-96–2019-20), validación 1.197 filas (2020-21–2022-23), test 1.140 filas (2023-24–2025-26, protegido). Falla explícitamente si aparece una temporada no contemplada, en vez de reasignar en silencio. Pruebas: `tests/unit/test_splits.py` (5 casos), suite completa 14/14 en verde. Pendiente revisión de I1.
-- Aprobación técnica I1 2026-07-23: verificados el SHA-256 del dataset canónico, la asignación cronológica, la regeneración local de 11.944 índices sin IDs duplicados o ausentes, los conteos 9.607/1.197/1.140 y la protección del test. Suite completa: 14/14 pruebas aprobadas. La asignación queda versionada mediante la constante y el manifest; el CSV regenerable permanece excluido por la política general de `data/processed/*`. T-1.5 continúa en `[~]` hasta obtener la revisión cruzada de I3 e I4 y la ratificación completa del equipo.
+- Aprobación técnica I1 2026-07-23: verificados el SHA-256 del dataset canónico, la asignación cronológica, la regeneración local de 11.944 índices sin IDs duplicados o ausentes, los conteos 9.607/1.197/1.140 y la protección del test. Suite completa: 14/14 pruebas aprobadas. La asignación queda versionada mediante la constante y el manifest; el CSV regenerable permanece excluido por la política general de `data/processed/*`.
+- Cierre 2026-07-24: revisión cruzada de I3 e I4 confirmada por el equipo en daily. Misma salvedad que otras confirmaciones de representante: si I3 o I4 objetan al ver el detalle, la tarea se reabre.
 
 ### [ ] T-1.6 Crear frontend simulado
 
@@ -463,7 +467,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 
 | Campo | Valor |
 |---|---|
-| Estado | v1.0 — dependencias, spikes, gates y trazabilidad reconciliados |
-| Fecha | 23/07/2026 |
-| Siguiente trabajo bloqueante | T-0.1, T-0.2b, T-0.4, T-0.5 y T-0.6 |
+| Estado | v1.0 — T-0.2b, T-0.4, T-0.5 y T-1.5 ratificados en daily 2026-07-24 |
+| Fecha | 24/07/2026 |
+| Siguiente trabajo bloqueante | T-0.1 y T-0.6; T-1.1–T-1.4, T-1.6–T-1.7 antes de `T-1.8` |
 | Regla | Marcar `[x]` solo con verificación, evidencia y revisión cruzada |
