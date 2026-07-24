@@ -69,3 +69,18 @@ Esto implica una desviación respecto a la estratificación "cuando resulte apro
 - Confirmar que T-0.2 (licencia del dataset) no obliga a cambiar de dataset, lo que invalidaría esta propuesta.
 
 Los cortes fueron validados al implementar T-1.5: train 9.607 filas, validación 1.197 y test protegido 1.140. I1 verificó el 23/07/2026 el SHA-256 del dataset, la regeneración de los 11.944 índices, la ausencia de IDs duplicados o ausentes y la suite completa 14/14. Hasta resolver las revisiones restantes y T-0.2b no se cierra `Data Ready` ni se inicia el entrenamiento de candidatos.
+
+## Regla de re-congelado (acordada 2026-07-24)
+
+Cualquier cambio en las reglas comunes de limpieza de `T-1.4`, o en los CSV raw de origen, invalida el SHA-256 registrado en `reports/metrics/split_manifest.json` y obliga, antes de dar `T-1.5` por vigente, a:
+
+1. Reejecutar `scripts/run_laliga_preprocessing.py` y luego `python -m src.evaluation.splits`.
+2. Confirmar el mismo SHA-256 del dataset limpio y los mismos 11.944 `match_id`.
+3. Confirmar los mismos cortes por temporada (train 1995-96–2019-20, validación 2020-21–2022-23, test 2023-24–2025-26).
+4. Confirmar los mismos conteos 9.607 / 1.197 / 1.140.
+
+Si cualquiera de estos valores cambia, `T-1.5` regresa a `[~]` en `4_tasks.md` hasta obtener nueva revisión cruzada de I1, I3 e I4. Esto formaliza por escrito lo que ya impone `assign_splits` en `src/evaluation/splits.py` (falla ante una temporada no contemplada) y evita que un cambio silencioso en la limpieza deje desactualizada la partición congelada.
+
+## Reverificación 2026-07-24
+
+Se ejecutaron `scripts/run_laliga_preprocessing.py` y `python -m src.evaluation.splits` como comprobación previa a solicitar `Data Ready`. Resultado: SHA-256 idéntico (`6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c`), 11.944 filas y 11.944 `match_id` únicos en `data/processed/splits/laliga_splits.csv`, mismos cortes por temporada y mismos conteos 9.607/1.197/1.140. Suite completa: 15/15 en verde. No hubo ningún pipeline de candidato que consultara el split de test (T-2.1–T-2.4 no han iniciado); queda como criterio de revisión obligatorio cuando arranquen esas tareas.
