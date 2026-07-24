@@ -2,16 +2,16 @@
 
 ## Estado del análisis
 
-Este informe cubre el preprocesamiento T-1.4 y el EDA T-1.3 del dataset canónico provisional de LaLiga. El target aprobado es `result_ft`: **H** (victoria local), **D** (empate) y **A** (victoria visitante). El flujo es reproducible, pero **no cierra `Data Ready`**: la redistribución pública de los datos no está autorizada de forma explícita y siguen pendientes la ratificación del equipo, las features comunes y las revisiones cruzadas.
+Este informe cubre el preprocesamiento T-1.4 y el EDA T-1.3 del dataset canónico provisional de LaLiga. El target aprobado es `result_ft`: **H** (victoria local), **D** (empate) y **A** (victoria visitante). El flujo es reproducible, pero **no cierra `Data Ready`**: todavía faltan las features históricas comunes y los mocks de frontend/backend.
 
 ## Resumen ejecutivo
 
 - Se analizaron **10,804 partidos**, **54 variables** y **28 temporadas**, entre 1995-09-02 y 2023-06-04.
-- La unión prioriza la fuente detallada en **100 partidos solapados** y termina con **0 IDs duplicados**, **0 targets ausentes** y **0 incoherencias.
+- La unión prioriza la fuente detallada en **100 partidos solapados** y termina con **0 IDs duplicados**, **0 targets ausentes** y **0 incoherencias**.
 - El target está moderadamente desbalanceado: H=5,119 (47.4%), D=2,761 (25.6%) y A=2,924 (27.1%). La baseline mayoritaria es 47.4%.
 - La media es **2.67 goles/partido**; 49.6% supera 2,5 goles y 51.5% registra goles de ambos equipos.
 - Solo **0 partidos** (0.0%) contienen tiros, faltas, tarjetas y cuotas. Esta ausencia es estructural por temporada y no debe imputarse sobre el histórico.
-- En las filas con cuotas completas, escoger el favorito de apertura acierta 0.0%; es una referencia descriptiva, no un modelo entrenado.
+- La baseline de cuotas de apertura no se calcula porque el conjunto de desarrollo no contiene filas con cuotas completas.
 
 ![Distribución del target](figures/01_target_distribution.png)
 
@@ -70,7 +70,7 @@ Salida reproducible: `data/processed/laliga_matches_clean.csv`; SHA-256 `6288a87
 
 ## 4. Distribución y balance del target
 
-La clase H domina, seguida de A y D. El ratio entre clase mayoritaria y minoritaria es **1.85**: existe desbalance moderado, no extremo. Accuracy por sí sola no será suficiente; el protocolo de evaluación debería considerar balanced accuracy y macro-F1, sujeto a T-0.4.
+La clase H domina, seguida de A y D. El ratio entre clase mayoritaria y minoritaria es **1.85**: existe desbalance moderado, no extremo. Accuracy por sí sola no será suficiente; el protocolo aprobado usa macro-F1 como métrica principal y balanced accuracy como métrica secundaria.
 
 La mezcla de resultados cambia por temporada. La asociación temporada-target es baja (V de Cramér=0.028), pero el orden temporal sigue siendo crítico para evitar evaluar con información futura.
 
@@ -116,9 +116,9 @@ La asociación bruta del equipo local con el target es V=0.168 y la del visitant
 
 ## 7. Relaciones entre variables y target
 
-En 2025-26, tiros y tiros a puerta se relacionan con goles y resultado, como cabe esperar. Esa relación es **descriptiva y posterior al evento**: usarla para predecir el mismo partido produciría leakage crítico.
+El bloque con tiros, faltas, tarjetas y cuotas pertenece a 2025-26, una temporada reservada para test. Por tanto, queda fuera de este EDA y no se extraen conclusiones sobre su relación con el target.
 
-Las cuotas de apertura sí existen antes del partido y muestran señal predictiva. Su uso es viable si la aplicación garantiza la misma fuente y momento de captura. Las cuotas de cierre tienen riesgo temporal porque pueden no estar disponibles cuando se solicita la predicción.
+No se evalúa señal de cuotas en este EDA porque las observaciones disponibles pertenecen al test protegido.
 
 ![Correlaciones detalladas](figures/07_detailed_correlation_heatmap.png)
 
@@ -126,9 +126,9 @@ Las cuotas de apertura sí existen antes del partido y muestran señal predictiv
 
 ## 8. Matrices de confusión descriptivas
 
-No se entrena ningún candidato porque `.specify` mantiene bloqueados splits y modelos. Se incluyen dos reglas de referencia:
+Los splits ya están congelados, pero todavía no se entrena ningún candidato porque el gate `Data Ready` sigue abierto. Se incluyen dos reglas de referencia:
 
-1. **Clase mayoritaria** sobre todo el dataset: siempre predice H y alcanza 47.4%. Evidencia que accuracy puede ocultar un fallo total en D y A.
+1. **Clase mayoritaria** sobre el conjunto de desarrollo (train + validation): siempre predice H y alcanza 47.4%. Evidencia que accuracy puede ocultar un fallo total en D y A.
 
 | Real \ Predicha | H | D | A |
 |---|---:|---:|---:|
@@ -138,7 +138,7 @@ No se entrena ningún candidato porque `.specify` mantiene bloqueados splits y m
 
 ![Baseline mayoritaria](figures/10_majority_baseline_confusion.png)
 
-2. **Favorito de cuotas de apertura** sobre 0 partidos 2025-26: elige la mayor probabilidad implícita y acierta 0.0%. No es un modelo entrenado ni una evaluación final.
+2. **Favorito de cuotas de apertura**: no disponible en el conjunto de desarrollo; la matriz se conserva vacía para documentar esa ausencia.
 
 | Real \ Favorito | H | D | A |
 |---|---:|---:|---:|
@@ -174,7 +174,7 @@ No son inputs aceptables: goles, tiros, tarjetas o cualquier estadística ocurri
 4. No imputar el bloque detallado sobre 1995-96–2024-25: es ausencia estructural.
 5. Excluir leakage y metadatos antes de modelar.
 6. Construir features históricas con `shift`/ventanas cerradas al pasado.
-7. Usar un split temporal; no congelarlo hasta aprobar T-0.4.
+7. Usar el split temporal aprobado y congelado en T-1.5.
 8. Proteger el test final y ajustar transformaciones solo con train.
 
 ## 12. Limitaciones y decisiones pendientes
@@ -183,7 +183,7 @@ No son inputs aceptables: goles, tiros, tarjetas o cualquier estadística ocurri
 - El target, el usuario, la ventana de predicción y el protocolo de evaluación están aprobados.
 - El bloque detallado representa una única temporada y no permite asumir estabilidad histórica.
 - Las primeras temporadas contienen más partidos por cambios de tamaño de la liga; comparar conteos brutos sin normalizar puede inducir a error.
-- Las matrices mostradas son reglas descriptivas; no se han creado splits ni entrenado candidatos.
+- Las matrices mostradas son reglas descriptivas sobre desarrollo; existen splits congelados, pero todavía no se han entrenado candidatos.
 
 ## Reproducibilidad
 

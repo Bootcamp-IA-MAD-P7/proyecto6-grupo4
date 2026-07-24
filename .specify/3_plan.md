@@ -329,4 +329,4 @@ Reglas del calendario:
 |---|---|
 | Estado | v1.0 — plan reconciliado con LaLiga y fecha de entrega |
 | Fecha | 23/07/2026 |
-| Próximo gate | Cerrar T-1.2–T-1.4/T-1.6–T-1.7 para verificar `Data Ready` |
+| Próximo gate | Cerrar T-1.4a/T-1.6–T-1.7 para verificar `Data Ready` |

@@ -643,4 +643,4 @@ Cambios sobre dataset, target, limpieza, splits, métricas, overfitting, contrat
 |---|---|
 | Estado | v1.0 — T-0.2b, T-0.4, T-0.5, T-0.6 y T-1.5 ratificados el 2026-07-24 |
 | Fecha | 24/07/2026 |
-| Bloqueos | T-1.2–T-1.4 y T-1.6–T-1.7 antes de `Data Ready` |
+| Bloqueos | T-1.4a y T-1.6–T-1.7 antes de `Data Ready` |

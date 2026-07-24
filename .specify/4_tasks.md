@@ -191,6 +191,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Evidencia provisional: `notebooks/01_laliga_eda.ipynb`, `reports/laliga_eda.md` y once figuras persistentes en `reports/figures/`, incluidas outliers y dos matrices de confusión descriptivas. Análisis técnico completo; pendiente revisión cruzada de los cuatro integrantes.
 - Cierre técnico I1 2026-07-24: EDA regenerado con 11 figuras, auditoría de nulos/duplicados/target, análisis temporal, outliers, baseline descriptivo y matriz de leakage. El EDA usa exclusivamente train+validación (10.804 filas); el test 2023-24–2025-26 queda excluido. Verificación registrada en `reports/metrics/eda_verification.md`; pendiente revisión cruzada humana.
 - Revisión compartida I1–I4 2026-07-24: el equipo revisó el notebook, informe, métricas y las 11 figuras. Confirma que el EDA analiza nulos, duplicados, distribuciones, desbalance del target, relaciones, correlaciones descriptivas, outliers e indicadores de leakage; que las dos matrices son baselines descriptivas y no candidatos; y que el test protegido queda fuera de todo cálculo y visualización. Verificación reproducida: preprocesamiento y splits regenerados con SHA-256 `6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c`, 11.944 IDs cubiertos una vez y suite **16 passed**. T-1.3 aceptada.
+- Reverificación I4 2026-07-24: confirmado el alcance exclusivo de train+validación (10.804 filas) y corregidas las referencias desactualizadas a 2025-26 y a la ausencia de splits. El informe regenerado identifica 2025-26 como test protegido, evita interpretar una baseline de cuotas sin observaciones y reconoce las particiones congeladas. Suite completa: **16 passed**.
 
 ### [x] T-1.4 Implementar limpieza común
 
@@ -498,5 +499,5 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 |---|---|
 | Estado | v1.0 — T-0.2b, T-0.4, T-0.5, T-0.6 y T-1.5 ratificados el 2026-07-24 |
 | Fecha | 24/07/2026 |
-| Siguiente trabajo bloqueante | T-1.2–T-1.4 y T-1.6–T-1.7 antes de `T-1.8` |
+| Siguiente trabajo bloqueante | T-1.4a y T-1.6–T-1.7 antes de `T-1.8` |
 | Regla | Marcar `[x]` solo con verificación, evidencia y revisión cruzada |

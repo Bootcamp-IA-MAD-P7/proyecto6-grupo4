@@ -641,20 +641,61 @@ def render_markdown_report(metrics: dict[str, Any], report_path: str | Path) -> 
     )
     majority_matrix = target["majority_confusion_matrix"]
     market_matrix = market.get("confusion_matrix", [[0, 0, 0] for _ in RESULT_ORDER])
+    if detailed["rows"]:
+        detailed_relationship_text = (
+            "Las estadísticas detalladas, como tiros y tiros a puerta, se relacionan con goles "
+            "y resultado. Esa relación es **descriptiva y posterior al evento**: usarla para "
+            "predecir el mismo partido produciría leakage crítico."
+        )
+    else:
+        detailed_relationship_text = (
+            "El bloque con tiros, faltas, tarjetas y cuotas pertenece a 2025-26, una temporada "
+            "reservada para test. Por tanto, queda fuera de este EDA y no se extraen conclusiones "
+            "sobre su relación con el target."
+        )
+    if market.get("rows_with_complete_opening_odds", 0):
+        market_summary = (
+            "En las filas con cuotas completas, escoger el favorito de apertura acierta "
+            f"{_pct(market['favorite_accuracy'])}; es una referencia descriptiva, no un modelo."
+        )
+        market_relationship_text = (
+            "Las cuotas de apertura existen antes del partido y muestran señal descriptiva. "
+            "Su uso exige garantizar la misma fuente y momento de captura; las cuotas de cierre "
+            "mantienen riesgo temporal."
+        )
+        market_baseline_text = (
+            f"**Favorito de cuotas de apertura** sobre "
+            f"{market['rows_with_complete_opening_odds']} partidos del conjunto de desarrollo: "
+            f"elige la mayor probabilidad implícita y acierta "
+            f"{_pct(market['favorite_accuracy'])}. No es un modelo entrenado ni una evaluación final."
+        )
+    else:
+        market_summary = (
+            "La baseline de cuotas de apertura no se calcula porque el conjunto de desarrollo "
+            "no contiene filas con cuotas completas."
+        )
+        market_relationship_text = (
+            "No se evalúa señal de cuotas en este EDA porque las observaciones disponibles "
+            "pertenecen al test protegido."
+        )
+        market_baseline_text = (
+            "**Favorito de cuotas de apertura**: no disponible en el conjunto de desarrollo; "
+            "la matriz se conserva vacía para documentar esa ausencia."
+        )
     report = f"""# EDA completo — Partidos de LaLiga
 
 ## Estado del análisis
 
-Este informe cubre el preprocesamiento T-1.4 y el EDA T-1.3 del dataset canónico provisional de LaLiga. El target aprobado es `result_ft`: **H** (victoria local), **D** (empate) y **A** (victoria visitante). El flujo es reproducible, pero **no cierra `Data Ready`**: la redistribución pública de los datos no está autorizada de forma explícita y siguen pendientes la ratificación del equipo, las features comunes y las revisiones cruzadas.
+Este informe cubre el preprocesamiento T-1.4 y el EDA T-1.3 del dataset canónico provisional de LaLiga. El target aprobado es `result_ft`: **H** (victoria local), **D** (empate) y **A** (victoria visitante). El flujo es reproducible, pero **no cierra `Data Ready`**: todavía faltan las features históricas comunes y los mocks de frontend/backend.
 
 ## Resumen ejecutivo
 
 - Se analizaron **{quality['rows']:,} partidos**, **{quality['columns']} variables** y **{quality['season_count']} temporadas**, entre {quality['date_min']} y {quality['date_max']}.
-- La unión prioriza la fuente detallada en **{join.get('overlap_rows', quality['source_coverage'].get('both_sources', 0))} partidos solapados** y termina con **{quality['duplicate_match_ids']} IDs duplicados**, **{quality['missing_target']} targets ausentes** y **{quality['full_time_result_inconsistencies']} incoherencias.
+- La unión prioriza la fuente detallada en **{join.get('overlap_rows', quality['source_coverage'].get('both_sources', 0))} partidos solapados** y termina con **{quality['duplicate_match_ids']} IDs duplicados**, **{quality['missing_target']} targets ausentes** y **{quality['full_time_result_inconsistencies']} incoherencias**.
 - El target está moderadamente desbalanceado: H={target['counts']['H']:,} ({_pct(target['shares']['H'])}), D={target['counts']['D']:,} ({_pct(target['shares']['D'])}) y A={target['counts']['A']:,} ({_pct(target['shares']['A'])}). La baseline mayoritaria es {_pct(target['majority_baseline_accuracy'])}.
 - La media es **{goals['mean_total']:.2f} goles/partido**; {_pct(goals['pct_over_2_5'])} supera 2,5 goles y {_pct(goals['pct_both_teams_scored'])} registra goles de ambos equipos.
 - Solo **{detailed['rows']} partidos** ({_pct(detailed['share_of_total'])}) contienen tiros, faltas, tarjetas y cuotas. Esta ausencia es estructural por temporada y no debe imputarse sobre el histórico.
-- En las filas con cuotas completas, escoger el favorito de apertura acierta {_pct(market.get('favorite_accuracy', 0.0))}; es una referencia descriptiva, no un modelo entrenado.
+- {market_summary}
 
 ![Distribución del target](figures/01_target_distribution.png)
 
@@ -712,7 +753,7 @@ Salida reproducible: `{processed_output.get('path', 'data/processed/laliga_match
 
 ## 4. Distribución y balance del target
 
-La clase H domina, seguida de A y D. El ratio entre clase mayoritaria y minoritaria es **{target['max_to_min_ratio']:.2f}**: existe desbalance moderado, no extremo. Accuracy por sí sola no será suficiente; el protocolo de evaluación debería considerar balanced accuracy y macro-F1, sujeto a T-0.4.
+La clase H domina, seguida de A y D. El ratio entre clase mayoritaria y minoritaria es **{target['max_to_min_ratio']:.2f}**: existe desbalance moderado, no extremo. Accuracy por sí sola no será suficiente; el protocolo aprobado usa macro-F1 como métrica principal y balanced accuracy como métrica secundaria.
 
 La mezcla de resultados cambia por temporada. La asociación temporada-target es baja (V de Cramér={associations['season_vs_target_cramers_v']:.3f}), pero el orden temporal sigue siendo crítico para evitar evaluar con información futura.
 
@@ -746,9 +787,9 @@ La asociación bruta del equipo local con el target es V={associations['home_tea
 
 ## 7. Relaciones entre variables y target
 
-En 2025-26, tiros y tiros a puerta se relacionan con goles y resultado, como cabe esperar. Esa relación es **descriptiva y posterior al evento**: usarla para predecir el mismo partido produciría leakage crítico.
+{detailed_relationship_text}
 
-Las cuotas de apertura sí existen antes del partido y muestran señal predictiva. Su uso es viable si la aplicación garantiza la misma fuente y momento de captura. Las cuotas de cierre tienen riesgo temporal porque pueden no estar disponibles cuando se solicita la predicción.
+{market_relationship_text}
 
 ![Correlaciones detalladas](figures/07_detailed_correlation_heatmap.png)
 
@@ -756,9 +797,9 @@ Las cuotas de apertura sí existen antes del partido y muestran señal predictiv
 
 ## 8. Matrices de confusión descriptivas
 
-No se entrena ningún candidato porque `.specify` mantiene bloqueados splits y modelos. Se incluyen dos reglas de referencia:
+Los splits ya están congelados, pero todavía no se entrena ningún candidato porque el gate `Data Ready` sigue abierto. Se incluyen dos reglas de referencia:
 
-1. **Clase mayoritaria** sobre todo el dataset: siempre predice H y alcanza {_pct(target['majority_baseline_accuracy'])}. Evidencia que accuracy puede ocultar un fallo total en D y A.
+1. **Clase mayoritaria** sobre el conjunto de desarrollo (train + validation): siempre predice H y alcanza {_pct(target['majority_baseline_accuracy'])}. Evidencia que accuracy puede ocultar un fallo total en D y A.
 
 | Real \\ Predicha | H | D | A |
 |---|---:|---:|---:|
@@ -768,7 +809,7 @@ No se entrena ningún candidato porque `.specify` mantiene bloqueados splits y m
 
 ![Baseline mayoritaria](figures/10_majority_baseline_confusion.png)
 
-2. **Favorito de cuotas de apertura** sobre {market.get('rows_with_complete_opening_odds', 0)} partidos 2025-26: elige la mayor probabilidad implícita y acierta {_pct(market.get('favorite_accuracy', 0.0))}. No es un modelo entrenado ni una evaluación final.
+2. {market_baseline_text}
 
 | Real \\ Favorito | H | D | A |
 |---|---:|---:|---:|
@@ -804,7 +845,7 @@ No son inputs aceptables: goles, tiros, tarjetas o cualquier estadística ocurri
 4. No imputar el bloque detallado sobre 1995-96–2024-25: es ausencia estructural.
 5. Excluir leakage y metadatos antes de modelar.
 6. Construir features históricas con `shift`/ventanas cerradas al pasado.
-7. Usar un split temporal; no congelarlo hasta aprobar T-0.4.
+7. Usar el split temporal aprobado y congelado en T-1.5.
 8. Proteger el test final y ajustar transformaciones solo con train.
 
 ## 12. Limitaciones y decisiones pendientes
@@ -813,7 +854,7 @@ No son inputs aceptables: goles, tiros, tarjetas o cualquier estadística ocurri
 - El target, el usuario, la ventana de predicción y el protocolo de evaluación están aprobados.
 - El bloque detallado representa una única temporada y no permite asumir estabilidad histórica.
 - Las primeras temporadas contienen más partidos por cambios de tamaño de la liga; comparar conteos brutos sin normalizar puede inducir a error.
-- Las matrices mostradas son reglas descriptivas; no se han creado splits ni entrenado candidatos.
+- Las matrices mostradas son reglas descriptivas sobre desarrollo; existen splits congelados, pero todavía no se han entrenado candidatos.
 
 ## Reproducibilidad
 

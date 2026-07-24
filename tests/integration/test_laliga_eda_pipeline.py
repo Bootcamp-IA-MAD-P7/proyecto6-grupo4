@@ -22,6 +22,11 @@ def test_full_eda_writes_reproducible_artifacts(tmp_path: Path) -> None:
     assert len(list((reports / "figures").glob("*.png"))) == 11
     persisted = json.loads((reports / "metrics/eda_summary.json").read_text(encoding="utf-8"))
     assert persisted["quality"]["duplicate_match_ids"] == 0
+    report = (reports / "laliga_eda.md").read_text(encoding="utf-8")
+    assert "conjunto de desarrollo (train + validation)" in report
+    assert "Los splits ya están congelados" in report
+    assert "En 2025-26, tiros" not in report
+    assert "no se han creado splits" not in report
 
 
 def test_full_eda_handles_development_data_without_market_rows(tmp_path: Path) -> None:
