@@ -506,11 +506,14 @@ Respuesta válida:
 
 ```json
 {
+  "contract_version": "1.0",
+  "request_id": "018f0f52-7a6d-7f48-9dcb-58f0e65d21a3",
   "prediction": "H",
   "probabilities": {"H": 0.51, "D": 0.25, "A": 0.24},
-  "model_version": "pending",
+  "model_version": "mock-v1",
   "data_version": "laliga_matches_1995_96_to_2025_26_v1",
   "status": "ok",
+  "latency_ms": 12.4,
   "message": "Estimación probabilística basada en el histórico disponible."
 }
 ```
@@ -520,19 +523,51 @@ Error uniforme:
 ```json
 {
   "status": "error",
+  "contract_version": "1.0",
+  "request_id": "018f0f52-7a6d-7f48-9dcb-58f0e65d21a3",
   "error": "INVALID_INPUT",
-  "message": "El equipo local y el visitante deben ser distintos."
+  "message": "El equipo local y el visitante deben ser distintos.",
+  "details": [{"field": "away_team", "reason": "SAME_TEAM"}]
 }
 ```
 
 Convenciones:
 
 - Fecha ISO-8601 `YYYY-MM-DD`.
+- `home_team` y `away_team` son obligatorios, se recortan en los extremos y admiten entre 1 y 80 caracteres.
+- Los equipos deben ser distintos sin diferenciar mayúsculas y deben existir en el catálogo disponible.
+- No se admiten campos adicionales ni cuerpos JSON mayores de 4 KiB.
+- Para `match_date`, el backend solo usa partidos estrictamente anteriores; si no existe historial suficiente devuelve un error controlado.
 - `prediction` solo admite `H`, `D` o `A`.
 - El backend calcula las features; el frontend no envía agregados históricos ni transforma datos.
 - Las probabilidades se devuelven para las tres clases y suman 1 con tolerancia numérica.
-- El contrato definitivo fijará códigos HTTP, límites y reglas de compatibilidad antes de cerrar T-0.6.
+- `latency_ms` mide el procesamiento dentro del backend; el objetivo caliente es p95 menor de 1 segundo, sin contar red ni arranque en frío.
+- Los logs incluyen `request_id`, ruta, estado, latencia y versiones, pero no almacenan el payload completo.
 - El mecanismo de feedback se añade sin romper este contrato si se alcanza el Nivel Medio.
+
+### Códigos HTTP y errores
+
+| HTTP | Código de error | Uso |
+|---:|---|---|
+| `200` | — | Predicción válida. |
+| `400` | `MALFORMED_JSON` | El cuerpo no es JSON válido. |
+| `404` | `TEAM_NOT_FOUND` | Algún equipo no pertenece al catálogo. |
+| `409` | `INSUFFICIENT_HISTORY` | No existe historial anterior suficiente. |
+| `413` | `PAYLOAD_TOO_LARGE` | El cuerpo supera 4 KiB. |
+| `415` | `UNSUPPORTED_MEDIA_TYPE` | El contenido no es JSON. |
+| `422` | `INVALID_INPUT` | Faltan o sobran campos, la fecha es inválida o los equipos coinciden. |
+| `500` | `INTERNAL_ERROR` | Fallo inesperado sin exponer trazas al cliente. |
+| `503` | `MODEL_UNAVAILABLE` | El mock o el Champion no están disponibles. |
+
+Todos los errores utilizan el sobre uniforme mostrado arriba. `details` puede ser una lista vacía y nunca expone trazas, secretos, rutas locales o datos del dataset.
+
+### Versionado y compatibilidad
+
+- La versión mayor forma parte de la ruta: `/api/v1`.
+- `contract_version` identifica la revisión compatible del contrato v1.
+- Añadir un campo opcional es compatible; eliminar, renombrar o cambiar el significado de un campo requiere `/api/v2`.
+- `model_version` y `data_version` evolucionan de forma independiente y no cambian por sí solas la versión de la API.
+- Sustituir `mock-v1` por el Champion no modifica la ruta ni el formato consumido por el frontend.
 
 El frontend no realizará transformaciones estadísticas propias del pipeline.
 
