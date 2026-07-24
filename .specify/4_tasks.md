@@ -41,7 +41,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 |---|---|---|
 | Alineación | En progreso | T-0.1: aprobar SDD reconciliado |
 | Dataset técnico | Cerrado | Daily 22/07, ADR-0001, loader y manifest |
-| Licencia | Bloqueado tras revisión I1 | T-0.2b: redistribución no demostrada; faltan ratificación y remediación del repositorio |
+| Licencia | Bloqueado tras revisión I1 | T-0.2b: los CSV se conservan para ejecución local; su publicación requiere permiso escrito o un repositorio privado con acceso controlado |
 | Evaluación | Pendiente | T-0.4: métrica, gap y ventanas temporales |
 | Aplicación | En progreso | T-0.6: arquitectura y contrato definitivo |
 | `Data Ready` | Abierto | T-1.8 y checklist de `2_spec.md` |
@@ -82,7 +82,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Apertura 2026-07-23: tarea formalizada como prioridad inmediata en GitHub issue #41, asignada a I1, añadida a `Proyecto6-Grupo4`, con prioridad `Urgent` y estado `In progress`. La procedencia técnica está identificada, pero no consta una licencia abierta explícita para ambas fuentes ni la aprobación del equipo sobre redistribución. Hasta resolverlo, `T-1.1` y `T-1.8` no pueden cerrarse.
 - Revisión I1 2026-07-23: la ficha de Kaggle declara `Data files © Original Authors`; Football-Data ofrece descarga gratuita y declara la finalidad de predicción de partidos, pero ninguna fuente publica una licencia abierta o una autorización explícita para redistribuir los archivos. Decisión I1: uso local para el proyecto compatible con la finalidad indicada; publicación de raw y derivados fila a fila **no autorizada mientras no exista permiso escrito**.
 - Estado tras revisión I1: resultado y verificación 15/15 publicados en el issue #41; ocho comprobaciones completadas y estado del Project cambiado a `In review`. El issue permanece abierto y la aprobación I2/I3/I4 continúa sin marcar.
-- Remediación requerida: ratificación de I2/I3/I4; retirar en un PR revisado `data/raw/*.csv` y los datasets fila a fila de `data/processed/` del estado público de Git, conservando manifests, contratos y scripts; o adjuntar permiso explícito de redistribución. La adquisición local queda documentada en `docs/data_acquisition.md`.
+- Decisión de conservación 2026-07-24: los CSV raw y los derivados fila a fila se mantienen dentro del directorio de trabajo para ejecución local y reproducibilidad. Esta decisión **no autoriza** su redistribución pública: mientras no exista permiso escrito, los datos solo pueden mantenerse en una copia local o en un repositorio privado con acceso controlado. Antes de cualquier publicación o cambio de visibilidad se debe adjuntar el permiso explícito de ambas fuentes o retirar los archivos. Queda pendiente la ratificación fechada de I2/I3/I4; por ello T-0.2b continúa bloqueada y no se marca como completada.
 
 ### [x] T-0.3 Definir problema, usuarios y target
 

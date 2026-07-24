@@ -12,7 +12,7 @@ Antes de proponer o modificar código es obligatorio leer completamente:
 4. `.specify/3_plan.md`.
 5. `.specify/4_tasks.md`.
 
-La carpeta `.specify/` es la fuente central de verdad. El equipo ha aprobado técnicamente LaLiga, la predicción prepartido, el target multiclase `result_ft` (`H`, `D`, `A`) y el protocolo de evaluación. La revisión I1 concluye que la redistribución pública de los CSV no está autorizada de forma explícita; quedan pendientes la ratificación y remediación de T-0.2b, la revisión cruzada de las particiones, las features comunes, los cuatro algoritmos y la arquitectura de aplicación.
+La carpeta `.specify/` es la fuente central de verdad. El equipo ha aprobado técnicamente LaLiga, la predicción prepartido, el target multiclase `result_ft` (`H`, `D`, `A`) y el protocolo de evaluación. La revisión I1 concluye que la redistribución pública de los CSV no está autorizada de forma explícita; los CSV se conservan para ejecución local y no deben hacerse públicos sin permiso escrito. Permanecen pendientes la ratificación I2/I3/I4 de T-0.2b, la revisión cruzada de las particiones, las features comunes, los cuatro algoritmos y la arquitectura de aplicación.
 
 ## Estrategia de datos y modelos
 
@@ -48,14 +48,14 @@ Después de los frentes iniciales, las ramas se crearán por ticket y se integra
 
 ## Base de datos y EDA de LaLiga
 
-La selección técnica, el target y el protocolo temporal están aprobados. El preprocesamiento, el EDA y las particiones son reproducibles y están integrados, pero no cierran `Data Ready`: falta ratificar la política de no redistribución, retirar o autorizar los datos actualmente publicados, completar las revisiones cruzadas, implementar las features comunes y elegir los candidatos.
+La selección técnica, el target y el protocolo temporal están aprobados. El preprocesamiento, el EDA y las particiones son reproducibles y están integrados, pero no cierran `Data Ready`: falta ratificar la política de no redistribución, decidir el acceso privado o acreditar permiso escrito antes de una publicación, completar las revisiones cruzadas, implementar las features comunes y elegir los candidatos.
 
 Fuentes requeridas localmente dentro de `data/raw/`, pero no redistribuibles en nuevos commits sin permiso explícito:
 
 - `LaLiga_Matches.csv`.
 - `laliga_2025_2026_stats.csv`.
 
-Consulta `docs/data_acquisition.md` para obtenerlas localmente, verificar sus huellas y regenerar los derivados. Los CSV que todavía aparecen versionados son deuda de remediación de T-0.2b y deberán retirarse mediante un PR revisado o quedar cubiertos por permiso escrito.
+Consulta `docs/data_acquisition.md` para obtenerlas localmente, verificar sus huellas y regenerar los derivados. Se conservan en el directorio de trabajo para ejecución local; antes de publicarlos debe existir permiso escrito de redistribución o utilizarse un repositorio privado con acceso controlado.
 
 Ejecución en PowerShell:
 
@@ -75,7 +75,7 @@ Entregables principales:
 - `reports/laliga_eda.md`: informe interpretado.
 - `notebooks/00_laliga_preprocessing.ipynb`: fuentes, columnas, limpieza y combinación.
 - `notebooks/01_laliga_eda.ipynb`: EDA ejecutado desde el dataset limpio.
-- `data/processed/laliga_matches_clean.csv`: dataset canónico limpio.
+- `data/processed/laliga_matches_clean.csv`: dataset canónico limpio para ejecución local.
 - `reports/figures/`: once visualizaciones persistentes.
 - `reports/metrics/`: manifest, procedencia, política de columnas, auditoría, diccionario y resúmenes.
 - `src/data/laliga_loader.py`: mecanismo único de carga y combinación.
