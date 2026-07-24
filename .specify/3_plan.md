@@ -19,9 +19,9 @@ La petición incorpora T-1.4 al incremento: se formalizan procedencia, política
 | ADR | Decisión | Estado |
 |---|---|---|
 | ADR-01 | LaLiga prepartido, unidad partido y target `result_ft` H/D/A | Aprobada técnicamente |
-| ADR-02 | Separación temporal; prohibido split aleatorio por filas como evaluación principal | Aprobada; ventanas exactas pendientes |
+| ADR-02 | Separación temporal; prohibido split aleatorio por filas como evaluación principal | Aprobada por I1–I4 el 24/07/2026 |
 | ADR-03 | Features históricas comunes, cerradas al pasado y calculadas en backend | Contrato preliminar |
-| ADR-04 | `macro-F1` principal y gap absoluto `< 0.05` | Propuesta para T-0.4 |
+| ADR-04 | `macro-F1` principal y gap absoluto `< 0.05` | Aprobado por I1–I4 el 24/07/2026 |
 | ADR-05 | Contrato de aplicación con local, visitante y fecha; salida H/D/A + probabilidades | Propuesta para T-0.6 |
 | ADR-06 | Cuotas no obligatorias en el MVP por cobertura limitada | Aprobada en `2_spec.md` |
 
@@ -329,4 +329,4 @@ Reglas del calendario:
 |---|---|
 | Estado | v1.0 — plan reconciliado con LaLiga y fecha de entrega |
 | Fecha | 23/07/2026 |
-| Próximo gate | Decisiones T-0.2b, T-0.4, T-0.5 y T-0.6 |
+| Próximo gate | Cerrar T-0.6 y T-1.1–T-1.4/T-1.6–T-1.7 para verificar `Data Ready` |

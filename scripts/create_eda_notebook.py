@@ -40,9 +40,11 @@ def main() -> None:
             "    sys.path.insert(0, str(PROJECT_ROOT))\n\n"
             "from src.data.laliga_loader import audit_dataset, load_processed_dataset\n"
             "from src.data.laliga_eda import build_data_dictionary, calculate_eda_metrics\n"
+            "from src.evaluation.splits import assign_splits\n"
             "DATA_PATH = PROJECT_ROOT / 'data' / 'processed' / 'laliga_matches_clean.csv'\n"
             "FIGURES_DIR = PROJECT_ROOT / 'reports' / 'figures'\n"
             "matches = load_processed_dataset(DATA_PATH)\n"
+            "matches = matches.loc[assign_splits(matches).ne('test')].copy()\n"
             "metrics = calculate_eda_metrics(matches)\n"
             "pd.Series(audit_dataset(matches), name='valor').to_frame()"
         ),
@@ -111,7 +113,7 @@ def main() -> None:
     cells.append(
         nbf.v4.new_markdown_cell(
             "## Conclusiones generales\n\n"
-            "El dataset limpio es adecuado para EDA y conserva 31 temporadas. Antes de modelar deben "
+            "El EDA usa únicamente train y validación; el test final queda excluido. Antes de modelar deben "
             "aprobarse licencia, target, métricas y partición temporal. Las variables postpartido "
             "tienen leakage crítico; una aplicación prepartido debería usar fecha, equipos, cuotas "
             "capturadas a tiempo y features históricas calculadas solo con encuentros anteriores."

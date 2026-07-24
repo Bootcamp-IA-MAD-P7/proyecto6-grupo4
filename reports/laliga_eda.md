@@ -6,12 +6,12 @@ Este informe cubre el preprocesamiento T-1.4 y el EDA T-1.3 del dataset canónic
 
 ## Resumen ejecutivo
 
-- Se analizaron **11,944 partidos**, **54 variables** y **31 temporadas**, entre 1995-09-02 y 2026-05-24.
+- Se analizaron **10,804 partidos**, **54 variables** y **28 temporadas**, entre 1995-09-02 y 2023-06-04.
 - La unión prioriza la fuente detallada en **100 partidos solapados** y termina con **0 IDs duplicados**, **0 targets ausentes** y **0 incoherencias.
-- El target está moderadamente desbalanceado: H=5,641 (47.2%), D=3,058 (25.6%) y A=3,245 (27.2%). La baseline mayoritaria es 47.2%.
-- La media es **2.67 goles/partido**; 49.5% supera 2,5 goles y 51.7% registra goles de ambos equipos.
-- Solo **380 partidos** (3.2%) contienen tiros, faltas, tarjetas y cuotas. Esta ausencia es estructural por temporada y no debe imputarse sobre el histórico.
-- En las filas con cuotas completas, escoger el favorito de apertura acierta 54.5%; es una referencia descriptiva, no un modelo entrenado.
+- El target está moderadamente desbalanceado: H=5,119 (47.4%), D=2,761 (25.6%) y A=2,924 (27.1%). La baseline mayoritaria es 47.4%.
+- La media es **2.67 goles/partido**; 49.6% supera 2,5 goles y 51.5% registra goles de ambos equipos.
+- Solo **0 partidos** (0.0%) contienen tiros, faltas, tarjetas y cuotas. Esta ausencia es estructural por temporada y no debe imputarse sobre el histórico.
+- En las filas con cuotas completas, escoger el favorito de apertura acierta 0.0%; es una referencia descriptiva, no un modelo entrenado.
 
 ![Distribución del target](figures/01_target_distribution.png)
 
@@ -54,7 +54,7 @@ Reglas deterministas:
 
 | Control | Resultado |
 |---|---:|
-| Filas finales | 11,944 |
+| Filas finales | 10,804 |
 | Columnas finales | 54 |
 | Filas duplicadas completas | 0 |
 | IDs de partido duplicados | 0 |
@@ -70,9 +70,9 @@ Salida reproducible: `data/processed/laliga_matches_clean.csv`; SHA-256 `6288a87
 
 ## 4. Distribución y balance del target
 
-La clase H domina, seguida de A y D. El ratio entre clase mayoritaria y minoritaria es **1.84**: existe desbalance moderado, no extremo. Accuracy por sí sola no será suficiente; el protocolo de evaluación debería considerar balanced accuracy y macro-F1, sujeto a T-0.4.
+La clase H domina, seguida de A y D. El ratio entre clase mayoritaria y minoritaria es **1.85**: existe desbalance moderado, no extremo. Accuracy por sí sola no será suficiente; el protocolo de evaluación debería considerar balanced accuracy y macro-F1, sujeto a T-0.4.
 
-La mezcla de resultados cambia por temporada. La asociación temporada-target es baja (V de Cramér=0.025), pero el orden temporal sigue siendo crítico para evitar evaluar con información futura.
+La mezcla de resultados cambia por temporada. La asociación temporada-target es baja (V de Cramér=0.028), pero el orden temporal sigue siendo crítico para evitar evaluar con información futura.
 
 ![Target por temporada](figures/02_target_by_season.png)
 
@@ -88,19 +88,19 @@ La tasa de victoria local y la diferencia media de goles fluctúan a lo largo de
 
 | Variable | Límite inferior IQR | Límite superior IQR | Outliers | Porcentaje |
 |---|---:|---:|---:|---:|
-| `red_cards_away` | 0.0 | 0.0 | 49 | 12.9% |
-| `red_cards_home` | 0.0 | 0.0 | 42 | 11.1% |
-| `home_goals_ft` | -0.5 | 3.5 | 973 | 8.1% |
-| `shots_away` | -1.0 | 23.0 | 12 | 3.2% |
-| `shots_on_target_away` | -2.5 | 9.5 | 9 | 2.4% |
-| `yellow_cards_away` | -2.0 | 6.0 | 8 | 2.1% |
-| `shots_home` | -0.5 | 27.5 | 3 | 0.8% |
-| `fouls_home` | 2.5 | 22.5 | 3 | 0.8% |
-| `yellow_cards_home` | -2.0 | 6.0 | 1 | 0.3% |
-| `away_goals_ft` | -3.0 | 5.0 | 31 | 0.3% |
+| `home_goals_ft` | -0.5 | 3.5 | 891 | 8.2% |
+| `away_goals_ft` | -3.0 | 5.0 | 30 | 0.3% |
 | `total_goals` | -3.5 | 8.5 | 21 | 0.2% |
-| `shots_on_target_home` | -3.0 | 13.0 | 0 | 0.0% |
-| `fouls_away` | 1.0 | 25.0 | 0 | 0.0% |
+| `shots_home` | N/A | N/A | 0 | 0.0% |
+| `shots_away` | N/A | N/A | 0 | 0.0% |
+| `shots_on_target_home` | N/A | N/A | 0 | 0.0% |
+| `shots_on_target_away` | N/A | N/A | 0 | 0.0% |
+| `fouls_home` | N/A | N/A | 0 | 0.0% |
+| `fouls_away` | N/A | N/A | 0 | 0.0% |
+| `yellow_cards_home` | N/A | N/A | 0 | 0.0% |
+| `yellow_cards_away` | N/A | N/A | 0 | 0.0% |
+| `red_cards_home` | N/A | N/A | 0 | 0.0% |
+| `red_cards_away` | N/A | N/A | 0 | 0.0% |
 
 ![Perfil de outliers](figures/11_outlier_profile.png)
 
@@ -110,7 +110,7 @@ Conclusión: los extremos de goles, tiros y tarjetas son observaciones deportiva
 
 Hay 48 equipos distintos en el rol local. `match_id` es único al 100.0% y debe tratarse exclusivamente como identificador. Los nombres de equipo sí pueden aportar señal, pero requieren una estrategia capaz de manejar ascensos, descensos y categorías no vistas. Una alternativa más robusta es derivar forma, Elo o promedios móviles usando solo el pasado.
 
-La asociación bruta del equipo local con el target es V=0.171 y la del visitante V=0.183; no implican causalidad.
+La asociación bruta del equipo local con el target es V=0.168 y la del visitante V=0.180; no implican causalidad.
 
 ![Rendimiento histórico de equipos](figures/05_team_performance.png)
 
@@ -128,23 +128,23 @@ Las cuotas de apertura sí existen antes del partido y muestran señal predictiv
 
 No se entrena ningún candidato porque `.specify` mantiene bloqueados splits y modelos. Se incluyen dos reglas de referencia:
 
-1. **Clase mayoritaria** sobre todo el dataset: siempre predice H y alcanza 47.2%. Evidencia que accuracy puede ocultar un fallo total en D y A.
+1. **Clase mayoritaria** sobre todo el dataset: siempre predice H y alcanza 47.4%. Evidencia que accuracy puede ocultar un fallo total en D y A.
 
 | Real \ Predicha | H | D | A |
 |---|---:|---:|---:|
-| H | 5641 | 0 | 0 |
-| D | 3058 | 0 | 0 |
-| A | 3245 | 0 | 0 |
+| H | 5119 | 0 | 0 |
+| D | 2761 | 0 | 0 |
+| A | 2924 | 0 | 0 |
 
 ![Baseline mayoritaria](figures/10_majority_baseline_confusion.png)
 
-2. **Favorito de cuotas de apertura** sobre 380 partidos 2025-26: elige la mayor probabilidad implícita y acierta 54.5%. No es un modelo entrenado ni una evaluación final.
+2. **Favorito de cuotas de apertura** sobre 0 partidos 2025-26: elige la mayor probabilidad implícita y acierta 0.0%. No es un modelo entrenado ni una evaluación final.
 
 | Real \ Favorito | H | D | A |
 |---|---:|---:|---:|
-| H | 160 | 0 | 26 |
-| D | 62 | 0 | 31 |
-| A | 54 | 0 | 47 |
+| H | 0 | 0 | 0 |
+| D | 0 | 0 | 0 |
+| A | 0 | 0 | 0 |
 
 ![Baseline de mercado](figures/09_market_baseline_confusion.png)
 

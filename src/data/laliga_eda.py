@@ -215,8 +215,12 @@ def calculate_eda_metrics(frame: pd.DataFrame) -> dict[str, Any]:
     odds = detailed.dropna(
         subset=["odds_avg_home_open", "odds_avg_draw_open", "odds_avg_away_open", TARGET_COLUMN]
     ).copy()
-    market: dict[str, Any] = {"rows_with_complete_opening_odds": int(len(odds))}
     market_confusion = np.zeros((3, 3), dtype=int)
+    market: dict[str, Any] = {
+        "rows_with_complete_opening_odds": int(len(odds)),
+        "confusion_matrix": market_confusion.tolist(),
+        "status": "not_available_without_development_opening_odds",
+    }
     if not odds.empty:
         raw_probs = 1 / odds[["odds_avg_home_open", "odds_avg_draw_open", "odds_avg_away_open"]].to_numpy()
         probs = raw_probs / raw_probs.sum(axis=1, keepdims=True)
@@ -225,6 +229,7 @@ def calculate_eda_metrics(frame: pd.DataFrame) -> dict[str, Any]:
         market_confusion = confusion_matrix(y_true, picks, labels=RESULT_ORDER)
         market.update(
             {
+                "status": "available",
                 "favorite_accuracy": float(np.mean(picks == y_true)),
                 "multiclass_log_loss": float(
                     log_loss(y_true, probs[:, [2, 1, 0]], labels=["A", "D", "H"])
@@ -436,6 +441,20 @@ def _market_data(frame: pd.DataFrame) -> tuple[pd.DataFrame, np.ndarray, np.ndar
 
 def _plot_detailed_relationships(frame: pd.DataFrame, figures_dir: Path) -> None:
     detailed = frame.loc[frame["has_detailed_stats"].fillna(False)].copy()
+    if detailed.empty:
+        fig, ax = plt.subplots(figsize=(10, 4))
+        ax.text(
+            0.5,
+            0.5,
+            "No hay estadísticas detalladas en train/validación.\n"
+            "El bloque 2025-26 permanece reservado en test.",
+            ha="center",
+            va="center",
+            fontsize=12,
+        )
+        ax.axis("off")
+        _save(fig, figures_dir / "08_relationships_with_target.png")
+        return
     detailed["shot_on_target_diff"] = detailed["shots_on_target_home"] - detailed["shots_on_target_away"]
     odds, probs, _ = _market_data(frame)
     probability = pd.DataFrame(probs, columns=RESULT_ORDER, index=odds.index)
@@ -455,8 +474,21 @@ def _plot_detailed_relationships(frame: pd.DataFrame, figures_dir: Path) -> None
 
 def _plot_market_confusion(frame: pd.DataFrame, figures_dir: Path) -> None:
     odds, _, picks = _market_data(frame)
-    matrix = confusion_matrix(odds[TARGET_COLUMN], picks, labels=RESULT_ORDER, normalize="true")
     fig, ax = plt.subplots(figsize=(7, 5.5))
+    if odds.empty:
+        ax.text(
+            0.5,
+            0.5,
+            "No hay cuotas de apertura en train/validación.\n"
+            "La temporada 2025-26 está reservada para test.",
+            ha="center",
+            va="center",
+            fontsize=11,
+        )
+        ax.axis("off")
+        _save(fig, figures_dir / "09_market_baseline_confusion.png")
+        return
+    matrix = confusion_matrix(odds[TARGET_COLUMN], picks, labels=RESULT_ORDER, normalize="true")
     sns.heatmap(matrix, annot=True, fmt=".1%", cmap="Blues", vmin=0, vmax=1, cbar=False, ax=ax)
     ax.set(
         title="Baseline de mercado: clase favorita frente al resultado real",
