@@ -4,7 +4,7 @@
 
 Este documento define el contrato técnico del proyecto y está subordinado a `0_constitution.md` y `1_intent.md`. Toda implementación debe respetarlo o detenerse hasta que el equipo apruebe y documente un cambio.
 
-Estado actual: **EDA, target, protocolo de evaluación y particiones congeladas aprobados (2026-07-23); T-0.2b se cerró el 24/07/2026 con la política de procedencia y redistribución documentada. El entrenamiento de candidatos sigue sujeto al resto del gate `Data Ready` (T-1.8)**.
+Estado actual: **EDA, target, contrato de evaluación y particiones aprobados por los cuatro integrantes el 24/07/2026; T-0.2b se cerró el mismo día con la política de procedencia y redistribución documentada. El entrenamiento de candidatos sigue sujeto al resto del gate `Data Ready` (T-1.8)**.
 
 ## Requisitos obligatorios de la consigna
 
@@ -591,4 +591,4 @@ Cambios sobre dataset, target, limpieza, splits, métricas, overfitting, contrat
 |---|---|
 | Estado | v1.0 — T-0.2b, T-0.4, T-0.5 y T-1.5 ratificados en daily 2026-07-24 |
 | Fecha | 24/07/2026 |
-| Bloqueos | T-0.1, T-0.6 y T-1.1–T-1.4/T-1.6–T-1.7 antes de `Data Ready` |
+| Bloqueos | T-0.6 y T-1.1–T-1.4/T-1.6–T-1.7 antes de `Data Ready` |
