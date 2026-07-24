@@ -343,6 +343,8 @@ Requisitos:
 - Transformaciones ajustadas únicamente con entrenamiento.
 - Posible backtesting adicional con ventanas temporales expansivas, sin consultar el test final.
 
+**Regla de re-congelado:** cualquier cambio en las reglas comunes de limpieza de `T-1.4` (o en los CSV raw de origen) invalida automáticamente el SHA-256 registrado en `reports/metrics/split_manifest.json`. Antes de considerar vigente `T-1.5`, hay que volver a ejecutar `scripts/run_laliga_preprocessing.py` y `python -m src.evaluation.splits`, y reconfirmar: mismo SHA-256 y 11.944 `match_id`; mismos cortes por temporada (train 1995-96–2019-20, validación 2020-21–2022-23, test 2023-24–2025-26); mismos conteos 9.607/1.197/1.140. Si algún valor cambia, `T-1.5` vuelve a `[~]` hasta nueva revisión cruzada de I1, I3 e I4.
+
 El Integrante 2 coordinó este contrato con revisión técnica del Integrante 1 y revisión cruzada de I3/I4 ratificada en daily 2026-07-24.
 
 ### Gate `Data Ready`
