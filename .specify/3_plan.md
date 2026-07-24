@@ -142,7 +142,7 @@ Debe completarse toda la checklist `Data Ready` de `2_spec.md`.
 - Las condiciones de uso y redistribución de las fuentes todavía no están aprobadas.
 - Las cuotas y estadísticas detalladas solo cubren 380 partidos y no representan el histórico completo.
 - Un split aleatorio por filas sobreestimaría la generalización temporal.
-- Las features agregadas sin `shift(1)` filtrarían el resultado del partido actual.
+- Las features agregadas sin `shift(1)` filtrarían el resultado del partido actual. T-1.4a es la tarea bloqueante que implementa y prueba el generador histórico común antes de `Data Ready`.
 - Equipos ascendidos o categorías no vistas pueden romper codificación e inferencia.
 - Elegir variables que no existirían durante una predicción real.
 - Introducir leakage durante limpieza o partición.
@@ -329,4 +329,4 @@ Reglas del calendario:
 |---|---|
 | Estado | v1.0 — plan reconciliado con LaLiga y fecha de entrega |
 | Fecha | 23/07/2026 |
-| Próximo gate | Cerrar T-0.6 y T-1.1–T-1.4/T-1.6–T-1.7 para verificar `Data Ready` |
+| Próximo gate | Cerrar T-0.6, T-1.4a y T-1.6–T-1.7 para verificar `Data Ready` |

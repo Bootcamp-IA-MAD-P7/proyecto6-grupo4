@@ -167,7 +167,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Reverificación 2026-07-24: `scripts/run_laliga_preprocessing.py` regeneró el dataset canónico con 11.944 filas, 54 columnas, 100 solapamientos resueltos, 0 `match_id` duplicados, 0 targets nulos y SHA-256 `6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c`. Suite completa: 16/16 pruebas aprobadas. Pendiente únicamente la revisión cruzada de I4.
 - Revisión cruzada I4 2026-07-24: revisados `load_raw_sources`, el contrato de `load_processed_dataset`, la regeneración mediante `scripts/run_laliga_preprocessing.py` y el manifest. Se corrigió el estado de procedencia para reflejar la decisión T-0.2b: uso local o repositorio privado, sin autorización de redistribución pública. Verificación reproducida: 11.944 filas, 54 columnas, SHA-256 canónico y 16/16 pruebas aprobadas. T-1.1 aceptada.
 
-### [~] T-1.2 Crear diccionario y auditoría de datos
+### [x] T-1.2 Crear diccionario y auditoría de datos
 
 - Responsable: I1.
 - Revisor: I3.
@@ -178,8 +178,9 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Evidencia: diccionario de datos revisado.
 - Evidencia provisional: `reports/metrics/data_dictionary.csv`, `reports/metrics/missingness.csv` y `reports/metrics/eda_summary.json`. Pendiente revisión de I3.
 - Cierre técnico I1 2026-07-24: diccionario regenerado para las 54 columnas, con tipo, rol, disponibilidad, tratamiento de nulos y riesgo de leakage. La evidencia queda lista para revisión de I3.
+- Revisión cruzada I3 2026-07-24: revisados el diccionario de las 54 columnas, la auditoría de nulos y el resumen EDA. Se confirma `result_ft` como target, `match_id` como identificador sin papel predictivo, la exclusión de variables posteriores al evento y metadatos de fuente, y el riesgo temporal de las cuotas de cierre. Los 29 campos estructuralmente vacíos del alcance de desarrollo quedan documentados para no imputarlos. Verificación reproducida: `./.venv/Scripts/python.exe -m pytest -q` (**16 passed**). T-1.2 aceptada.
 
-### [~] T-1.3 Realizar EDA compartido
+### [x] T-1.3 Realizar EDA compartido
 
 - Responsable: todos; coordina I1.
 - Dependencias: T-1.1, T-1.2.
@@ -189,8 +190,9 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Evidencia: notebook o informe reproducible con interpretaciones.
 - Evidencia provisional: `notebooks/01_laliga_eda.ipynb`, `reports/laliga_eda.md` y once figuras persistentes en `reports/figures/`, incluidas outliers y dos matrices de confusión descriptivas. Análisis técnico completo; pendiente revisión cruzada de los cuatro integrantes.
 - Cierre técnico I1 2026-07-24: EDA regenerado con 11 figuras, auditoría de nulos/duplicados/target, análisis temporal, outliers, baseline descriptivo y matriz de leakage. El EDA usa exclusivamente train+validación (10.804 filas); el test 2023-24–2025-26 queda excluido. Verificación registrada en `reports/metrics/eda_verification.md`; pendiente revisión cruzada humana.
+- Revisión compartida I1–I4 2026-07-24: el equipo revisó el notebook, informe, métricas y las 11 figuras. Confirma que el EDA analiza nulos, duplicados, distribuciones, desbalance del target, relaciones, correlaciones descriptivas, outliers e indicadores de leakage; que las dos matrices son baselines descriptivas y no candidatos; y que el test protegido queda fuera de todo cálculo y visualización. Verificación reproducida: preprocesamiento y splits regenerados con SHA-256 `6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c`, 11.944 IDs cubiertos una vez y suite **16 passed**. T-1.3 aceptada.
 
-### [~] T-1.4 Implementar limpieza común
+### [x] T-1.4 Implementar limpieza común
 
 - Responsable: I1.
 - Revisores: I2 e I4.
@@ -202,6 +204,19 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Evidencia provisional 2026-07-23: `notebooks/00_laliga_preprocessing.ipynb`, `data/processed/laliga_matches_clean.csv`, `reports/metrics/preprocessing_summary.json`, `reports/metrics/source_column_policy.csv` y pruebas unitarias/integración. Pendientes revisión de I2/I4 y cierre de dependencias.
 - Revisión I2 2026-07-23: dataset limpio auditado sin duplicados, targets nulos ni incoherencias marcador/resultado; `load_processed_dataset` valida el contrato de tipos y la suite de tests pasa (14/14). Aceptable como base para congelar particiones (T-1.5). Revisión de I4 sigue pendiente.
 - Cierre técnico I1 2026-07-24: limpieza determinista regenerada sin modificar raw, con política de columnas, reporte antes/después y 0 incoherencias marcador/target. Se añadió `verify_preprocessing_split_contract` para asegurar que dataset, `match_id`, huella y conteos coinciden con las particiones congeladas; 15/15 pruebas en verde. Todo cambio de limpieza obliga a regenerar preprocesamiento, splits y esta verificación antes de entrenar. Pendiente revisión de I4.
+- Revisión cruzada I4 2026-07-24: revisados `preprocess_sources`, la política de columnas, `load_processed_dataset` y el contrato con los splits. Se confirma que los CSV raw no se modifican, que la deduplicación con prioridad de fuente detallada resuelve 100 solapamientos y que la limpieza conserva 2 nulos opcionales de descanso sin imputarlos. Regeneración reproducida: 11.944 filas, 54 columnas, 0 IDs duplicados, 0 targets nulos, 0 incoherencias marcador/target y SHA-256 `6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c`; `verify_preprocessing_split_contract` valida 9.607/1.197/1.140 y la suite queda en **16 passed**. T-1.4 aceptada.
+
+### [ ] T-1.4a Implementar generador común de features históricas sin leakage
+
+- Prioridad: **P0 — bloqueante para `Data Ready`**.
+- Responsable: I1.
+- Revisor: I2.
+- Dependencias: T-1.4, T-1.5.
+- Requisitos: ML-01, ML-06.
+- Acción: implementar y documentar un generador común de features históricas para los cuatro candidatos. Debe recorrer los partidos en orden cronológico estable y producir forma, fuerza, goles, puntos, Elo o enfrentamientos únicamente a partir de encuentros estrictamente anteriores; toda ventana o agregación debe aplicar `shift(1)` o un mecanismo equivalente. No puede incluir columnas posteriores al evento, `match_id`, metadatos de cobertura ni usar el target del partido actual.
+- Criterio de aceptación: el generador es determinista, versionado y reutilizable por los cuatro pipelines; su schema, parámetros y origen de datos quedan documentados. Ningún resultado futuro modifica las features de partidos anteriores y las transformaciones ajustables se estiman solo en train. El test permanece protegido: no se usa para ajuste, selección ni cálculo de parámetros.
+- Verificación: ejecutar el generador sobre el dataset y splits congelados; comprobar schema, `match_id`, SHA-256 y conteos. Añadir pruebas unitarias de orden temporal, `shift(1)`, empate de fechas y no-leakage al alterar un resultado futuro, más una prueba de integración reproducible. Ejecutar `./.venv/Scripts/python.exe -m pytest -q`.
+- Evidencia esperada: implementación en `src/data/`, pruebas en `tests/unit/` y `tests/integration/`, manifest de features en `reports/metrics/` y contrato actualizado en `2_spec.md`.
 
 ### [x] T-1.5 Congelar particiones comunes
 
@@ -241,7 +256,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 ### [ ] T-1.8 / T-1.INT Verificar gate `Data Ready`
 
 - Responsable: todo el equipo; coordina I2.
-- Dependencias: T-0.1, T-0.2b, T-0.4, T-0.5 y T-1.1 a T-1.7.
+- Dependencias: T-0.1, T-0.2b, T-0.4, T-0.5, T-1.1 a T-1.7 y T-1.4a.
 - Acción: completar la checklist de `2_spec.md`.
 - Criterio de aceptación: no quedan decisiones de datos, evaluación o candidatos que bloqueen el entrenamiento.
 - Evidencia: checklist completada y revisión cruzada.
@@ -483,5 +498,5 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 |---|---|
 | Estado | v1.0 — T-0.2b, T-0.4, T-0.5 y T-1.5 ratificados en daily 2026-07-24 |
 | Fecha | 24/07/2026 |
-| Siguiente trabajo bloqueante | T-0.6; T-1.1–T-1.4 y T-1.6–T-1.7 antes de `T-1.8` |
+| Siguiente trabajo bloqueante | T-0.6, T-1.4a y T-1.6–T-1.7 antes de `T-1.8` |
 | Regla | Marcar `[x]` solo con verificación, evidencia y revisión cruzada |
