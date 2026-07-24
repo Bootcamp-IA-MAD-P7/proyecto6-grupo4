@@ -160,6 +160,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: los cuatro integrantes pueden obtener la misma versión de datos.
 - Verificación: comprobar schema, dimensiones y huella o versión.
 - Evidencia provisional: `src/data/laliga_loader.py`, `scripts/run_laliga_preprocessing.py`, `reports/metrics/dataset_manifest.json`, `reports/metrics/source_provenance.json` y tests unitarios. Pendiente revisión de I4 y cierre de dependencias.
+- Cierre técnico I1 2026-07-24: regenerados desde raw el dataset canónico y su manifest; contrato validado con 11.944 filas, 54 columnas, SHA-256 `6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c`, 0 IDs duplicados y 0 targets nulos. Preparado para revisión de I4.
 
 ### [~] T-1.2 Crear diccionario y auditoría de datos
 
@@ -171,6 +172,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: todas las variables tienen rol y descripción.
 - Evidencia: diccionario de datos revisado.
 - Evidencia provisional: `reports/metrics/data_dictionary.csv`, `reports/metrics/missingness.csv` y `reports/metrics/eda_summary.json`. Pendiente revisión de I3.
+- Cierre técnico I1 2026-07-24: diccionario regenerado para las 54 columnas, con tipo, rol, disponibilidad, tratamiento de nulos y riesgo de leakage. La evidencia queda lista para revisión de I3.
 
 ### [~] T-1.3 Realizar EDA compartido
 
@@ -181,6 +183,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: nulos, duplicados, distribuciones, target, relaciones, correlaciones y leakage analizados.
 - Evidencia: notebook o informe reproducible con interpretaciones.
 - Evidencia provisional: `notebooks/01_laliga_eda.ipynb`, `reports/laliga_eda.md` y once figuras persistentes en `reports/figures/`, incluidas outliers y dos matrices de confusión descriptivas. Análisis técnico completo; pendiente revisión cruzada de los cuatro integrantes.
+- Cierre técnico I1 2026-07-24: EDA regenerado con 11 figuras, auditoría de nulos/duplicados/target, análisis temporal, outliers, baseline descriptivo y matriz de leakage. El EDA usa exclusivamente train+validación (10.804 filas); el test 2023-24–2025-26 queda excluido. Verificación registrada en `reports/metrics/eda_verification.md`; pendiente revisión cruzada humana.
 
 ### [~] T-1.4 Implementar limpieza común
 
@@ -193,6 +196,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Evidencia: tests y comparación antes/después.
 - Evidencia provisional 2026-07-23: `notebooks/00_laliga_preprocessing.ipynb`, `data/processed/laliga_matches_clean.csv`, `reports/metrics/preprocessing_summary.json`, `reports/metrics/source_column_policy.csv` y pruebas unitarias/integración. Pendientes revisión de I2/I4 y cierre de dependencias.
 - Revisión I2 2026-07-23: dataset limpio auditado sin duplicados, targets nulos ni incoherencias marcador/resultado; `load_processed_dataset` valida el contrato de tipos y la suite de tests pasa (14/14). Aceptable como base para congelar particiones (T-1.5). Revisión de I4 sigue pendiente.
+- Cierre técnico I1 2026-07-24: limpieza determinista regenerada sin modificar raw, con política de columnas, reporte antes/después y 0 incoherencias marcador/target. Se añadió `verify_preprocessing_split_contract` para asegurar que dataset, `match_id`, huella y conteos coinciden con las particiones congeladas; 15/15 pruebas en verde. Todo cambio de limpieza obliga a regenerar preprocesamiento, splits y esta verificación antes de entrenar. Pendiente revisión de I4.
 
 ### [x] T-1.5 Congelar particiones comunes
 

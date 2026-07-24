@@ -572,6 +572,7 @@ Cambios sobre dataset, target, limpieza, splits, métricas, overfitting, contrat
 3. Aprobación del equipo.
 4. Actualización de `.specify/`.
 5. Reevaluación de candidatos si se pierde comparabilidad.
+6. Si cambia la limpieza o el dataset procesado, ejecutar de nuevo `scripts/run_laliga_preprocessing.py`, `python -m src.evaluation.splits` y `verify_preprocessing_split_contract`; registrar la nueva huella, cobertura de `match_id` y conteos antes de permitir cualquier entrenamiento.
 
 ## Trazabilidad mínima
 

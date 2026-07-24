@@ -13,6 +13,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from src.data.laliga_eda import run_full_eda
 from src.data.laliga_loader import load_processed_dataset
+from src.evaluation.splits import TEST_SEASONS, assign_splits
 
 
 def parse_args() -> argparse.Namespace:
@@ -29,7 +30,19 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     canonical = load_processed_dataset(args.processed_path)
-    metrics = run_full_eda(canonical, args.reports_dir)
+    development = canonical.loc[assign_splits(canonical).ne("test")].copy()
+    metrics = run_full_eda(development, args.reports_dir)
+    scope = {
+        "scope": "development_only_train_and_validation",
+        "excluded_test_seasons": TEST_SEASONS,
+        "source_rows": int(len(canonical)),
+        "analyzed_rows": int(len(development)),
+    }
+    metrics_dir = args.reports_dir / "metrics"
+    metrics_dir.mkdir(parents=True, exist_ok=True)
+    (metrics_dir / "eda_scope.json").write_text(
+        json.dumps(scope, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     print(
         json.dumps(
             {
@@ -37,6 +50,7 @@ def main() -> None:
                 "processed_path": str(args.processed_path),
                 "rows": metrics["quality"]["rows"],
                 "columns": metrics["quality"]["columns"],
+                "scope": scope["scope"],
                 "report": str(args.reports_dir / "laliga_eda.md"),
             },
             ensure_ascii=False,
