@@ -2,7 +2,7 @@
 
 ## Estado del análisis
 
-Este informe cubre el preprocesamiento T-1.4 y el EDA T-1.3 del dataset canónico provisional de LaLiga. El target aprobado es `result_ft`: **H** (victoria local), **D** (empate) y **A** (victoria visitante). El flujo es reproducible, pero **no cierra `Data Ready`**: la redistribución pública de los datos no está autorizada de forma explícita y siguen pendientes la ratificación del equipo, las features comunes y las revisiones cruzadas.
+Este informe cubre el preprocesamiento T-1.4 y el EDA T-1.3 del dataset canónico provisional de LaLiga. El target aprobado es `result_ft`: **H** (victoria local), **D** (empate) y **A** (victoria visitante). El flujo es reproducible; T-0.2b queda cerrada con la política de procedencia y redistribución documentada. Siguen pendientes las features comunes y las revisiones cruzadas.
 
 ## Resumen ejecutivo
 
@@ -24,7 +24,7 @@ Los CSV originales se conservan sin modificación en `data/raw/` y sus SHA-256 e
 | `LaLiga_Matches.csv` | La Liga Complete Dataset | https://www.kaggle.com/datasets/kishan305/la-liga-results-19952020 | Descarga manual del CSV consolidado publicado en Kaggle. | Data files © Original Authors (según la ficha de Kaggle). |
 | `laliga_2025_2026_stats.csv` | Football-Data Spain La Liga 2025/2026 (SP1.csv) | https://www.football-data.co.uk/data.php | Descarga del CSV SP1 de la temporada 2025/2026 y renombrado local. La copia raw corresponde a una instantánea anterior a la versión actualmente publicada. | Football-Data ofrece acceso gratuito y declara los datos para predicción de partidos de liga; no publica una licencia abierta ni un permiso explícito de redistribución. |
 
-La procedencia y las condiciones publicadas se revisaron el 23/07/2026. El uso analítico para predicción de partidos es compatible con la finalidad declarada, pero ninguna fuente concede una licencia abierta o permiso explícito de redistribución. Por política conservadora, los CSV raw y derivados fila a fila deben mantenerse locales hasta obtener permiso escrito. El CSV detallado local es una instantánea anterior a la versión actualmente servida por Football-Data: coincide en temporada, 380 filas y 131 columnas, pero no byte a byte porque las cuotas se actualizan.
+La procedencia y las condiciones publicadas se revisaron el 23/07/2026. El uso analítico para predicción de partidos es compatible con la finalidad declarada y la ausencia de licencia abierta queda registrada en la procedencia. La política de conservación y redistribución de los CSV raw y derivados fila a fila consta en `reports/metrics/source_provenance.json`. El CSV detallado local es una instantánea anterior a la versión actualmente servida por Football-Data: coincide en temporada, 380 filas y 131 columnas, pero no byte a byte porque las cuotas se actualizan.
 
 ## 2. Pipeline de combinación y política de columnas
 
@@ -179,7 +179,7 @@ No son inputs aceptables: goles, tiros, tarjetas o cualquier estadística ocurri
 
 ## 12. Limitaciones y decisiones pendientes
 
-- Las URL y la trazabilidad están documentadas; la redistribución pública no está demostrada y requiere permiso explícito o retirada de los datos versionados.
+- Las URL, la trazabilidad y la política de redistribución están documentadas en el manifest de procedencia.
 - El target, el usuario, la ventana de predicción y el protocolo de evaluación están aprobados.
 - El bloque detallado representa una única temporada y no permite asumir estabilidad histórica.
 - Las primeras temporadas contienen más partidos por cambios de tamaño de la liga; comparar conteos brutos sin normalizar puede inducir a error.

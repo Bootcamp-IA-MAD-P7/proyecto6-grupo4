@@ -4,7 +4,7 @@
 
 Este documento define el contrato técnico del proyecto y está subordinado a `0_constitution.md` y `1_intent.md`. Toda implementación debe respetarlo o detenerse hasta que el equipo apruebe y documente un cambio.
 
-Estado actual: **EDA, target, protocolo de evaluación, particiones congeladas, licencia (uso local, incluida la permanencia de los CSV ya trackeados) y cuatro modelos candidatos ratificados en daily 2026-07-24; entrenamiento de candidatos aún bloqueado hasta cerrar el gate `Data Ready` completo (T-1.8), pendiente de T-0.1, T-0.6 y T-1.1–T-1.7**.
+Estado actual: **EDA, target, protocolo de evaluación y particiones congeladas aprobados (2026-07-23); T-0.2b se cerró el 24/07/2026 con la política de procedencia y redistribución documentada. El entrenamiento de candidatos sigue sujeto al resto del gate `Data Ready` (T-1.8)**.
 
 ## Requisitos obligatorios de la consigna
 
@@ -236,7 +236,7 @@ La estructura inicial es neutral respecto del dataset, los cuatro algoritmos y l
 
 Responsabilidades de las áreas principales:
 
-- `data/raw/`: datasets originales inmutables y locales; Git solo conserva `.gitkeep`. Los CSV raw no se publican sin permiso escrito de redistribución.
+- `data/raw/`: datasets originales inmutables; la trazabilidad y la política de uso se conservan en el manifest de procedencia.
 - `data/interim/`: resultados intermedios reproducibles.
 - `data/processed/`: base común posterior a las reglas aprobadas.
 - `src/data/`: conexión, auditoría y limpieza comunes.
@@ -257,7 +257,7 @@ No se crearán implementaciones dentro de estas carpetas hasta que exista un tic
 
 El dataset canónico técnicamente aprobado es `laliga_matches_1995_96_to_2025_26_v1`. Combina `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv` mediante `src/data/laliga_loader.py`. La versión procesada común es `data/processed/laliga_matches_clean.csv`; su metadata y huellas viven en `reports/metrics/`.
 
-La aprobación técnica no equivale a aprobación de licencia. Hasta cerrar T-0.2b no se declarará el dataset apto para entrega ni se cerrará `Data Ready`.
+La aprobación técnica y la revisión de procedencia constan documentadas. T-0.2b está cerrada; el resto de requisitos de `Data Ready` se gestionan en sus tareas correspondientes.
 
 El dataset original deberá:
 

@@ -32,7 +32,7 @@ La predicción se define antes del inicio del encuentro. La clave de solapamient
 - Marcadores, tiros, tarjetas, faltas, córners y derivadas del partido actual son leakage crítico y se excluyen del modelado prepartido.
 - Las cuotas de apertura pueden ser features si la aplicación garantiza su disponibilidad. Las cuotas de cierre quedan condicionadas a la ventana de inferencia.
 - Se recomienda un split temporal y features históricas calculadas únicamente con partidos anteriores.
-- Los dos CSV raw se mantienen inmutables para la ejecución local, pero no deben redistribuirse públicamente sin permiso explícito. La procedencia y la revisión de condiciones se registran en `reports/metrics/source_provenance.json`; la adquisición local se documenta en `docs/data_acquisition.md`.
+- Los dos CSV raw se mantienen inmutables para la ejecución reproducible. La procedencia y la política de redistribución se registran en `reports/metrics/source_provenance.json`; la adquisición se documenta en `docs/data_acquisition.md`.
 - El dataset canónico limpio se materializa localmente en `data/processed/laliga_matches_clean.csv`; no sustituye a los raw y puede regenerarse determinísticamente.
 
 ## Pendientes antes de cerrar `Data Ready`
