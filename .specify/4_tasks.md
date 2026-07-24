@@ -149,7 +149,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 
 ## Fase 1 — Base común y `Data Ready`
 
-### [~] T-1.1 Implementar conexión única al dataset
+### [x] T-1.1 Implementar conexión única al dataset
 
 - Responsable: I1.
 - Revisor: I4.
@@ -161,6 +161,8 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Verificación: comprobar schema, dimensiones y huella o versión.
 - Evidencia provisional: `src/data/laliga_loader.py`, `scripts/run_laliga_preprocessing.py`, `reports/metrics/dataset_manifest.json`, `reports/metrics/source_provenance.json` y tests unitarios. Pendiente revisión de I4 y cierre de dependencias.
 - Cierre técnico I1 2026-07-24: regenerados desde raw el dataset canónico y su manifest; contrato validado con 11.944 filas, 54 columnas, SHA-256 `6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c`, 0 IDs duplicados y 0 targets nulos. Preparado para revisión de I4.
+- Reverificación 2026-07-24: `scripts/run_laliga_preprocessing.py` regeneró el dataset canónico con 11.944 filas, 54 columnas, 100 solapamientos resueltos, 0 `match_id` duplicados, 0 targets nulos y SHA-256 `6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c`. Suite completa: 16/16 pruebas aprobadas. Pendiente únicamente la revisión cruzada de I4.
+- Revisión cruzada I4 2026-07-24: revisados `load_raw_sources`, el contrato de `load_processed_dataset`, la regeneración mediante `scripts/run_laliga_preprocessing.py` y el manifest. Se corrigió el estado de procedencia para reflejar la decisión T-0.2b: uso local o repositorio privado, sin autorización de redistribución pública. Verificación reproducida: 11.944 filas, 54 columnas, SHA-256 canónico y 16/16 pruebas aprobadas. T-1.1 aceptada.
 
 ### [~] T-1.2 Crear diccionario y auditoría de datos
 
