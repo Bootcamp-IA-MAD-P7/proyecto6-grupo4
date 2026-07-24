@@ -88,8 +88,9 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 | Fórmula de overfitting | Aprobada 2026-07-23 (T-0.4) | `gap = macro-F1(train) − macro-F1(validación)`, en puntos absolutos; umbral `< 0.05` sobre medias de CV |
 | Estrategia de partición | Aprobada 2026-07-23 (T-0.4/T-1.5) | Cronológica por temporada, congelada: train 1995-96–2019-20 (9.607 filas), validación 2020-21–2022-23 (1.197 filas), test 2023-24–2025-26 (1.140 filas, protegido); semilla `42` |
 | Modelos A, B, C y D | Aprobada 2026-07-24 (T-0.5) | A: regresión logística multinomial (I1). B: gradient boosting (I2). C: random forest (I3). D: SVM kernel RBF (I4). Detalle en `docs/decisions/0003-four-candidate-models.md` |
-| Tecnología frontend | Pendiente | No seleccionada |
-| Tecnología backend | Pendiente | No seleccionada |
+| Tecnología frontend | Seleccionada por I3/I4; pendiente de revisión I1/I2 | React + TypeScript con Vite; implementación propiedad de I3 |
+| Tecnología backend | Seleccionada por I3/I4; pendiente de revisión I1/I2 | FastAPI + Pydantic, servido con Uvicorn; implementación propiedad de I4 |
+| Arquitectura de aplicación | Seleccionada por I3/I4; pendiente de revisión I1/I2 | Frontend y backend separados: React consume por HTTP/JSON la API FastAPI versionada |
 | Persistencia | Pendiente | No seleccionada |
 | Despliegue | Pendiente | No seleccionado |
 | Gestión del equipo | Aprobada | GitHub Project `Proyecto6-Grupo4`, issues #3–#35 |
@@ -480,6 +481,19 @@ El test final se utilizará una única vez después de la selección y no se reu
 
 Contrato preliminar versionado para que I3 e I4 puedan trabajar con mocks compatibles:
 
+Arquitectura seleccionada por I3/I4 para revisión de I1/I2:
+
+- I3 — César desarrolla el frontend en `app/frontend/` con React, TypeScript y Vite.
+- I4 — Fernanda desarrolla el backend en `app/backend/` con FastAPI, Pydantic y Uvicorn.
+- El frontend consume el backend mediante HTTP y JSON; no accede directamente al modelo ni a los datos procesados.
+- I4 no modifica `app/frontend/` e I3 no modifica `app/backend/` sin coordinación, para evitar solapamientos.
+
+Ruta de predicción seleccionada:
+
+```text
+POST /api/v1/predictions
+```
+
 ```json
 {
   "home_team": "Real Madrid",
@@ -517,7 +531,7 @@ Convenciones:
 - `prediction` solo admite `H`, `D` o `A`.
 - El backend calcula las features; el frontend no envía agregados históricos ni transforma datos.
 - Las probabilidades se devuelven para las tres clases y suman 1 con tolerancia numérica.
-- El contrato definitivo fijará ruta, códigos HTTP, límites y versión después de aprobar la arquitectura en T-0.6.
+- El contrato definitivo fijará códigos HTTP, límites y reglas de compatibilidad antes de cerrar T-0.6.
 - El mecanismo de feedback se añade sin romper este contrato si se alcanza el Nivel Medio.
 
 El frontend no realizará transformaciones estadísticas propias del pipeline.
