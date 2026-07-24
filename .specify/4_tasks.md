@@ -129,7 +129,9 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Requisitos: RF-01–RF-06, RNF-02–RNF-06.
 - Acción: aprobar tecnología, separación lógica o física, endpoints, entrada, salida, errores, latencia y versionado.
 - Criterio de aceptación: frontend y backend pueden avanzar con mocks compatibles.
-- Evidencia actual: contrato JSON preliminar en `2_spec.md`; faltan ruta, códigos HTTP y decisión de arquitectura.
+- Evidencia actual: contrato JSON preliminar, tecnologías, arquitectura y ruta registrados en `2_spec.md`.
+- Avance 2026-07-24: I3/I4 seleccionan frontend React + TypeScript con Vite y backend FastAPI + Pydantic servido con Uvicorn, en procesos separados comunicados mediante HTTP/JSON. La ruta de predicción será `POST /api/v1/predictions`. César conserva la propiedad exclusiva de `app/frontend/` y Fernanda la de `app/backend/` para evitar solapamientos.
+- Pendiente para cierre: definir códigos HTTP, límites, errores uniformes, latencia y reglas finales de versionado; obtener revisión de I1/I2.
 
 ### [x] T-0.7 Definir estrategia Git
 
