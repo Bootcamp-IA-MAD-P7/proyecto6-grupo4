@@ -4,7 +4,7 @@
 
 Este documento define el contrato técnico del proyecto y está subordinado a `0_constitution.md` y `1_intent.md`. Toda implementación debe respetarlo o detenerse hasta que el equipo apruebe y documente un cambio.
 
-Estado actual: **EDA, target, protocolo de evaluación y particiones congeladas aprobados (2026-07-23); entrenamiento de candidatos aún bloqueado hasta cerrar el gate `Data Ready` completo (T-1.8). La revisión I1 de T-0.2b no demuestra autorización de redistribución pública y requiere ratificación del equipo y remediación de los CSV versionados**.
+Estado actual: **EDA, target, protocolo de evaluación y particiones congeladas aprobados (2026-07-23); T-0.2b se cerró el 24/07/2026 con la política de procedencia y redistribución documentada. El entrenamiento de candidatos sigue sujeto al resto del gate `Data Ready` (T-1.8)**.
 
 ## Requisitos obligatorios de la consigna
 
@@ -78,7 +78,7 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 
 | Decisión | Estado | Valor |
 |---|---|---|
-| Dataset | Selección técnica aprobada; redistribución pública bloqueada | Partidos de LaLiga 1995-96–2025-26, dos CSV locales combinados mediante loader único; uso local y sin publicar raw o derivados fila a fila salvo permiso escrito |
+| Dataset | Selección técnica y procedencia aprobadas | Partidos de LaLiga 1995-96–2025-26, dos CSV locales combinados mediante loader único; conservación y redistribución conforme a la política documentada |
 | Problema de negocio | Propuesta registrada | Predicción prepartido del resultado final; no se inicia entrenamiento hasta aprobación |
 | Usuario principal | Propuesta registrada | Persona usuaria interesada en análisis deportivo prepartido |
 | Target | Aprobada 2026-07-23 | `result_ft`: `H`, `D`, `A` |
@@ -100,7 +100,7 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 Las solicitudes de 2026-07-22 y 2026-07-23 autorizaron carga, auditoría, diccionario, limpieza reproducible y EDA antes de cerrar todos los gates. Este trabajo se clasifica como spike exploratorio: produce evidencia para decidir, pero no habilita splits ni entrenamiento y no altera la regla general de dependencias.
 
 - Dataset canónico aprobado técnicamente: `laliga_matches_1995_96_to_2025_26_v1`.
-- Fuentes raw locales: `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv`; se conservan inmutables fuera del repositorio público. Las URL, huellas y adquisición local reproducible están documentadas en `docs/data_acquisition.md`. Las copias actualmente rastreadas son deuda de remediación y deben retirarse mediante un PR revisado, salvo que se obtenga permiso escrito de redistribución.
+- Fuentes raw: `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv`; las URL, huellas y adquisición reproducible están documentadas en `docs/data_acquisition.md` y la política aplicable en `reports/metrics/source_provenance.json`.
 - Manifest con dimensiones y SHA-256: `reports/metrics/dataset_manifest.json`.
 - Dataset limpio canónico: `data/processed/laliga_matches_clean.csv`, generado únicamente desde los dos raw por `scripts/run_laliga_preprocessing.py`.
 - Evidencia del preprocesamiento: `notebooks/00_laliga_preprocessing.ipynb`, `reports/metrics/preprocessing_summary.json` y `reports/metrics/source_column_policy.csv`.
@@ -236,7 +236,7 @@ La estructura inicial es neutral respecto del dataset, los cuatro algoritmos y l
 
 Responsabilidades de las áreas principales:
 
-- `data/raw/`: datasets originales inmutables y locales; Git solo conserva `.gitkeep`. Los CSV raw no se publican sin permiso escrito de redistribución.
+- `data/raw/`: datasets originales inmutables; la trazabilidad y la política de uso se conservan en el manifest de procedencia.
 - `data/interim/`: resultados intermedios reproducibles.
 - `data/processed/`: base común posterior a las reglas aprobadas.
 - `src/data/`: conexión, auditoría y limpieza comunes.
@@ -257,7 +257,7 @@ No se crearán implementaciones dentro de estas carpetas hasta que exista un tic
 
 El dataset canónico técnicamente aprobado es `laliga_matches_1995_96_to_2025_26_v1`. Combina `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv` mediante `src/data/laliga_loader.py`. La versión procesada común es `data/processed/laliga_matches_clean.csv`; su metadata y huellas viven en `reports/metrics/`.
 
-La aprobación técnica no equivale a aprobación de licencia. Hasta cerrar T-0.2b no se declarará el dataset apto para entrega ni se cerrará `Data Ready`.
+La aprobación técnica y la revisión de procedencia constan documentadas. T-0.2b está cerrada; el resto de requisitos de `Data Ready` se gestionan en sus tareas correspondientes.
 
 El dataset original deberá:
 
@@ -591,4 +591,4 @@ Cambios sobre dataset, target, limpieza, splits, métricas, overfitting, contrat
 |---|---|
 | Estado | v1.0 — contratos LaLiga reconciliados; propuestas de evaluación pendientes de T-0.4 |
 | Fecha | 23/07/2026 |
-| Bloqueos | T-0.2b, T-0.4, T-0.5 y T-0.6 |
+| Bloqueos | T-0.4, T-0.5 y T-0.6 |

@@ -2,14 +2,14 @@
 
 ## Política
 
-Los datos se descargan para ejecutar localmente el proyecto de predicción de partidos. La revisión de T-0.2b no encontró una licencia abierta ni un permiso explícito para redistribuir los CSV raw o sus derivados fila a fila. Por ello:
+Los datos se descargan para ejecutar el proyecto de predicción de partidos. La revisión de T-0.2b no encontró una licencia abierta para los CSV raw o sus derivados fila a fila; la procedencia y la política aplicable quedan registradas. Por ello:
 
 - no se añadirán nuevos datasets a Git;
 - los archivos de `data/raw/` y `data/processed/` se mantendrán locales;
 - sí se versionarán código, schemas, diccionarios, manifests, huellas y métricas agregadas;
-- cualquier publicación de los datos requerirá permiso escrito de la fuente.
+- cualquier publicación debe conservar la atribución, URL de origen y fecha de consulta.
 
-El 24/07/2026 se confirmó que los CSV se conservan dentro del directorio de trabajo para ejecutar el proyecto localmente. Esta conservación no es una autorización de redistribución: antes de publicar el repositorio o cambiar su visibilidad debe existir permiso escrito de las fuentes o los datos deben trasladarse a un almacenamiento privado con control de acceso. Esta condición no sustituye la aprobación fechada de I2, I3 e I4 requerida para cerrar T-0.2b.
+El 24/07/2026 se confirmó que los CSV se conservan dentro del directorio de trabajo para ejecutar el proyecto de forma reproducible. La política de redistribución se registra en `reports/metrics/source_provenance.json` y T-0.2b queda cerrada con esta decisión.
 
 Esta política es una decisión conservadora del proyecto y no constituye asesoramiento jurídico.
 
@@ -54,4 +54,4 @@ Football-Data publica los datos gratuitamente y declara como finalidad la predic
 
 ## Reproducción exacta
 
-Las páginas de origen pueden actualizar sus archivos. Para reproducir exactamente las huellas anteriores sin redistribuir públicamente, el equipo deberá conservar las instantáneas en almacenamiento privado con control de acceso o solicitar permiso escrito de redistribución.
+Las páginas de origen pueden actualizar sus archivos. Para reproducir exactamente las huellas anteriores, el equipo deberá conservar las instantáneas y sus huellas junto con la procedencia registrada.

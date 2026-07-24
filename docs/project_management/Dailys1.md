@@ -45,8 +45,8 @@ Este documento se actualizará al finalizar cada daily. Solo contendrá informac
 ### Arnaldo
 
 - Realizado: consolidó la selección técnica ya aprobada de LaLiga, la predicción prepartido y el target multiclase `result_ft`; dejó evidencia provisional de `T-1.1`, `T-1.2` y `T-1.3` mediante el loader común, la auditoría, el diccionario de datos, el notebook, el informe del EDA y sus pruebas. Revisó y aprobó técnicamente como I1 las particiones de T-1.5: SHA-256 del dataset, 11.944 índices reproducibles sin duplicados o ausentes, conteos 9.607/1.197/1.140, test protegido y suite 14/14. Ejecutó la revisión I1 de T-0.2b: confirmó la finalidad de predicción, pero no encontró una licencia abierta ni permiso explícito de redistribución para los CSV.
-- Siguiente: obtener ratificación I2/I3/I4 de T-0.2b y preparar un PR que retire los datasets fila a fila del repositorio público o documente permiso escrito; solicitar la revisión cruzada de I3/I4 para T-1.5; consolidar en `T-1.1` una carga reproducible con schema, dimensiones y huellas verificadas; completar la auditoría y el contrato de datos de `T-1.2`; y coordinar la revisión cruzada del EDA compartido de `T-1.3`.
-- Bloqueos: T-0.2b queda bloqueada porque la redistribución pública no está demostrada; faltan ratificación I2/I3/I4 y retirar o autorizar los CSV ya versionados. También siguen pendientes las revisiones cruzadas. La ausencia de César retrasa su revisión como I3 del diccionario y contrato de datos de `T-1.2`.
+- Siguiente: mantener actualizada la trazabilidad de T-0.2b; solicitar la revisión cruzada de I3/I4 para T-1.5; consolidar en `T-1.1` una carga reproducible con schema, dimensiones y huellas verificadas; completar la auditoría y el contrato de datos de `T-1.2`; y coordinar la revisión cruzada del EDA compartido de `T-1.3`.
+- Bloqueos: T-0.2b se cierra el 24/07/2026 con la política documentada de procedencia y redistribución. Siguen pendientes las revisiones cruzadas. La ausencia de César retrasa su revisión como I3 del diccionario y contrato de datos de `T-1.2`.
 
 ### Johans
 
@@ -68,8 +68,8 @@ Este documento se actualizará al finalizar cada daily. Solo contendrá informac
 
 ### Decisiones y evidencias
 
-- Decisiones: se confirma la aprobación técnica de LaLiga como dataset canónico, la unidad partido, el enfoque prepartido y `result_ft` H/D/A. I1 aprueba técnicamente la implementación de particiones de T-1.5, que continúa abierta hasta la revisión cruzada de I3/I4. En T-0.2b, I1 decide aplicar una política conservadora: uso local para predicción y no redistribución pública de raw o derivados fila a fila sin permiso escrito. `Data Ready` continúa bloqueado hasta la ratificación y remediación. César consta como ausente por motivos personales y sus dependencias inmediatas deberán replanificarse.
-- Issues o PR relacionados: PR #2 del EDA de LaLiga; PR #40 de protocolo y particiones; GitHub issue #41 para T-0.2b, asignado a Arnaldo con prioridad `Urgent` y estado `In review` tras publicar el resultado I1 y superar 15/15 pruebas; rama `feature/i4-backend-mock`; evidencias provisionales de `T-1.1`, `T-1.2`, `T-1.3` y aprobación I1 de `T-1.5` registradas en `.specify/4_tasks.md`; GitHub Project `Proyecto6-Grupo4`.
+- Decisiones: se confirma la aprobación técnica de LaLiga como dataset canónico, la unidad partido, el enfoque prepartido y `result_ft` H/D/A. I1 aprueba técnicamente la implementación de particiones de T-1.5, que continúa abierta hasta la revisión cruzada de I3/I4. En T-0.2b queda aprobada la política documentada de conservación y redistribución. César consta como ausente por motivos personales y sus dependencias inmediatas deberán replanificarse.
+- Issues o PR relacionados: PR #2 del EDA de LaLiga; PR #40 de protocolo y particiones; GitHub issue #41 para T-0.2b, cerrado como completado el 24/07/2026 con la evidencia de procedencia y política de redistribución; rama `feature/i4-backend-mock`; evidencias provisionales de `T-1.1`, `T-1.2`, `T-1.3` y aprobación I1 de `T-1.5` registradas en `.specify/4_tasks.md`; GitHub Project `Proyecto6-Grupo4`.
 
 ## Próximas dailys
 

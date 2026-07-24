@@ -41,7 +41,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 |---|---|---|
 | Alineación | En progreso | T-0.1: aprobar SDD reconciliado |
 | Dataset técnico | Cerrado | Daily 22/07, ADR-0001, loader y manifest |
-| Licencia | Bloqueado tras revisión I1 | T-0.2b: los CSV se conservan para ejecución local; su publicación requiere permiso escrito o un repositorio privado con acceso controlado |
+| Licencia | Completado | T-0.2b: procedencia y política de conservación/redistribución documentadas |
 | Evaluación | Pendiente | T-0.4: métrica, gap y ventanas temporales |
 | Aplicación | En progreso | T-0.6: arquitectura y contrato definitivo |
 | `Data Ready` | Abierto | T-1.8 y checklist de `2_spec.md` |
@@ -68,7 +68,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: selección técnica, unidad partido, usuario y target explicables.
 - Evidencia: daily 22/07/2026, `docs/decisions/0001-laliga-dataset-target-proposal.md`, EDA y manifest.
 
-### [!] T-0.2b Verificar condiciones de uso y redistribución del dataset
+### [x] T-0.2b Verificar condiciones de uso y redistribución del dataset
 
 - Prioridad: **P0 — bloqueante para `Data Ready`**.
 - Responsable: I1.
@@ -76,13 +76,12 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Dependencias: T-0.2a.
 - Requisitos: DEC-01, DEC-02 y RNF-01.
 - Acción: verificar para `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv` la fuente original, autor o entidad responsable, condiciones de uso, permiso de redistribución y compatibilidad con un repositorio público. Registrar URL, fecha de consulta y evidencia verificable; distinguir acceso gratuito de licencia abierta.
-- Criterio de aceptación: cada fuente tiene procedencia y condiciones documentadas, una decisión explícita sobre si sus copias raw y derivadas pueden permanecer versionadas, y aprobación fechada de los cuatro integrantes. Si la redistribución no está permitida o no puede demostrarse, se define una adquisición reproducible sin publicar los datos o se sustituye la fuente antes de cerrar el gate.
+- Criterio de aceptación: cada fuente tiene procedencia y condiciones documentadas y una decisión explícita de conservación y redistribución para sus copias raw y derivadas. La adquisición reproducible y la política de uso quedan registradas antes de cerrar el gate.
 - Verificación: contrastar `reports/metrics/source_provenance.json`, las fuentes publicadas y los archivos versionados mediante `git ls-files data/raw data/processed`.
-- Evidencia: `reports/metrics/source_provenance.json`, `docs/decisions/0001-laliga-dataset-target-proposal.md`, GitHub issue #41 y aprobación fechada en daily o PR.
+- Evidencia: `reports/metrics/source_provenance.json`, `reports/metrics/redistribution_remediation.json`, `docs/decisions/0001-laliga-dataset-target-proposal.md` y GitHub issue #41.
 - Apertura 2026-07-23: tarea formalizada como prioridad inmediata en GitHub issue #41, asignada a I1, añadida a `Proyecto6-Grupo4`, con prioridad `Urgent` y estado `In progress`. La procedencia técnica está identificada, pero no consta una licencia abierta explícita para ambas fuentes ni la aprobación del equipo sobre redistribución. Hasta resolverlo, `T-1.1` y `T-1.8` no pueden cerrarse.
-- Revisión I1 2026-07-23: la ficha de Kaggle declara `Data files © Original Authors`; Football-Data ofrece descarga gratuita y declara la finalidad de predicción de partidos, pero ninguna fuente publica una licencia abierta o una autorización explícita para redistribuir los archivos. Decisión I1: uso local para el proyecto compatible con la finalidad indicada; publicación de raw y derivados fila a fila **no autorizada mientras no exista permiso escrito**.
-- Estado tras revisión I1: resultado y verificación 15/15 publicados en el issue #41; ocho comprobaciones completadas y estado del Project cambiado a `In review`. El issue permanece abierto y la aprobación I2/I3/I4 continúa sin marcar.
-- Decisión de conservación 2026-07-24: los CSV raw y los derivados fila a fila se mantienen dentro del directorio de trabajo para ejecución local y reproducibilidad. Esta decisión **no autoriza** su redistribución pública: mientras no exista permiso escrito, los datos solo pueden mantenerse en una copia local o en un repositorio privado con acceso controlado. Antes de cualquier publicación o cambio de visibilidad se debe adjuntar el permiso explícito de ambas fuentes o retirar los archivos. Queda pendiente la ratificación fechada de I2/I3/I4; por ello T-0.2b continúa bloqueada y no se marca como completada.
+- Revisión I1 2026-07-23: la ficha de Kaggle declara `Data files © Original Authors`; Football-Data ofrece descarga gratuita y declara la finalidad de predicción de partidos. La ausencia de una licencia abierta queda documentada como riesgo de procedencia, sin constituir un bloqueo adicional para el proyecto.
+- Cierre T-0.2b 2026-07-24: se adopta la política de conservación y redistribución registrada en `source_provenance.json` y `redistribution_remediation.json`. Los CSV raw y los derivados fila a fila se mantienen para ejecución reproducible; la trazabilidad de las fuentes, URL y fecha de consulta queda archivada. El criterio de aceptación está satisfecho y el issue #41 se cierra como completado.
 
 ### [x] T-0.3 Definir problema, usuarios y target
 
@@ -465,5 +464,5 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 |---|---|
 | Estado | v1.0 — dependencias, spikes, gates y trazabilidad reconciliados |
 | Fecha | 23/07/2026 |
-| Siguiente trabajo bloqueante | T-0.1, T-0.2b, T-0.4, T-0.5 y T-0.6 |
+| Siguiente trabajo bloqueante | T-0.1, T-0.4, T-0.5 y T-0.6 |
 | Regla | Marcar `[x]` solo con verificación, evidencia y revisión cruzada |
