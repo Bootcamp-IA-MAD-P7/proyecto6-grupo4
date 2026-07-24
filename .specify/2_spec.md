@@ -355,11 +355,11 @@ No podrá comenzar el entrenamiento individual hasta verificar:
 - [x] Dataset seleccionado y accesible localmente.
 - [x] Condiciones de uso y redistribución aprobadas (uso local ratificado 2026-07-24, incluida la permanencia de los CSV ya trackeados en Git).
 - [x] Target y clases aprobados.
-- [ ] EDA inicial completado.
-- [ ] Reglas comunes de limpieza aprobadas.
+- [x] EDA inicial completado (T-1.3: revisión compartida I1–I4 el 2026-07-24).
+- [x] Reglas comunes de limpieza aprobadas (T-1.4: revisión I2/I4; regeneración y contrato de splits verificados el 2026-07-24).
 - [ ] Variables con leakage excluidas.
-- [ ] Generador común de features históricas aprobado y probado.
-- [ ] Contrato de datos aprobado.
+- [ ] Generador común de features históricas aprobado y probado (T-1.4a, bloqueante de `Data Ready`).
+- [x] Contrato de datos aprobado (T-1.2: diccionario y auditoría revisados por I3 el 2026-07-24).
 - [x] Particiones comunes reproducibles.
 - [x] Test final protegido.
 - [x] Métricas comunes definidas.
