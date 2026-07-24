@@ -12,7 +12,7 @@ Antes de proponer o modificar código es obligatorio leer completamente:
 4. `.specify/3_plan.md`.
 5. `.specify/4_tasks.md`.
 
-La carpeta `.specify/` es la fuente central de verdad. El equipo ha aprobado técnicamente LaLiga, la predicción prepartido, el target multiclase `result_ft` (`H`, `D`, `A`) y el protocolo de evaluación. La revisión I1 concluye que la redistribución pública de los CSV no está autorizada de forma explícita; los CSV se conservan para ejecución local y no deben hacerse públicos sin permiso escrito. Permanecen pendientes la ratificación I2/I3/I4 de T-0.2b, la revisión cruzada de las particiones, las features comunes, los cuatro algoritmos y la arquitectura de aplicación.
+La carpeta `.specify/` es la fuente central de verdad. El equipo ha aprobado LaLiga, la predicción prepartido, el target multiclase `result_ft` (`H`, `D`, `A`), el protocolo de evaluación, las particiones cronológicas y los cuatro modelos candidatos. La redistribución pública de los CSV no está autorizada de forma explícita; se conservan para ejecución local y no deben hacerse públicos sin permiso escrito. Permanecen pendientes las features comunes, la arquitectura y el contrato de aplicación, los mocks y el cierre del gate `Data Ready`.
 
 ## Estrategia de datos y modelos
 

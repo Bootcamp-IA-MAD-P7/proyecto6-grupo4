@@ -64,7 +64,7 @@ La entrega está planificada para el 30/07/2026. Se protege primero un Nivel Ese
 
 | Campo | Valor |
 |---|---|
-| Estado | Propuesta v1.0 para aprobación del equipo |
-| Fecha | 23/07/2026 |
+| Estado | v1.0 aprobada por I1–I4 |
+| Fecha | 24/07/2026 |
 | Propietario | Todo el equipo |
-| Próxima acción | Revisión y aprobación mediante T-0.1 |
+| Evidencia | Daily 24/07/2026 y acta T-0.1 |

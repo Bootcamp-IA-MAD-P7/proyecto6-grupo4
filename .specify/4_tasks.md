@@ -39,7 +39,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 
 | Gate | Estado | Bloqueo o evidencia principal |
 |---|---|---|
-| Alineación | En progreso | T-0.1: aprobar SDD reconciliado |
+| Alineación | Cerrado | T-0.1: SDD reconciliado y aprobado por I1–I4 |
 | Dataset técnico | Cerrado | Daily 22/07, ADR-0001, loader y manifest |
 | Licencia | Cerrado | T-0.2b: ratificado por el equipo en daily 2026-07-24; uso local aceptado, incluida la permanencia de los CSV ya trackeados en Git |
 | Evaluación | Cerrado | T-0.4/T-1.5: métrica, gap, ventanas temporales y particiones ratificados por el equipo en daily 2026-07-24 |
@@ -50,7 +50,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 
 ## Fase 0 — Decisiones bloqueantes
 
-### [~] T-0.1 Revisar y aprobar `.specify/`
+### [x] T-0.1 Revisar y aprobar `.specify/`
 
 - Responsable: todo el equipo.
 - Revisor: todo el equipo.
@@ -59,6 +59,8 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Acción: leer `0_constitution.md` y los cuatro documentos SPEC, registrar dudas y aprobar o corregir el contrato.
 - Criterio de aceptación: los cuatro integrantes aprueban dominio, gates, flujo común de datos, contratos y cuatro pipelines.
 - Evidencia: aprobación fechada en daily o PR.
+- Reconciliación 2026-07-24: la fuente de verdad para T-0.4 fija las ventanas canónicas en `2_spec.md`: train 1995-96–2019-20, validación 2020-21–2022-23 y test protegido 2023-24–2025-26. La propuesta alternativa queda retirada. T-0.4 permanece en progreso hasta la ratificación individual; una confirmación de representante no permite cerrarla.
+- Cierre 2026-07-24: aprobación y visto bueno explícitos de I1 Arnaldo `[x]`, I2 Johans `[x]`, I3 César `[x]` e I4 Fernanda `[x]`. Evidencia: confirmación conjunta del equipo registrada en la daily 24/07/2026. Se cumplen el criterio de aceptación y la revisión cruzada.
 
 ### [x] T-0.2a Evaluar y seleccionar técnicamente el dataset
 
@@ -107,7 +109,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: protocolo aprobado por los cuatro integrantes.
 - Evidencia: contrato registrado en `2_spec.md`.
 - Avance 2026-07-23: propuesta registrada — métrica principal `macro-F1`, secundarias (accuracy, balanced accuracy, precisión/recall/F1 por clase, log loss, matriz de confusión), fórmula de overfitting (`gap < 0.05` sobre `macro-F1` train/validación) y partición cronológica por temporada con semilla `42`. Detalle y justificación en `docs/decisions/0002-evaluation-protocol-proposal.md`.
-- Cierre 2026-07-23: confirmada en sesión de trabajo. Misma salvedad que T-0.3: confirmación de representante del equipo, no firma individual de cada integrante.
+- Cierre 2026-07-24: I1, I2, I3 e I4 aprueban el contrato, incluidas métricas, gap, semilla y ventanas canónicas. Evidencia: confirmación conjunta del equipo registrada en la daily 24/07/2026 y acta de T-0.1.
 
 ### [x] T-0.5 Elegir cuatro modelos candidatos
 
@@ -469,5 +471,5 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 |---|---|
 | Estado | v1.0 — T-0.2b, T-0.4, T-0.5 y T-1.5 ratificados en daily 2026-07-24 |
 | Fecha | 24/07/2026 |
-| Siguiente trabajo bloqueante | T-0.1 y T-0.6; T-1.1–T-1.4, T-1.6–T-1.7 antes de `T-1.8` |
+| Siguiente trabajo bloqueante | T-0.6; T-1.1–T-1.4 y T-1.6–T-1.7 antes de `T-1.8` |
 | Regla | Marcar `[x]` solo con verificación, evidencia y revisión cruzada |

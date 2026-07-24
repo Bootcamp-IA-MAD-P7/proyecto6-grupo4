@@ -95,7 +95,7 @@ El dataset de trabajo combina partidos de LaLiga 1995-96–2025-26. La unidad de
 
 El problema aprobado es estimar antes del inicio el resultado final. Los únicos inputs admisibles son datos disponibles en ese momento. Marcadores, tiros, faltas, córners, tarjetas y cualquier variable derivada del encuentro actual se consideran posteriores al evento y quedan excluidos por leakage.
 
-La selección técnica, el problema y el target constan como aprobados en la daily del 22/07/2026. La validación de las condiciones de uso y redistribución de las fuentes sigue pendiente y bloquea el cierre de `Data Ready`. También permanecen pendientes el protocolo de evaluación, los cuatro candidatos y la arquitectura definitiva.
+La selección técnica, el problema y el target constan como aprobados en la daily del 22/07/2026. La política de uso y redistribución está cerrada en T-0.2b. El protocolo de evaluación y los cuatro modelos candidatos fueron aprobados el 24/07/2026; permanecen pendientes el contrato definitivo de features históricas y la arquitectura de aplicación.
 
 ## Alcance del MVP
 
@@ -147,12 +147,7 @@ El MVP será satisfactorio cuando:
 
 Antes de implementar componentes dependientes de ellas, el equipo deberá aprobar:
 
-- Condiciones de uso y redistribución de las dos fuentes.
-- Métrica principal y métricas secundarias.
-- Fórmula operativa del overfitting inferior al 5 %.
-- Ventanas temporales exactas de train, validación y test.
 - Contrato definitivo de features históricas.
-- Cuatro algoritmos candidatos.
 - Tecnología y arquitectura de la aplicación.
 - Estrategia de persistencia.
 - Plataforma de despliegue.
