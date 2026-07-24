@@ -15,6 +15,7 @@ from src.evaluation.splits import (
     assign_splits,
     build_split_manifest,
     freeze_splits,
+    verify_preprocessing_split_contract,
 )
 
 
@@ -87,8 +88,20 @@ def test_freeze_splits_writes_reproducible_outputs(tmp_path: Path) -> None:
         "2025-26": "test",
     }
     assert manifest["seed"] == SPLIT_SEED
-    assert manifest["status"] == "frozen_i1_approved_pending_i3_i4_cross_review"
+    assert manifest["status"] == "frozen_team_ratified_2026-07-24"
     assert manifest["technical_approvals"]["I1"]["status"] == "approved"
-    assert manifest["required_cross_reviewers_pending"] == ["I3", "I4"]
+    assert manifest["technical_approvals"]["I3_I4"]["status"] == "cross_review_ratified"
+    assert manifest["required_cross_reviewers_pending"] == []
     assert manifest["row_counts"] == {"train": 1, "validation": 1, "test": 1}
     assert manifest["source_dataset"]["rows"] == 3
+
+    verification = verify_preprocessing_split_contract(
+        processed_path,
+        splits_path,
+        manifest_path,
+    )
+
+    assert verification["status"] == "verified"
+    assert verification["processed_rows"] == 3
+    assert verification["split_rows"] == 3
+    assert verification["row_counts"] == {"train": 1, "validation": 1, "test": 1}
