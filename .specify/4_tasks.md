@@ -44,7 +44,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 | Licencia | Cerrado | T-0.2b: ratificado por el equipo en daily 2026-07-24; uso local aceptado, incluida la permanencia de los CSV ya trackeados en Git |
 | Evaluación | Cerrado | T-0.4/T-1.5: métrica, gap, ventanas temporales y particiones ratificados por el equipo en daily 2026-07-24 |
 | Candidatos | Cerrado | T-0.5: cuatro algoritmos asignados, ver `docs/decisions/0003-four-candidate-models.md` |
-| Aplicación | En progreso | T-0.6: arquitectura y contrato definitivo |
+| Aplicación | Cerrado | T-0.6: arquitectura y contrato aprobados por I1–I4 |
 | `Data Ready` | Abierto | T-1.8 y checklist de `2_spec.md` |
 | Nivel Esencial | No iniciado | Requiere `Data Ready` |
 
@@ -121,7 +121,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Evidencia: tabla de decisiones de `2_spec.md` actualizada.
 - Cierre 2026-07-24: confirmado por el equipo (representante de sesión). Candidato A (I1): regresión logística multinomial. Candidato B (I2): gradient boosting (HistGradientBoostingClassifier/XGBoost/LightGBM). Candidato C (I3): random forest. Candidato D (I4): SVM con kernel RBF y probabilidades. Diversidad cubierta: lineal, boosting de árboles, bagging de árboles y margen. Detalle y justificación en `docs/decisions/0003-four-candidate-models.md`.
 
-### [~] T-0.6 Definir aplicación y contratos preliminares
+### [x] T-0.6 Definir aplicación y contratos preliminares
 
 - Responsable: I3 e I4.
 - Revisores: I1 e I2.
@@ -132,7 +132,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Evidencia actual: contrato JSON preliminar, tecnologías, arquitectura y ruta registrados en `2_spec.md`.
 - Avance 2026-07-24: I3/I4 seleccionan frontend React + TypeScript con Vite y backend FastAPI + Pydantic servido con Uvicorn, en procesos separados comunicados mediante HTTP/JSON. La ruta de predicción será `POST /api/v1/predictions`. César conserva la propiedad exclusiva de `app/frontend/` y Fernanda la de `app/backend/` para evitar solapamientos.
 - Contrato listo para revisión 2026-07-24: definidos códigos HTTP, error uniforme, límites de entrada, objetivo de latencia p95, observabilidad mínima y reglas de versionado/compatibilidad en `2_spec.md`.
-- Pendiente para cierre: obtener revisión de I1/I2 y registrar su aprobación; la implementación y sus fixtures corresponden a T-1.6/T-1.7.
+- Cierre 2026-07-24: I1 e I2 confirmaron su aprobación del contrato preparado por I3/I4. Quedan aprobadas las tecnologías, la arquitectura separada, la ruta versionada, los esquemas JSON, los errores, los límites, la latencia y el versionado. La implementación y sus fixtures corresponden a T-1.6/T-1.7.
 
 ### [x] T-0.7 Definir estrategia Git
 
@@ -496,7 +496,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 
 | Campo | Valor |
 |---|---|
-| Estado | v1.0 — T-0.2b, T-0.4, T-0.5 y T-1.5 ratificados en daily 2026-07-24 |
+| Estado | v1.0 — T-0.2b, T-0.4, T-0.5, T-0.6 y T-1.5 ratificados el 2026-07-24 |
 | Fecha | 24/07/2026 |
-| Siguiente trabajo bloqueante | T-0.6, T-1.4a y T-1.6–T-1.7 antes de `T-1.8` |
+| Siguiente trabajo bloqueante | T-1.2–T-1.4 y T-1.6–T-1.7 antes de `T-1.8` |
 | Regla | Marcar `[x]` solo con verificación, evidencia y revisión cruzada |
