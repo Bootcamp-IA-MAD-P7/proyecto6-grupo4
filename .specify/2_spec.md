@@ -29,7 +29,7 @@ La consigna también menciona una API como posible mecanismo de productivizació
 
 ### Restricción de overfitting
 
-Propuesta para aprobación en T-0.4:
+Aprobada en T-0.4 (2026-07-23), ratificada en daily 2026-07-24:
 
 - Métrica principal: `macro-F1`.
 - Gap: `max(0, macro_F1_train - macro_F1_validation)`.
@@ -78,7 +78,7 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 
 | Decisión | Estado | Valor |
 |---|---|---|
-| Dataset | Selección técnica y procedencia aprobadas | Partidos de LaLiga 1995-96–2025-26, dos CSV locales combinados mediante loader único; conservación y redistribución conforme a la política documentada |
+| Dataset | Aprobada 2026-07-24 (T-0.2b, uso local) | Partidos de LaLiga 1995-96–2025-26, dos CSV locales combinados mediante loader único; uso local, permanencia de las copias ya trackeadas aceptada por el equipo, sin publicar nuevos derivados fila a fila salvo permiso escrito |
 | Problema de negocio | Propuesta registrada | Predicción prepartido del resultado final; no se inicia entrenamiento hasta aprobación |
 | Usuario principal | Propuesta registrada | Persona usuaria interesada en análisis deportivo prepartido |
 | Target | Aprobada 2026-07-23 | `result_ft`: `H`, `D`, `A` |
@@ -87,7 +87,7 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 | Métricas secundarias | Aprobada 2026-07-23 (T-0.4) | Accuracy, balanced accuracy, precisión/recall/F1 por clase, log loss, matriz de confusión |
 | Fórmula de overfitting | Aprobada 2026-07-23 (T-0.4) | `gap = macro-F1(train) − macro-F1(validación)`, en puntos absolutos; umbral `< 0.05` sobre medias de CV |
 | Estrategia de partición | Aprobada 2026-07-23 (T-0.4/T-1.5) | Cronológica por temporada, congelada: train 1995-96–2019-20 (9.607 filas), validación 2020-21–2022-23 (1.197 filas), test 2023-24–2025-26 (1.140 filas, protegido); semilla `42` |
-| Modelos A, B, C y D | Pendiente | No seleccionados |
+| Modelos A, B, C y D | Aprobada 2026-07-24 (T-0.5) | A: regresión logística multinomial (I1). B: gradient boosting (I2). C: random forest (I3). D: SVM kernel RBF (I4). Detalle en `docs/decisions/0003-four-candidate-models.md` |
 | Tecnología frontend | Pendiente | No seleccionada |
 | Tecnología backend | Pendiente | No seleccionada |
 | Persistencia | Pendiente | No seleccionada |
@@ -100,7 +100,7 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 Las solicitudes de 2026-07-22 y 2026-07-23 autorizaron carga, auditoría, diccionario, limpieza reproducible y EDA antes de cerrar todos los gates. Este trabajo se clasifica como spike exploratorio: produce evidencia para decidir, pero no habilita splits ni entrenamiento y no altera la regla general de dependencias.
 
 - Dataset canónico aprobado técnicamente: `laliga_matches_1995_96_to_2025_26_v1`.
-- Fuentes raw: `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv`; las URL, huellas y adquisición reproducible están documentadas en `docs/data_acquisition.md` y la política aplicable en `reports/metrics/source_provenance.json`.
+- Fuentes raw locales: `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv`; se conservan inmutables. Las URL, huellas y adquisición local reproducible están documentadas en `docs/data_acquisition.md`. El equipo ratificó en daily 2026-07-24 la permanencia de las copias ya trackeadas en Git; no hay remediación pendiente sobre este punto.
 - Manifest con dimensiones y SHA-256: `reports/metrics/dataset_manifest.json`.
 - Dataset limpio canónico: `data/processed/laliga_matches_clean.csv`, generado únicamente desde los dos raw por `scripts/run_laliga_preprocessing.py`.
 - Evidencia del preprocesamiento: `notebooks/00_laliga_preprocessing.ipynb`, `reports/metrics/preprocessing_summary.json` y `reports/metrics/source_column_policy.csv`.
@@ -108,7 +108,7 @@ Las solicitudes de 2026-07-22 y 2026-07-23 autorizaron carga, auditoría, diccio
 - Resultado de auditoría: 11.944 filas, 54 columnas, 31 temporadas, 0 IDs duplicados, 0 targets nulos y 0 incoherencias marcador/resultado.
 - EDA reproducible: `reports/laliga_eda.md`, `notebooks/01_laliga_eda.ipynb` y once figuras persistentes.
 - Las matrices de confusión de esta fase corresponden exclusivamente a reglas descriptivas fijas (clase mayoritaria y favorito de apertura); no son candidatos entrenados ni sustituyen T-0.4.
-- Procedencia y revisión I1 documentadas: el uso analítico local encaja con la finalidad declarada, pero no se demuestra permiso de redistribución pública. El gate `Data Ready` permanece abierto hasta la ratificación I2/I3/I4 y la remediación.
+- Procedencia y revisión I1 documentadas: el uso analítico local encaja con la finalidad declarada. El equipo ratificó en daily 2026-07-24 (I2/I3/I4) mantener las copias ya trackeadas sin remediación adicional.
 
 ## Estrategia Git aprobada
 
@@ -335,33 +335,33 @@ Requisitos:
 
 - Orden cronológico por `match_date` y clave estable de desempate.
 - Ventanas temporales explícitas y sin solapamiento.
-- Propuesta para T-0.4: train hasta 2021-22; validación 2022-23–2023-24; test 2024-25–2025-26.
-- La semilla solo controla algoritmos y operaciones internas; no decide el split principal.
+- Congelado en T-1.5 (ratificado 2026-07-24): train 1995-96–2019-20 (9.607 filas); validación 2020-21–2022-23 (1.197 filas); test 2023-24–2025-26 (1.140 filas, protegido). Implementado en `src/evaluation/splits.py`, versionado en `data/processed/splits/laliga_splits.csv` y `reports/metrics/split_manifest.json`.
+- La semilla (`42`) solo controla algoritmos y operaciones internas; no decide el split principal.
 - La estratificación aleatoria por filas no sustituye la separación temporal.
 - Índices o mecanismo de generación versionados.
 - Test final reservado.
 - Transformaciones ajustadas únicamente con entrenamiento.
 - Posible backtesting adicional con ventanas temporales expansivas, sin consultar el test final.
 
-El Integrante 2 coordinará este contrato con revisión del Integrante 1.
+El Integrante 2 coordinó este contrato con revisión técnica del Integrante 1 y revisión cruzada de I3/I4 ratificada en daily 2026-07-24.
 
 ### Gate `Data Ready`
 
 No podrá comenzar el entrenamiento individual hasta verificar:
 
 - [x] Dataset seleccionado y accesible localmente.
-- [ ] Condiciones de uso y redistribución aprobadas.
+- [x] Condiciones de uso y redistribución aprobadas (uso local ratificado 2026-07-24, incluida la permanencia de los CSV ya trackeados en Git).
 - [x] Target y clases aprobados.
 - [ ] EDA inicial completado.
 - [ ] Reglas comunes de limpieza aprobadas.
 - [ ] Variables con leakage excluidas.
 - [ ] Generador común de features históricas aprobado y probado.
 - [ ] Contrato de datos aprobado.
-- [ ] Particiones comunes reproducibles.
-- [ ] Test final protegido.
-- [ ] Métricas comunes definidas.
-- [ ] Fórmula de overfitting definida.
-- [ ] Cuatro modelos candidatos aprobados.
+- [x] Particiones comunes reproducibles.
+- [x] Test final protegido.
+- [x] Métricas comunes definidas.
+- [x] Fórmula de overfitting definida.
+- [x] Cuatro modelos candidatos aprobados.
 
 ## Pipelines individuales
 
@@ -589,6 +589,6 @@ Cambios sobre dataset, target, limpieza, splits, métricas, overfitting, contrat
 
 | Campo | Valor |
 |---|---|
-| Estado | v1.0 — contratos LaLiga reconciliados; propuestas de evaluación pendientes de T-0.4 |
-| Fecha | 23/07/2026 |
-| Bloqueos | T-0.4, T-0.5 y T-0.6 |
+| Estado | v1.0 — T-0.2b, T-0.4, T-0.5 y T-1.5 ratificados en daily 2026-07-24 |
+| Fecha | 24/07/2026 |
+| Bloqueos | T-0.1, T-0.6 y T-1.1–T-1.4/T-1.6–T-1.7 antes de `Data Ready` |
