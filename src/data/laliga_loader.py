@@ -672,8 +672,8 @@ def build_dataset_manifest(
         "preprocessing": preprocessing_report or {},
         "canonical_audit": audit_dataset(canonical),
         "provenance_status": (
-            "i1_review_complete_public_redistribution_not_demonstrated_"
-            "pending_team_approval_and_repository_remediation"
+            "team_ratified_local_or_private_repository_only_"
+            "public_redistribution_not_authorized"
         ),
     }
 
