@@ -1,6 +1,6 @@
 # Tabla de experimentos (T-2.5)
 
-Plantilla vacía para consolidar los cuatro candidatos bajo el mismo contrato de experimentación. Coordina I2; cada integrante rellena la fila de su candidato al terminar T-2.1–T-2.4. No contiene resultados todavía: `T-1.8` (`Data Ready`) sigue abierto y ningún candidato se ha entrenado.
+Tabla consolidada tras `Data Ready`. Las cuatro filas comparten datos, features y splits; el Champion D y su evaluación final constan en `champion_metadata.json`.
 
 ## Columnas de `experiments_table.csv`
 

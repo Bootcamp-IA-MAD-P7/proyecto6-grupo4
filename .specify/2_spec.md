@@ -369,8 +369,8 @@ No podrá comenzar el entrenamiento individual hasta verificar:
 - [x] Target y clases aprobados.
 - [x] EDA inicial completado (T-1.3: revisión compartida I1–I4 el 2026-07-24).
 - [x] Reglas comunes de limpieza aprobadas (T-1.4: revisión I2/I4; regeneración y contrato de splits verificados el 2026-07-24).
-- [x] Variables con leakage excluidas técnicamente por el contrato y el generador histórico (pendiente de ratificación de I2 dentro de T-1.4a).
-- [ ] Generador común de features históricas aprobado y probado (T-1.4a, bloqueante de `Data Ready`).
+- [x] Variables con leakage excluidas técnicamente por el contrato y el generador histórico, revisado por I2.
+- [x] Generador común de features históricas aprobado y probado (`historical_features_v1`; manifest y pruebas reproducibles).
 - [x] Contrato de datos aprobado (T-1.2: diccionario y auditoría revisados por I3 el 2026-07-24).
 - [x] Particiones comunes reproducibles.
 - [x] Test final protegido.

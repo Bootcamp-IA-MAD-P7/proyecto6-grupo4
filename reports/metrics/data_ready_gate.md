@@ -14,8 +14,7 @@
 
 ## Dictamen
 
-**No cerrado.** Falta la revisión obligatoria de I2 de T-1.4a y siguen abiertas
-T-1.6 (mock de frontend) y T-1.7 (mock de backend). Por las reglas de
-`.specify/`, esos elementos impiden habilitar formalmente T-2.1–T-2.4. El
-artefacto y las métricas de A son evidencia técnica reproducible, no una
-autorización para usar el test ni para seleccionar un Champion.
+**Cerrado el 2026-07-26.** I2 revisó T-1.4a; el frontend y backend están
+integrados, y el checklist de `2_spec.md` no conserva decisiones bloqueantes.
+El manifest fija los datos, splits y el contrato histórico usados por los cuatro
+candidatos. El test permaneció reservado hasta la selección de Champion.

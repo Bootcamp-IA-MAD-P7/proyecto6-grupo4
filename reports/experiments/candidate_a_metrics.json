@@ -61,8 +61,8 @@
   },
   "overfitting_gap_macro_f1": 0.0,
   "absolute_macro_f1_difference": 0.009332570036762244,
-  "training_time_seconds": 0.19732889998704195,
-  "inference_time_ms_per_row": 0.01873650793110642,
+  "training_time_seconds": 0.29893569997511804,
+  "inference_time_ms_per_row": 0.03674661654297421,
   "artifact_path": "models/candidates/model_a/candidate_a_logistic_regression_v1.joblib",
   "test_protection": "Las filas split=test no se usan para ajuste, entrenamiento, validación ni selección."
 }

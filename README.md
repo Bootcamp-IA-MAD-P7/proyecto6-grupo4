@@ -70,6 +70,28 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pytest
 ```
 
+## Entrenamiento, Champion y aplicación
+
+Tras preparar los datos, ejecuta las features y los cuatro candidatos con el
+mismo contrato temporal. La selección evalúa el test únicamente después de
+decidir el Champion mediante validation.
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-backend.txt
+.\.venv\Scripts\python.exe scripts\run_historical_features.py
+.\.venv\Scripts\python.exe scripts\run_candidate_a.py
+.\.venv\Scripts\python.exe scripts\run_candidate_b.py
+.\.venv\Scripts\python.exe scripts\run_candidate_c.py
+.\.venv\Scripts\python.exe scripts\run_candidate_d.py
+.\.venv\Scripts\python.exe scripts\select_champion.py
+.\.venv\Scripts\python.exe -m uvicorn app.backend.main:app --reload
+```
+
+La API escucha `POST /api/v1/predictions`; el frontend está en
+`app/frontend/public/` y se sirve como archivos estáticos. Para verificar la
+suite en entornos donde `.pytest_tmp` pertenezca a otro proceso, usa un temporal
+aislado: `python -m pytest -q -p no:cacheprovider --basetemp <ruta-temporal>`.
+
 Entregables principales:
 
 - `reports/laliga_eda.md`: informe interpretado.
