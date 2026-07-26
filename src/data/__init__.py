@@ -13,6 +13,16 @@ from .laliga_loader import (
     preprocess_sources,
     write_canonical_outputs,
 )
+from .historical_features import (
+    FEATURE_GENERATOR_VERSION,
+    FEATURE_METADATA_COLUMNS,
+    MODEL_CATEGORICAL_FEATURES,
+    MODEL_FEATURES,
+    MODEL_NUMERIC_FEATURES,
+    HistoricalFeatureConfig,
+    build_historical_features,
+    generate_historical_features,
+)
 
 __all__ = [
     "DETAILED_FILENAME",
@@ -26,4 +36,12 @@ __all__ = [
     "load_raw_sources",
     "preprocess_sources",
     "write_canonical_outputs",
+    "FEATURE_GENERATOR_VERSION",
+    "FEATURE_METADATA_COLUMNS",
+    "MODEL_CATEGORICAL_FEATURES",
+    "MODEL_FEATURES",
+    "MODEL_NUMERIC_FEATURES",
+    "HistoricalFeatureConfig",
+    "build_historical_features",
+    "generate_historical_features",
 ]

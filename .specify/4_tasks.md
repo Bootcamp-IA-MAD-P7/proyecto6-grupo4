@@ -218,6 +218,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: el generador es determinista, versionado y reutilizable por los cuatro pipelines; su schema, parámetros y origen de datos quedan documentados. Ningún resultado futuro modifica las features de partidos anteriores y las transformaciones ajustables se estiman solo en train. El test permanece protegido: no se usa para ajuste, selección ni cálculo de parámetros.
 - Verificación: ejecutar el generador sobre el dataset y splits congelados; comprobar schema, `match_id`, SHA-256 y conteos. Añadir pruebas unitarias de orden temporal, `shift(1)`, empate de fechas y no-leakage al alterar un resultado futuro, más una prueba de integración reproducible. Ejecutar `./.venv/Scripts/python.exe -m pytest -q`.
 - Evidencia esperada: implementación en `src/data/`, pruebas en `tests/unit/` y `tests/integration/`, manifest de features en `reports/metrics/` y contrato actualizado en `2_spec.md`.
+- Avance técnico I1 2026-07-26: implementado `src/data/historical_features.py` y el comando `scripts/run_historical_features.py`. El generador `historical_features_v1` usa una ventana de 5, puntos, goles, victorias, descanso y Elo (1500, K=20); procesa por fecha y actualiza el estado solo tras calcular toda la fecha. La evidencia `reports/metrics/historical_features_manifest.json` registra SHA-256, schema, parámetros, rango y conteos 9.607/1.197/1.140. Se añadieron pruebas de cold-start, `shift` equivalente, orden estable, empate de fecha, modificación de un resultado futuro e integración reproducible. Pendiente revisión obligatoria de I2 antes de marcar la tarea como cerrada.
 
 ### [x] T-1.5 Congelar particiones comunes
 
@@ -261,6 +262,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Acción: completar la checklist de `2_spec.md`.
 - Criterio de aceptación: no quedan decisiones de datos, evaluación o candidatos que bloqueen el entrenamiento.
 - Evidencia: checklist completada y revisión cruzada.
+- Estado técnico I1 2026-07-26: las exclusiones de leakage y el generador histórico tienen implementación y pruebas, pero T-1.4a aún espera revisión de I2. Además T-1.6 (frontend mock) y T-1.7 (backend mock) siguen sin cerrar en esta rama. Por tanto el gate no puede declararse cerrado y el entrenamiento de candidatos no se habilita por este registro; cualquier experimento local deberá identificarse como evidencia técnica pendiente de gate.
 
 ## Fase 2 — Cuatro candidatos en paralelo
 
@@ -272,6 +274,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Acción: crear, entrenar, evaluar, serializar y documentar el candidato A.
 - Criterio de aceptación: cumple el contrato común de experimentación.
 - Evidencia: pipeline, artefacto, métricas, tests y registro.
+- Avance técnico I1 2026-07-26: se implementó `src/candidates/model_a/pipeline.py` y `scripts/run_candidate_a.py` como ejecución local pendiente de gate. Consume exclusivamente el schema de `historical_features_v1`, ajusta imputación, escalado y codificación solo en train, usa regresión logística multinomial con semilla 42, evalúa solo validation, serializa el pipeline completo y actualiza el registro. No autoriza ni sustituye el cierre de T-1.8; requiere revisión de I2 para cierre formal.
 
 ### [ ] T-2.2 Desarrollar Pipeline B + Modelo B
 
