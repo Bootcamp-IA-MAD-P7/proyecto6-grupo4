@@ -285,6 +285,18 @@ Los cuatro candidatos consumirán una tabla de features generada por una única 
 | Encuentro actual | Excluidos goles, resultado, tiros, faltas, córners, tarjetas y todas sus derivadas |
 | Metadatos | `match_id` y proxies de fuente o cobertura quedan fuera del modelo |
 
+Implementación versionada: `src/data/historical_features.py` genera
+`historical_features_v1`. Usa una ventana de cinco encuentros, puntos, goles a
+favor/en contra, tasa de victorias, días desde el último partido y Elo
+(`1500`, factor K `20`). Las filas se ordenan de forma estable por
+`match_date` y `match_id`, pero se calculan por lotes de fecha: todas las
+features de la fecha se emiten antes de incorporar sus resultados. De este modo
+un partido del mismo día tampoco se considera pasado de otro. `match_id`,
+`season`, `match_date`, `split` y `result_ft` permanecen como metadata y no se
+entregan al estimador. La regeneración local se realiza con
+`python scripts/run_historical_features.py` y su evidencia queda en
+`reports/metrics/historical_features_manifest.json`.
+
 Reglas obligatorias:
 
 - Toda agregación histórica aplica `shift(1)` o una operación equivalente antes de cualquier ventana.
@@ -357,7 +369,7 @@ No podrá comenzar el entrenamiento individual hasta verificar:
 - [x] Target y clases aprobados.
 - [x] EDA inicial completado (T-1.3: revisión compartida I1–I4 el 2026-07-24).
 - [x] Reglas comunes de limpieza aprobadas (T-1.4: revisión I2/I4; regeneración y contrato de splits verificados el 2026-07-24).
-- [ ] Variables con leakage excluidas.
+- [x] Variables con leakage excluidas técnicamente por el contrato y el generador histórico (pendiente de ratificación de I2 dentro de T-1.4a).
 - [ ] Generador común de features históricas aprobado y probado (T-1.4a, bloqueante de `Data Ready`).
 - [x] Contrato de datos aprobado (T-1.2: diccionario y auditoría revisados por I3 el 2026-07-24).
 - [x] Particiones comunes reproducibles.
