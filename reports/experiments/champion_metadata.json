@@ -1,0 +1,82 @@
+{
+  "champion_candidate_id": "D",
+  "champion_model_version": "candidate_d_svc_rbf_v1",
+  "selection_rule": "Mayor macro-F1 de validation entre candidatos con gap < 0.05; empate por menor latencia.",
+  "selection_timestamp_utc": "2026-07-26T18:56:20.961580+00:00",
+  "comparability": {
+    "data_version_sha256": "6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c",
+    "features_sha256": "563634a73e265ab71f4d1b3795d1245eedf33a82c26328a61e99d16d8f8d2c81",
+    "feature_generator_version": "historical_features_v1",
+    "split_manifest_reference": "reports/metrics/split_manifest.json"
+  },
+  "validation": {
+    "macro_f1": 0.48374403901344326,
+    "accuracy": 0.49624060150375937,
+    "balanced_accuracy": 0.4891958330945669,
+    "log_loss": 1.0094291542239737
+  },
+  "train": {
+    "macro_f1": 0.4929096220599551,
+    "accuracy": 0.5013011345893619,
+    "balanced_accuracy": 0.5026655067275311,
+    "log_loss": 0.965811280135868
+  },
+  "overfitting_gap_macro_f1": 0.009165583046511827,
+  "final_fit_rows": 10804,
+  "test_rows": 1140,
+  "test_used_once": true,
+  "test": {
+    "macro_f1": 0.47052911743489023,
+    "accuracy": 0.4868421052631579,
+    "balanced_accuracy": 0.4757235042442905,
+    "log_loss": 0.9883868597269201
+  },
+  "test_confusion_matrix": {
+    "labels": [
+      "H",
+      "D",
+      "A"
+    ],
+    "matrix": [
+      [
+        273,
+        149,
+        100
+      ],
+      [
+        79,
+        102,
+        116
+      ],
+      [
+        55,
+        86,
+        180
+      ]
+    ]
+  },
+  "final_fit_seconds": 33.779274599975906,
+  "artifact_path": "models/champion/laliga_champion_v1.joblib",
+  "feature_columns": [
+    "home_team",
+    "away_team",
+    "home_matches_played",
+    "away_matches_played",
+    "home_points_per_match_5",
+    "away_points_per_match_5",
+    "home_goals_for_per_match_5",
+    "away_goals_for_per_match_5",
+    "home_goals_against_per_match_5",
+    "away_goals_against_per_match_5",
+    "home_win_rate_5",
+    "away_win_rate_5",
+    "home_elo_pre_match",
+    "away_elo_pre_match",
+    "elo_difference_home",
+    "home_days_since_last_match",
+    "away_days_since_last_match"
+  ],
+  "feature_generator_version": "historical_features_v1",
+  "source_data_sha256": "6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c",
+  "limitations": "Predicción orientativa; se apoya únicamente en histórico. Equipos nuevos usan cold-start y no se usan cuotas."
+}

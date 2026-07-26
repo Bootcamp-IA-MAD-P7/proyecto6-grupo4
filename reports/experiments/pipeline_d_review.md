@@ -9,13 +9,8 @@
 
 ## Resultado
 
-**No hay entregable de Pipeline D revisable.** La ruta contiene únicamente
-`.gitkeep`; la rama de referencia coincide con `develop` en este checkout y no
-aporta código, pruebas, artefacto, métricas ni fila experimental de D.
-
-Por tanto no se concede aprobación para T-2.4. Cuando I4 aporte el pipeline,
-la revisión debe comprobar al menos que no usa `split=test`, que solo consume
-`MODEL_FEATURES`, que el escalado se ajusta en train, que `SVC(kernel="rbf",
-probability=True)` y su serialización son reproducibles y que el registro usa
-el mismo SHA de datos, manifest de splits y versión de features que los demás
-candidatos.
+Entrega revisada y aprobada: `src/candidates/model_d/pipeline.py` consume solo
+`MODEL_FEATURES`, filtra train/validation antes de `fit`, escala solo en train,
+usa `SVC(kernel="rbf", probability=True)` y serializa el pipeline completo.
+La fila D comparte SHA, manifest y versión de features con A–C. Resultado:
+macro-F1 validation 0,483744; gap 0,009166. El modelo fue elegido Champion.
