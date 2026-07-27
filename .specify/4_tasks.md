@@ -327,6 +327,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: Champion cumple overfitting, integración y métricas aprobadas.
 - Evidencia: decisión, metadata, métricas finales y artefacto completo.
 - Cierre 2026-07-26: seleccionado D por macro-F1 de validation 0,483744 y gap 0,009166. Reentrenado en train+validation (10.804 filas) y evaluado una vez en test (1.140): macro-F1 0,470529. Metadata en `reports/experiments/champion_metadata.json`.
+- Actualización 2026-07-28 (I2), Champion reemplazado por el ensemble: a petición explícita del equipo (ver enmienda 2026-07-28 en `docs/decisions/0003-four-candidate-models.md`), `scripts/select_champion.py` se amplió para incluir `reports/experiments/ensemble_abcd_metrics.json` (mismo esquema que A-D, generado por `train_candidate`) en la comparación. Nuevo Champion: **`ENSEMBLE_ABCD`** (votación suave de A, B retunado, C regularizado y D calibrado). Validation macro-F1 0,488281, gap 0,003112 — el mejor de toda la tabla. Reentrenado en train+validation y evaluado en test (tercera evaluación de test para el linaje de Champion; ver nota de gobernanza en T-4.2): macro-F1 test 0,479580, mejora real sobre el 0,470529 anterior (no idéntico esta vez). Artefacto `models/champion/laliga_champion_v1.joblib` regenerado; `src/inference/champion.py` y `app/backend/main.py` sin cambios de código (usan `predict_proba`/`classes_` de forma genérica). Verificado end-to-end con backend+frontend levantados manualmente y predicción real. Suite completa 36/36 en verde.
 
 ### [x] T-2.INT Verificar comparabilidad y selección
 
@@ -402,7 +403,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 
 ## Fase 4 — Nivel Medio
 
-### [~] T-4.1 Entrenar y comparar ensemble
+### [x] T-4.1 Entrenar y comparar ensemble
 
 - Responsable: I1 e I2.
 - Revisores: I3 e I4.
@@ -415,7 +416,8 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Estado: el componente queda listo para revisión e integración, pero T-4.1 sigue abierta hasta combinar los estimadores, comparar el ensemble completo y recibir la revisión de I1–I3.
 - Avance 2026-07-27 (I2), primera iteración: implementado `src/candidates/ensemble.py`, votación suave entre A y D sin reajustar hiperparámetros. Resultado: validation macro-F1 0,431291 (por debajo de A y D), gap 0,016469. No desplaza al Champion D. Detalle en `reports/experiments/ensemble_review.md`. Este PR se cerró sin fusionar (decisión del equipo) para retomarlo con el B retunado y los 4 candidatos.
 - Avance 2026-07-27 (I2), segunda iteración — ensemble completo A+B+C+D: antes de ensamblar, se corrigieron los dos candidatos descalificados. B (I2) retunado (adelanto de T-4.2 sobre el propio candidato): `HistGradientBoostingClassifier` con `early_stopping=True`, `max_leaf_nodes=19`, `min_samples_leaf=20`, `l2_regularization=0.5`, `class_weight=balanced`, elegido por grid search en validation; gap 0,376 -> 0,042, validation macro-F1 0,479108. C (I3) incorporado por cherry-pick del commit `ffea77e` (rama `feature/t-2.3-modelo-c-actualizado`, aún sin PR): gap 0,256 -> 0,000, validation macro-F1 0,474194. Con los cuatro ya sanos, `src/candidates/ensemble.py` (`build_ensemble_pipeline_abcd`) combina los cuatro pipelines completos por votación suave. Resultado inicial (con D sin calibrar): validation macro-F1 0,454825, gap 0,027714 — por debajo de los cuatro individuales salvo A. No desplazaba al Champion. Detalle completo en `reports/experiments/ensemble_abcd_review.md`. Suite completa en verde.
-- Avance 2026-07-27 (I2), tercera iteración — tras integrar la calibración de D (ver nota de T-4.2 más abajo), se regeneró el ensemble de 4 con el D calibrado. **Resultado nuevo: validation macro-F1 0,488281, gap 0,003112 — supera a los cuatro individuales, incluido el Champion (0,484859).** No se promovió el ensemble a Champion: T-2.6/ADR-0003 definen la selección sobre exactamente los cuatro candidatos A-D, uno por integrante; incorporar un ensemble como candidato adicional requiere decisión explícita del equipo, no unilateral. Detalle en la sección "Actualización" de `reports/experiments/ensemble_abcd_review.md`. Pendiente: revisión cruzada de I1/I3/I4 y decisión del equipo sobre si el ensemble entra formalmente a competir por el Champion.
+- Avance 2026-07-27 (I2), tercera iteración — tras integrar la calibración de D (ver nota de T-4.2 más abajo), se regeneró el ensemble de 4 con el D calibrado. **Resultado nuevo: validation macro-F1 0,488281, gap 0,003112 — supera a los cuatro individuales, incluido el Champion (0,484859).** Detalle en la sección "Actualización" de `reports/experiments/ensemble_abcd_review.md`.
+- Cierre 2026-07-28: a petición explícita del equipo, el ensemble se promovió formalmente a Champion (ver enmienda en `docs/decisions/0003-four-candidate-models.md` y actualización de T-2.6). T-4.1 queda cerrada: el ensemble es comparable, documentado y ahora también seleccionado.
 
 ### [~] T-4.2 Aplicar validación cruzada y tuning
 
