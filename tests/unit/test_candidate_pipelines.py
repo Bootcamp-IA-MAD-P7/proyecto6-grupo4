@@ -29,7 +29,15 @@ def test_candidate_b_c_and_d_fit_only_the_common_feature_schema() -> None:
         assert set(pipeline.predict(features.loc[:, MODEL_FEATURES])).issubset({"H", "D", "A"})
 
 
-def test_pipeline_d_is_the_approved_probabilistic_rbf_svm() -> None:
-    classifier = build_pipeline_d().named_steps["classifier"]
-    assert classifier.kernel == "rbf"
-    assert classifier.probability is True
+def test_pipeline_d_is_the_calibrated_rbf_svm() -> None:
+    # T-4.2: D ya no usa el probability=True interno (deprecado desde sklearn
+    # 1.9); calibra explícitamente con CalibratedClassifierCV (I4, T-4.1).
+    calibrator = build_pipeline_d().named_steps["classifier"]
+    assert calibrator.method == "temperature"
+    assert calibrator.ensemble is False
+    assert calibrator.cv.get_n_splits() == 5
+    base_svc = calibrator.estimator.named_steps["classifier"]
+    assert base_svc.kernel == "rbf"
+    # No pasa probability=True: la calibración explícita reemplaza la
+    # estimación interna deprecada, así que el parámetro queda en su default.
+    assert base_svc.probability != True  # noqa: E712 (comparación explícita contra el sentinel "deprecated")

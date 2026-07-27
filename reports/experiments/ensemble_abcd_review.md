@@ -1,5 +1,12 @@
 # T-4.1 — Ensemble de los 4 candidatos (A+B+C+D) vs. individuales
 
+> **Actualización 2026-07-27 (T-4.2 adelantado sobre D):** tras calibrar D
+> (ver `reports/experiments/champion_d_calibration_review.md`), se regeneró
+> este ensemble con el nuevo D. **El resultado cambió por completo: el
+> ensemble ahora SÍ supera al Champion.** Ver la sección "Actualización" al
+> final de este documento. Las secciones de abajo son el análisis original,
+> con el D sin calibrar, y se conservan como evidencia histórica.
+
 ## Alcance
 
 Segunda iteración de T-4.1, después de que la primera (solo A+D) quedara sin
@@ -95,3 +102,42 @@ B en particular pasó de ser el peor candidato con diferencia a quedar a solo
 - Reproducción: `./.venv/Scripts/python.exe scripts/run_ensemble_abcd.py`
 - Modelo B retunado: `src/candidates/model_b/pipeline.py`, reproducible con `./.venv/Scripts/python.exe scripts/run_candidate_b.py`
 - Modelo C regularizado: aporte de I3, commit `ffea77e` (cherry-pick)
+
+---
+
+## Actualización 2026-07-27 — con D calibrado, el ensemble SÍ gana
+
+Tras integrar la calibración de D (componente de I4, ver
+`champion_d_calibration_review.md`), se regeneró el ensemble de 4 sin tocar
+nada más (mismos A, B, C; D actualizado).
+
+| Candidato | Validation macro-F1 | Gap |
+|---|---:|---:|
+| A | 0.464836 | 0.000000 |
+| B (retunado) | 0.479108 | 0.042046 |
+| C (fix de I3) | 0.474194 | 0.000000 |
+| D calibrado (Champion vigente) | 0.484859 | 0.007564 |
+| **Ensemble A+B+C+D (con D calibrado)** | **0.488281** | **0.003112** |
+
+**El ensemble ahora supera a los cuatro individuales, incluido el Champion**,
+con el mejor gap de overfitting de toda la tabla. La diferencia frente a la
+primera versión del ensemble (0.454825 con D sin calibrar) es enorme para un
+solo cambio: la hipótesis de la sugerencia 3 de arriba —que la falta de
+calibración de D distorsionaba el promedio de probabilidades— parece
+confirmada.
+
+### Qué NO se hizo con este hallazgo
+
+Este resultado **no convierte automáticamente al ensemble en el nuevo
+Champion**. La selección de Champion (T-2.6) está definida en
+`docs/decisions/0003-four-candidate-models.md` sobre exactamente los cuatro
+candidatos A-D, uno por integrante; un ensemble de 5º "candidato" no está
+contemplado en ese contrato y promoverlo unilateralmente violaría la regla
+de `0_constitution.md` de que "ningún integrante podrá promocionar
+unilateralmente su candidato". Esta decisión queda explícitamente pendiente
+de coordinación con el equipo completo, no tomada aquí.
+
+### Evidencia de esta actualización
+
+- Métricas y tabla regeneradas: `reports/experiments/ensemble_abcd_metrics.json`, fila `ENSEMBLE_ABCD` en `reports/experiments/ensemble_table.csv`.
+- Reproducción: primero `./.venv/Scripts/python.exe scripts/run_candidate_d.py` (D calibrado), luego `./.venv/Scripts/python.exe scripts/run_ensemble_abcd.py`.

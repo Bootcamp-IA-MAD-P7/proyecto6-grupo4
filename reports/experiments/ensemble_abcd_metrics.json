@@ -48,7 +48,7 @@
       ],
       [
         "svc_d",
-        "Pipeline(steps=[('preprocessing',\n                 ColumnTransformer(transformers=[('numeric',\n                                                  Pipeline(steps=[('imputer',\n                                                                   SimpleImputer(strategy='median')),\n                                                                  ('scaler',\n                                                                   StandardScaler())]),\n                                                  ['home_matches_played',\n                                                   'away_matches_played',\n                                                   'home_points_per_match_5',\n                                                   'away_points_per_match_5',\n                                                   'home_goals_for_per_match_5',\n                                                   'away_goals_for_per_match_5',\n                                                   'home_goals_against_per_matc...\n                                                   'home_elo_pre_match',\n                                                   'away_elo_pre_match',\n                                                   'elo_difference_home',\n                                                   'home_days_since_last_match',\n                                                   'away_days_since_last_match']),\n                                                 ('teams',\n                                                  Pipeline(steps=[('imputer',\n                                                                   SimpleImputer(strategy='most_frequent')),\n                                                                  ('one_hot',\n                                                                   OneHotEncoder(handle_unknown='ignore'))]),\n                                                  ['home_team',\n                                                   'away_team'])])),\n                ('classifier',\n                 SVC(C=0.5, class_weight='balanced', probability=True,\n                     random_state=42))])"
+        "Pipeline(steps=[('classifier',\n                 CalibratedClassifierCV(cv=StratifiedKFold(n_splits=5, random_state=None, shuffle=False),\n                                        ensemble=False,\n                                        estimator=Pipeline(steps=[('preprocessing',\n                                                                   ColumnTransformer(transformers=[('numeric',\n                                                                                                    Pipeline(steps=[('imputer',\n                                                                                                                     SimpleImputer(strategy='median')),\n                                                                                                                    ('scaler',\n                                                                                                                     StandardScaler())]),\n                                                                                                    ['home_matches_played',\n                                                                                                     'away_matches_playe...\n                                                                                                     'away_elo_pre_match',\n                                                                                                     'elo_difference_home',\n                                                                                                     'home_days_since_last_match',\n                                                                                                     'away_days_since_last_match']),\n                                                                                                   ('teams',\n                                                                                                    Pipeline(steps=[('imputer',\n                                                                                                                     SimpleImputer(strategy='most_frequent')),\n                                                                                                                    ('one_hot',\n                                                                                                                     OneHotEncoder(handle_unknown='ignore'))]),\n                                                                                                    ['home_team',\n                                                                                                     'away_team'])])),\n                                                                  ('classifier',\n                                                                   SVC(C=0.5,\n                                                                       class_weight='balanced',\n                                                                       random_state=42))]),\n                                        method='temperature', n_jobs=-1))])"
       ]
     ],
     "flatten_transform": true,
@@ -59,7 +59,7 @@
     "logistic_a": "Pipeline(steps=[('preprocessing',\n                 ColumnTransformer(transformers=[('numeric',\n                                                  Pipeline(steps=[('imputer',\n                                                                   SimpleImputer(strategy='median')),\n                                                                  ('scaler',\n                                                                   StandardScaler())]),\n                                                  ['home_matches_played',\n                                                   'away_matches_played',\n                                                   'home_points_per_match_5',\n                                                   'away_points_per_match_5',\n                                                   'home_goals_for_per_match_5',\n                                                   'away_goals_for_per_match_5',\n                                                   'home_goals_against_per_matc...\n                                                   'away_elo_pre_match',\n                                                   'elo_difference_home',\n                                                   'home_days_since_last_match',\n                                                   'away_days_since_last_match']),\n                                                 ('teams',\n                                                  Pipeline(steps=[('imputer',\n                                                                   SimpleImputer(strategy='most_frequent')),\n                                                                  ('one_hot',\n                                                                   OneHotEncoder(handle_unknown='ignore'))]),\n                                                  ['home_team',\n                                                   'away_team'])])),\n                ('classifier',\n                 LogisticRegression(C=0.1, class_weight='balanced',\n                                    max_iter=2000, random_state=42))])",
     "hgb_b": "Pipeline(steps=[('preprocessing',\n                 ColumnTransformer(transformers=[('numeric',\n                                                  SimpleImputer(strategy='median'),\n                                                  ['home_matches_played',\n                                                   'away_matches_played',\n                                                   'home_points_per_match_5',\n                                                   'away_points_per_match_5',\n                                                   'home_goals_for_per_match_5',\n                                                   'away_goals_for_per_match_5',\n                                                   'home_goals_against_per_match_5',\n                                                   'away_goals_against_per_match_5',\n                                                   'home_win_rate_5',\n                                                   'a...\n                                                                   SimpleImputer(strategy='most_frequent')),\n                                                                  ('ordinal',\n                                                                   OrdinalEncoder(handle_unknown='use_encoded_value',\n                                                                                  unknown_value=-1))]),\n                                                  ['home_team',\n                                                   'away_team'])])),\n                ('classifier',\n                 HistGradientBoostingClassifier(class_weight='balanced',\n                                                early_stopping=True,\n                                                l2_regularization=0.5,\n                                                learning_rate=0.025,\n                                                max_iter=300, max_leaf_nodes=19,\n                                                n_iter_no_change=15,\n                                                random_state=42,\n                                                validation_fraction=0.15))])",
     "rf_c": "Pipeline(steps=[('preprocessing',\n                 ColumnTransformer(transformers=[('numeric',\n                                                  SimpleImputer(strategy='median'),\n                                                  ['home_matches_played',\n                                                   'away_matches_played',\n                                                   'home_points_per_match_5',\n                                                   'away_points_per_match_5',\n                                                   'home_goals_for_per_match_5',\n                                                   'away_goals_for_per_match_5',\n                                                   'home_goals_against_per_match_5',\n                                                   'away_goals_against_per_match_5',\n                                                   'home_win_rate_5',\n                                                   'a...\n                                                   'away_days_since_last_match']),\n                                                 ('teams',\n                                                  Pipeline(steps=[('imputer',\n                                                                   SimpleImputer(strategy='most_frequent')),\n                                                                  ('one_hot',\n                                                                   OneHotEncoder(handle_unknown='ignore'))]),\n                                                  ['home_team',\n                                                   'away_team'])])),\n                ('classifier',\n                 RandomForestClassifier(class_weight='balanced', max_depth=6,\n                                        min_samples_leaf=15,\n                                        min_samples_split=30, n_estimators=300,\n                                        n_jobs=-1, random_state=42))])",
-    "svc_d": "Pipeline(steps=[('preprocessing',\n                 ColumnTransformer(transformers=[('numeric',\n                                                  Pipeline(steps=[('imputer',\n                                                                   SimpleImputer(strategy='median')),\n                                                                  ('scaler',\n                                                                   StandardScaler())]),\n                                                  ['home_matches_played',\n                                                   'away_matches_played',\n                                                   'home_points_per_match_5',\n                                                   'away_points_per_match_5',\n                                                   'home_goals_for_per_match_5',\n                                                   'away_goals_for_per_match_5',\n                                                   'home_goals_against_per_matc...\n                                                   'home_elo_pre_match',\n                                                   'away_elo_pre_match',\n                                                   'elo_difference_home',\n                                                   'home_days_since_last_match',\n                                                   'away_days_since_last_match']),\n                                                 ('teams',\n                                                  Pipeline(steps=[('imputer',\n                                                                   SimpleImputer(strategy='most_frequent')),\n                                                                  ('one_hot',\n                                                                   OneHotEncoder(handle_unknown='ignore'))]),\n                                                  ['home_team',\n                                                   'away_team'])])),\n                ('classifier',\n                 SVC(C=0.5, class_weight='balanced', probability=True,\n                     random_state=42))])",
+    "svc_d": "Pipeline(steps=[('classifier',\n                 CalibratedClassifierCV(cv=StratifiedKFold(n_splits=5, random_state=None, shuffle=False),\n                                        ensemble=False,\n                                        estimator=Pipeline(steps=[('preprocessing',\n                                                                   ColumnTransformer(transformers=[('numeric',\n                                                                                                    Pipeline(steps=[('imputer',\n                                                                                                                     SimpleImputer(strategy='median')),\n                                                                                                                    ('scaler',\n                                                                                                                     StandardScaler())]),\n                                                                                                    ['home_matches_played',\n                                                                                                     'away_matches_playe...\n                                                                                                     'away_elo_pre_match',\n                                                                                                     'elo_difference_home',\n                                                                                                     'home_days_since_last_match',\n                                                                                                     'away_days_since_last_match']),\n                                                                                                   ('teams',\n                                                                                                    Pipeline(steps=[('imputer',\n                                                                                                                     SimpleImputer(strategy='most_frequent')),\n                                                                                                                    ('one_hot',\n                                                                                                                     OneHotEncoder(handle_unknown='ignore'))]),\n                                                                                                    ['home_team',\n                                                                                                     'away_team'])])),\n                                                                  ('classifier',\n                                                                   SVC(C=0.5,\n                                                                       class_weight='balanced',\n                                                                       random_state=42))]),\n                                        method='temperature', n_jobs=-1))])",
     "logistic_a__memory": null,
     "logistic_a__steps": [
       [
@@ -401,23 +401,35 @@
     "svc_d__memory": null,
     "svc_d__steps": [
       [
+        "classifier",
+        "CalibratedClassifierCV(cv=StratifiedKFold(n_splits=5, random_state=None, shuffle=False),\n                       ensemble=False,\n                       estimator=Pipeline(steps=[('preprocessing',\n                                                  ColumnTransformer(transformers=[('numeric',\n                                                                                   Pipeline(steps=[('imputer',\n                                                                                                    SimpleImputer(strategy='median')),\n                                                                                                   ('scaler',\n                                                                                                    StandardScaler())]),\n                                                                                   ['home_matches_played',\n                                                                                    'away_matches_played',\n                                                                                    'home_points_per_match_5',\n                                                                                    '...\n                                                                                    'away_elo_pre_match',\n                                                                                    'elo_difference_home',\n                                                                                    'home_days_since_last_match',\n                                                                                    'away_days_since_last_match']),\n                                                                                  ('teams',\n                                                                                   Pipeline(steps=[('imputer',\n                                                                                                    SimpleImputer(strategy='most_frequent')),\n                                                                                                   ('one_hot',\n                                                                                                    OneHotEncoder(handle_unknown='ignore'))]),\n                                                                                   ['home_team',\n                                                                                    'away_team'])])),\n                                                 ('classifier',\n                                                  SVC(C=0.5,\n                                                      class_weight='balanced',\n                                                      random_state=42))]),\n                       method='temperature', n_jobs=-1)"
+      ]
+    ],
+    "svc_d__transform_input": null,
+    "svc_d__verbose": false,
+    "svc_d__classifier": "CalibratedClassifierCV(cv=StratifiedKFold(n_splits=5, random_state=None, shuffle=False),\n                       ensemble=False,\n                       estimator=Pipeline(steps=[('preprocessing',\n                                                  ColumnTransformer(transformers=[('numeric',\n                                                                                   Pipeline(steps=[('imputer',\n                                                                                                    SimpleImputer(strategy='median')),\n                                                                                                   ('scaler',\n                                                                                                    StandardScaler())]),\n                                                                                   ['home_matches_played',\n                                                                                    'away_matches_played',\n                                                                                    'home_points_per_match_5',\n                                                                                    '...\n                                                                                    'away_elo_pre_match',\n                                                                                    'elo_difference_home',\n                                                                                    'home_days_since_last_match',\n                                                                                    'away_days_since_last_match']),\n                                                                                  ('teams',\n                                                                                   Pipeline(steps=[('imputer',\n                                                                                                    SimpleImputer(strategy='most_frequent')),\n                                                                                                   ('one_hot',\n                                                                                                    OneHotEncoder(handle_unknown='ignore'))]),\n                                                                                   ['home_team',\n                                                                                    'away_team'])])),\n                                                 ('classifier',\n                                                  SVC(C=0.5,\n                                                      class_weight='balanced',\n                                                      random_state=42))]),\n                       method='temperature', n_jobs=-1)",
+    "svc_d__classifier__cv": "StratifiedKFold(n_splits=5, random_state=None, shuffle=False)",
+    "svc_d__classifier__ensemble": false,
+    "svc_d__classifier__estimator__memory": null,
+    "svc_d__classifier__estimator__steps": [
+      [
         "preprocessing",
         "ColumnTransformer(transformers=[('numeric',\n                                 Pipeline(steps=[('imputer',\n                                                  SimpleImputer(strategy='median')),\n                                                 ('scaler', StandardScaler())]),\n                                 ['home_matches_played', 'away_matches_played',\n                                  'home_points_per_match_5',\n                                  'away_points_per_match_5',\n                                  'home_goals_for_per_match_5',\n                                  'away_goals_for_per_match_5',\n                                  'home_goals_against_per_match_5',\n                                  'away_goals_against_per_match_5',\n                                  'home_win_rate_5', 'away_win_rate_5',\n                                  'home_elo_pre_match', 'away_elo_pre_match',\n                                  'elo_difference_home',\n                                  'home_days_since_last_match',\n                                  'away_days_since_last_match']),\n                                ('teams',\n                                 Pipeline(steps=[('imputer',\n                                                  SimpleImputer(strategy='most_frequent')),\n                                                 ('one_hot',\n                                                  OneHotEncoder(handle_unknown='ignore'))]),\n                                 ['home_team', 'away_team'])])"
       ],
       [
         "classifier",
-        "SVC(C=0.5, class_weight='balanced', probability=True, random_state=42)"
+        "SVC(C=0.5, class_weight='balanced', random_state=42)"
       ]
     ],
-    "svc_d__transform_input": null,
-    "svc_d__verbose": false,
-    "svc_d__preprocessing": "ColumnTransformer(transformers=[('numeric',\n                                 Pipeline(steps=[('imputer',\n                                                  SimpleImputer(strategy='median')),\n                                                 ('scaler', StandardScaler())]),\n                                 ['home_matches_played', 'away_matches_played',\n                                  'home_points_per_match_5',\n                                  'away_points_per_match_5',\n                                  'home_goals_for_per_match_5',\n                                  'away_goals_for_per_match_5',\n                                  'home_goals_against_per_match_5',\n                                  'away_goals_against_per_match_5',\n                                  'home_win_rate_5', 'away_win_rate_5',\n                                  'home_elo_pre_match', 'away_elo_pre_match',\n                                  'elo_difference_home',\n                                  'home_days_since_last_match',\n                                  'away_days_since_last_match']),\n                                ('teams',\n                                 Pipeline(steps=[('imputer',\n                                                  SimpleImputer(strategy='most_frequent')),\n                                                 ('one_hot',\n                                                  OneHotEncoder(handle_unknown='ignore'))]),\n                                 ['home_team', 'away_team'])])",
-    "svc_d__classifier": "SVC(C=0.5, class_weight='balanced', probability=True, random_state=42)",
-    "svc_d__preprocessing__n_jobs": null,
-    "svc_d__preprocessing__remainder": "drop",
-    "svc_d__preprocessing__sparse_threshold": 0.3,
-    "svc_d__preprocessing__transformer_weights": null,
-    "svc_d__preprocessing__transformers": [
+    "svc_d__classifier__estimator__transform_input": null,
+    "svc_d__classifier__estimator__verbose": false,
+    "svc_d__classifier__estimator__preprocessing": "ColumnTransformer(transformers=[('numeric',\n                                 Pipeline(steps=[('imputer',\n                                                  SimpleImputer(strategy='median')),\n                                                 ('scaler', StandardScaler())]),\n                                 ['home_matches_played', 'away_matches_played',\n                                  'home_points_per_match_5',\n                                  'away_points_per_match_5',\n                                  'home_goals_for_per_match_5',\n                                  'away_goals_for_per_match_5',\n                                  'home_goals_against_per_match_5',\n                                  'away_goals_against_per_match_5',\n                                  'home_win_rate_5', 'away_win_rate_5',\n                                  'home_elo_pre_match', 'away_elo_pre_match',\n                                  'elo_difference_home',\n                                  'home_days_since_last_match',\n                                  'away_days_since_last_match']),\n                                ('teams',\n                                 Pipeline(steps=[('imputer',\n                                                  SimpleImputer(strategy='most_frequent')),\n                                                 ('one_hot',\n                                                  OneHotEncoder(handle_unknown='ignore'))]),\n                                 ['home_team', 'away_team'])])",
+    "svc_d__classifier__estimator__classifier": "SVC(C=0.5, class_weight='balanced', random_state=42)",
+    "svc_d__classifier__estimator__preprocessing__n_jobs": null,
+    "svc_d__classifier__estimator__preprocessing__remainder": "drop",
+    "svc_d__classifier__estimator__preprocessing__sparse_threshold": 0.3,
+    "svc_d__classifier__estimator__preprocessing__transformer_weights": null,
+    "svc_d__classifier__estimator__preprocessing__transformers": [
       [
         "numeric",
         "Pipeline(steps=[('imputer', SimpleImputer(strategy='median')),\n                ('scaler', StandardScaler())])",
@@ -448,12 +460,12 @@
         ]
       ]
     ],
-    "svc_d__preprocessing__verbose": false,
-    "svc_d__preprocessing__verbose_feature_names_out": true,
-    "svc_d__preprocessing__numeric": "Pipeline(steps=[('imputer', SimpleImputer(strategy='median')),\n                ('scaler', StandardScaler())])",
-    "svc_d__preprocessing__teams": "Pipeline(steps=[('imputer', SimpleImputer(strategy='most_frequent')),\n                ('one_hot', OneHotEncoder(handle_unknown='ignore'))])",
-    "svc_d__preprocessing__numeric__memory": null,
-    "svc_d__preprocessing__numeric__steps": [
+    "svc_d__classifier__estimator__preprocessing__verbose": false,
+    "svc_d__classifier__estimator__preprocessing__verbose_feature_names_out": true,
+    "svc_d__classifier__estimator__preprocessing__numeric": "Pipeline(steps=[('imputer', SimpleImputer(strategy='median')),\n                ('scaler', StandardScaler())])",
+    "svc_d__classifier__estimator__preprocessing__teams": "Pipeline(steps=[('imputer', SimpleImputer(strategy='most_frequent')),\n                ('one_hot', OneHotEncoder(handle_unknown='ignore'))])",
+    "svc_d__classifier__estimator__preprocessing__numeric__memory": null,
+    "svc_d__classifier__estimator__preprocessing__numeric__steps": [
       [
         "imputer",
         "SimpleImputer(strategy='median')"
@@ -463,21 +475,21 @@
         "StandardScaler()"
       ]
     ],
-    "svc_d__preprocessing__numeric__transform_input": null,
-    "svc_d__preprocessing__numeric__verbose": false,
-    "svc_d__preprocessing__numeric__imputer": "SimpleImputer(strategy='median')",
-    "svc_d__preprocessing__numeric__scaler": "StandardScaler()",
-    "svc_d__preprocessing__numeric__imputer__add_indicator": false,
-    "svc_d__preprocessing__numeric__imputer__copy": true,
-    "svc_d__preprocessing__numeric__imputer__fill_value": null,
-    "svc_d__preprocessing__numeric__imputer__keep_empty_features": false,
-    "svc_d__preprocessing__numeric__imputer__missing_values": NaN,
-    "svc_d__preprocessing__numeric__imputer__strategy": "median",
-    "svc_d__preprocessing__numeric__scaler__copy": true,
-    "svc_d__preprocessing__numeric__scaler__with_mean": true,
-    "svc_d__preprocessing__numeric__scaler__with_std": true,
-    "svc_d__preprocessing__teams__memory": null,
-    "svc_d__preprocessing__teams__steps": [
+    "svc_d__classifier__estimator__preprocessing__numeric__transform_input": null,
+    "svc_d__classifier__estimator__preprocessing__numeric__verbose": false,
+    "svc_d__classifier__estimator__preprocessing__numeric__imputer": "SimpleImputer(strategy='median')",
+    "svc_d__classifier__estimator__preprocessing__numeric__scaler": "StandardScaler()",
+    "svc_d__classifier__estimator__preprocessing__numeric__imputer__add_indicator": false,
+    "svc_d__classifier__estimator__preprocessing__numeric__imputer__copy": true,
+    "svc_d__classifier__estimator__preprocessing__numeric__imputer__fill_value": null,
+    "svc_d__classifier__estimator__preprocessing__numeric__imputer__keep_empty_features": false,
+    "svc_d__classifier__estimator__preprocessing__numeric__imputer__missing_values": NaN,
+    "svc_d__classifier__estimator__preprocessing__numeric__imputer__strategy": "median",
+    "svc_d__classifier__estimator__preprocessing__numeric__scaler__copy": true,
+    "svc_d__classifier__estimator__preprocessing__numeric__scaler__with_mean": true,
+    "svc_d__classifier__estimator__preprocessing__numeric__scaler__with_std": true,
+    "svc_d__classifier__estimator__preprocessing__teams__memory": null,
+    "svc_d__classifier__estimator__preprocessing__teams__steps": [
       [
         "imputer",
         "SimpleImputer(strategy='most_frequent')"
@@ -487,56 +499,59 @@
         "OneHotEncoder(handle_unknown='ignore')"
       ]
     ],
-    "svc_d__preprocessing__teams__transform_input": null,
-    "svc_d__preprocessing__teams__verbose": false,
-    "svc_d__preprocessing__teams__imputer": "SimpleImputer(strategy='most_frequent')",
-    "svc_d__preprocessing__teams__one_hot": "OneHotEncoder(handle_unknown='ignore')",
-    "svc_d__preprocessing__teams__imputer__add_indicator": false,
-    "svc_d__preprocessing__teams__imputer__copy": true,
-    "svc_d__preprocessing__teams__imputer__fill_value": null,
-    "svc_d__preprocessing__teams__imputer__keep_empty_features": false,
-    "svc_d__preprocessing__teams__imputer__missing_values": NaN,
-    "svc_d__preprocessing__teams__imputer__strategy": "most_frequent",
-    "svc_d__preprocessing__teams__one_hot__categories": "auto",
-    "svc_d__preprocessing__teams__one_hot__drop": null,
-    "svc_d__preprocessing__teams__one_hot__dtype": "<class 'numpy.float64'>",
-    "svc_d__preprocessing__teams__one_hot__feature_name_combiner": "concat",
-    "svc_d__preprocessing__teams__one_hot__handle_unknown": "ignore",
-    "svc_d__preprocessing__teams__one_hot__max_categories": null,
-    "svc_d__preprocessing__teams__one_hot__min_frequency": null,
-    "svc_d__preprocessing__teams__one_hot__sparse_output": true,
-    "svc_d__classifier__C": 0.5,
-    "svc_d__classifier__break_ties": false,
-    "svc_d__classifier__cache_size": 200,
-    "svc_d__classifier__class_weight": "balanced",
-    "svc_d__classifier__coef0": 0.0,
-    "svc_d__classifier__decision_function_shape": "ovr",
-    "svc_d__classifier__degree": 3,
-    "svc_d__classifier__gamma": "scale",
-    "svc_d__classifier__kernel": "rbf",
-    "svc_d__classifier__max_iter": -1,
-    "svc_d__classifier__probability": true,
-    "svc_d__classifier__random_state": 42,
-    "svc_d__classifier__shrinking": true,
-    "svc_d__classifier__tol": 0.001,
-    "svc_d__classifier__verbose": false
+    "svc_d__classifier__estimator__preprocessing__teams__transform_input": null,
+    "svc_d__classifier__estimator__preprocessing__teams__verbose": false,
+    "svc_d__classifier__estimator__preprocessing__teams__imputer": "SimpleImputer(strategy='most_frequent')",
+    "svc_d__classifier__estimator__preprocessing__teams__one_hot": "OneHotEncoder(handle_unknown='ignore')",
+    "svc_d__classifier__estimator__preprocessing__teams__imputer__add_indicator": false,
+    "svc_d__classifier__estimator__preprocessing__teams__imputer__copy": true,
+    "svc_d__classifier__estimator__preprocessing__teams__imputer__fill_value": null,
+    "svc_d__classifier__estimator__preprocessing__teams__imputer__keep_empty_features": false,
+    "svc_d__classifier__estimator__preprocessing__teams__imputer__missing_values": NaN,
+    "svc_d__classifier__estimator__preprocessing__teams__imputer__strategy": "most_frequent",
+    "svc_d__classifier__estimator__preprocessing__teams__one_hot__categories": "auto",
+    "svc_d__classifier__estimator__preprocessing__teams__one_hot__drop": null,
+    "svc_d__classifier__estimator__preprocessing__teams__one_hot__dtype": "<class 'numpy.float64'>",
+    "svc_d__classifier__estimator__preprocessing__teams__one_hot__feature_name_combiner": "concat",
+    "svc_d__classifier__estimator__preprocessing__teams__one_hot__handle_unknown": "ignore",
+    "svc_d__classifier__estimator__preprocessing__teams__one_hot__max_categories": null,
+    "svc_d__classifier__estimator__preprocessing__teams__one_hot__min_frequency": null,
+    "svc_d__classifier__estimator__preprocessing__teams__one_hot__sparse_output": true,
+    "svc_d__classifier__estimator__classifier__C": 0.5,
+    "svc_d__classifier__estimator__classifier__break_ties": false,
+    "svc_d__classifier__estimator__classifier__cache_size": 200,
+    "svc_d__classifier__estimator__classifier__class_weight": "balanced",
+    "svc_d__classifier__estimator__classifier__coef0": 0.0,
+    "svc_d__classifier__estimator__classifier__decision_function_shape": "ovr",
+    "svc_d__classifier__estimator__classifier__degree": 3,
+    "svc_d__classifier__estimator__classifier__gamma": "scale",
+    "svc_d__classifier__estimator__classifier__kernel": "rbf",
+    "svc_d__classifier__estimator__classifier__max_iter": -1,
+    "svc_d__classifier__estimator__classifier__probability": "deprecated",
+    "svc_d__classifier__estimator__classifier__random_state": 42,
+    "svc_d__classifier__estimator__classifier__shrinking": true,
+    "svc_d__classifier__estimator__classifier__tol": 0.001,
+    "svc_d__classifier__estimator__classifier__verbose": false,
+    "svc_d__classifier__estimator": "Pipeline(steps=[('preprocessing',\n                 ColumnTransformer(transformers=[('numeric',\n                                                  Pipeline(steps=[('imputer',\n                                                                   SimpleImputer(strategy='median')),\n                                                                  ('scaler',\n                                                                   StandardScaler())]),\n                                                  ['home_matches_played',\n                                                   'away_matches_played',\n                                                   'home_points_per_match_5',\n                                                   'away_points_per_match_5',\n                                                   'home_goals_for_per_match_5',\n                                                   'away_goals_for_per_match_5',\n                                                   'home_goals_against_per_matc...\n                                                   'home_elo_pre_match',\n                                                   'away_elo_pre_match',\n                                                   'elo_difference_home',\n                                                   'home_days_since_last_match',\n                                                   'away_days_since_last_match']),\n                                                 ('teams',\n                                                  Pipeline(steps=[('imputer',\n                                                                   SimpleImputer(strategy='most_frequent')),\n                                                                  ('one_hot',\n                                                                   OneHotEncoder(handle_unknown='ignore'))]),\n                                                  ['home_team',\n                                                   'away_team'])])),\n                ('classifier',\n                 SVC(C=0.5, class_weight='balanced', random_state=42))])",
+    "svc_d__classifier__method": "temperature",
+    "svc_d__classifier__n_jobs": -1
   },
   "train": {
-    "macro_f1": 0.4825388644777788,
-    "accuracy": 0.5371083584886021,
-    "balanced_accuracy": 0.48962749979466674,
-    "log_loss": 0.9863689909652531
+    "macro_f1": 0.4913929216052865,
+    "accuracy": 0.5031747683980431,
+    "balanced_accuracy": 0.49909225282729014,
+    "log_loss": 1.0116101749600876
   },
   "validation": {
-    "macro_f1": 0.454824896221119,
-    "accuracy": 0.52046783625731,
-    "balanced_accuracy": 0.47846794728595765,
-    "log_loss": 1.0074927528256854
+    "macro_f1": 0.4882812882911914,
+    "accuracy": 0.5029239766081871,
+    "balanced_accuracy": 0.4930478647908358,
+    "log_loss": 1.02109233541757
   },
-  "overfitting_gap_macro_f1": 0.027713968256659782,
-  "absolute_macro_f1_difference": 0.027713968256659782,
-  "training_time_seconds": 114.37415029993281,
-  "inference_time_ms_per_row": 1.8815030910832529,
+  "overfitting_gap_macro_f1": 0.0031116333140951413,
+  "absolute_macro_f1_difference": 0.0031116333140951413,
+  "training_time_seconds": 83.06863660004456,
+  "inference_time_ms_per_row": 2.3450974101525923,
   "artifact_path": "models/ensemble/ensemble_abcd_soft_voting_v1.joblib",
   "test_protection": "El estimador recibe únicamente train y validation; test_used es siempre 0."
 }
