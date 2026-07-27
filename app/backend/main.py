@@ -9,7 +9,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.backend.schemas import ErrorResponse, PredictionRequest, PredictionResponse
+from app.backend.schemas import ErrorResponse, FeedbackRequest, FeedbackResponse, PredictionRequest, PredictionResponse
+from src.feedback.store import FeedbackRecord, FeedbackValidationError, append_feedback
 from src.inference.champion import ChampionPredictor, InferenceError
 
 
@@ -21,6 +22,7 @@ app.add_middleware(
     allow_headers=["Content-Type"],
 )
 ROOT = Path(__file__).resolve().parents[2]
+FEEDBACK_PATH = ROOT / "data/feedback/predictions_feedback.csv"
 _predictor: ChampionPredictor | None = None
 
 
@@ -57,3 +59,25 @@ def create_prediction(payload: PredictionRequest):
     except Exception:
         return _error(request_id, "MODEL_UNAVAILABLE", "El Champion no está disponible.", status_code=503)
     return PredictionResponse(request_id=request_id, prediction=result["prediction"], probabilities={"H": result["H"], "D": result["D"], "A": result["A"]}, model_version=get_predictor().metadata["champion_model_version"], data_version=get_predictor().metadata["source_data_sha256"], latency_ms=(perf_counter() - started) * 1000, message="Estimación probabilística basada únicamente en el histórico anterior.")
+
+
+@app.post("/api/v1/feedback", response_model=FeedbackResponse, responses={422: {"model": ErrorResponse}})
+def create_feedback(payload: FeedbackRequest):
+    request_id = str(uuid4())
+    try:
+        stored = append_feedback(
+            FeedbackRecord(
+                home_team=payload.home_team,
+                away_team=payload.away_team,
+                match_date=payload.match_date,
+                actual_result=payload.actual_result,
+                predicted_result=payload.predicted_result,
+                model_version=payload.model_version,
+                data_version=payload.data_version,
+                comment=payload.comment,
+            ),
+            FEEDBACK_PATH,
+        )
+    except FeedbackValidationError as exc:
+        return _error(request_id, "INVALID_FEEDBACK", str(exc))
+    return FeedbackResponse(feedback_id=stored.feedback_id)

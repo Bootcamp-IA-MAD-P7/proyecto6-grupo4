@@ -1,0 +1,66 @@
+{
+  "candidate_id": "C",
+  "method": "TimeSeriesSplit_within_train_only",
+  "n_splits_requested": 4,
+  "n_folds_scored": 4,
+  "feature_generator_version": "historical_features_v1",
+  "data_version_sha256": "6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c",
+  "features_sha256": "563634a73e265ab71f4d1b3795d1245eedf33a82c26328a61e99d16d8f8d2c81",
+  "folds": [
+    {
+      "fold": 0,
+      "train_rows": 1923,
+      "test_rows": 1921,
+      "test_date_range": [
+        "2000-02-15",
+        "2005-03-05"
+      ],
+      "macro_f1": 0.4019801875966574,
+      "accuracy": 0.44508068714211346,
+      "balanced_accuracy": 0.40614791288566243,
+      "log_loss": 1.0663302582829484
+    },
+    {
+      "fold": 1,
+      "train_rows": 3844,
+      "test_rows": 1921,
+      "test_date_range": [
+        "2005-03-05",
+        "2010-03-27"
+      ],
+      "macro_f1": 0.4040116418942594,
+      "accuracy": 0.4747527329515877,
+      "balanced_accuracy": 0.4302258055431829,
+      "log_loss": 1.0528301273827352
+    },
+    {
+      "fold": 2,
+      "train_rows": 5765,
+      "test_rows": 1921,
+      "test_date_range": [
+        "2010-03-27",
+        "2015-04-11"
+      ],
+      "macro_f1": 0.44497966573098874,
+      "accuracy": 0.4960957834461218,
+      "balanced_accuracy": 0.45509614494628764,
+      "log_loss": 1.013565794975266
+    },
+    {
+      "fold": 3,
+      "train_rows": 7686,
+      "test_rows": 1921,
+      "test_date_range": [
+        "2015-04-11",
+        "2020-06-30"
+      ],
+      "macro_f1": 0.4570535670481704,
+      "accuracy": 0.49817803227485685,
+      "balanced_accuracy": 0.4657209090446118,
+      "log_loss": 1.0064193825450756
+    }
+  ],
+  "macro_f1_mean": 0.42700626556751897,
+  "macro_f1_std": 0.024397442161955447,
+  "test_protection": "Solo usa filas split=train; validation y test nunca se leen aquí."
+}
