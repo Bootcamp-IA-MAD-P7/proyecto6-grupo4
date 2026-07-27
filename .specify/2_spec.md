@@ -435,6 +435,19 @@ Cada experimento deberá registrar:
 
 La comparación solo será válida si los cuatro candidatos respetan este contrato.
 
+### Contrato de calibración para el ensemble
+
+Los componentes que aporten probabilidades a T-4.1 deberán cumplir además:
+
+- Ajustar estimador, preprocesamiento y calibrador únicamente con train; validation se utiliza para comparar alternativas y el test final permanece protegido.
+- Conservar el dataset, las features históricas y los splits comunes, registrando sus versiones o huellas.
+- Evaluar `macro-F1` como métrica principal y complementar con log loss, Brier multiclase, ECE, suma de probabilidades, matriz de confusión y gap train-validación.
+- Guardar el pipeline completo de forma reproducible, pero mantener los artefactos binarios `.joblib` fuera de Git; las métricas y la configuración sí se versionan.
+
+El primer componente registrado por I4 es un SVC RBF con `C=0.5`, `gamma="scale"` y `class_weight="balanced"`. El SVC base no activa su estimación probabilística interna: se envuelve en `CalibratedClassifierCV(method="temperature")`, con cinco folds estratificados dentro de train y `ensemble=False`. Esta configuración produce probabilidades multiclase explícitas y comparables sin consultar el test protegido.
+
+Este componente no sustituye al Champion actual ni cierra T-4.1 por sí solo. Su inclusión definitiva depende de la integración con los demás estimadores, la comparación del ensemble completo y la revisión cruzada asignada.
+
 ## Selección del Champion
 
 El equipo seleccionará el pipeline más modelo que se productivizará. Ningún integrante podrá promocionar unilateralmente su candidato.
@@ -647,12 +660,13 @@ Cambios sobre dataset, target, limpieza, splits, métricas, overfitting, contrat
 | ML-01 Datos sin leakage | T-1.1–T-1.5 | manifest, diccionario, generador de features y test temporal |
 | ML-02 Cuatro candidatos | T-2.1–T-2.5 | registros de experimentos comparables |
 | ML-03 Champion | T-2.6, T-3.1 | decisión, artefacto, metadata y evaluación final |
+| ML-04 Ensemble probabilístico | T-4.1–T-4.2 | componentes calibrados, métricas de probabilidad, comparación y revisión |
 | RNF-01–RNF-06 | T-3.4, T-3.6, T-5.1–T-5.4 | comandos, resultados, logs, contenedor y despliegue |
 
 ## Estado del documento
 
 | Campo | Valor |
 |---|---|
-| Estado | v1.0 — T-0.2b, T-0.4, T-0.5, T-0.6 y T-1.5 ratificados el 2026-07-24 |
-| Fecha | 24/07/2026 |
-| Bloqueos | T-1.4a y T-1.6–T-1.7 antes de `Data Ready` |
+| Estado | v1.1 — Nivel Esencial cerrado; contrato de calibración de T-4.1 añadido |
+| Fecha | 27/07/2026 |
+| Bloqueos | Completar la integración y comparación del ensemble de T-4.1 antes de T-4.2 |
