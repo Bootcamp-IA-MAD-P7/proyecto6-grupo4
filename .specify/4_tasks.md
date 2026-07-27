@@ -402,12 +402,13 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 
 ## Fase 4 — Nivel Medio
 
-### [ ] T-4.1 Entrenar y comparar ensemble
+### [~] T-4.1 Entrenar y comparar ensemble
 
 - Responsable: I1 e I2.
 - Revisores: I3 e I4.
 - Dependencias: T-3.7.
 - Criterio de aceptación: ensemble comparable y documentado.
+- Avance 2026-07-27 (I2): implementado `src/candidates/ensemble.py`, votación suave (`VotingClassifier`, `voting="soft"`) entre A y D (los únicos `ready_for_comparison` de T-2.5), sin reajustar hiperparámetros. Mismo SHA de datos, features y split que A–D; ajustado solo en train, medido en validation, test no tocado. Resultado: validation macro-F1 0,431291 (por debajo de A 0,464836 y D 0,483744), gap 0,016469 sin señal de sobreajuste. El ensemble no desplaza al Champion D bajo la métrica principal. Detalle en `reports/experiments/ensemble_review.md`. Pendiente revisión cruzada de I3/I4 y coordinación con I1 antes de cerrar `[x]`.
 
 ### [ ] T-4.2 Aplicar validación cruzada y tuning
 
