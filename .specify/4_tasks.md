@@ -419,27 +419,30 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Avance 2026-07-27 (I2), tercera iteración — tras integrar la calibración de D (ver nota de T-4.2 más abajo), se regeneró el ensemble de 4 con el D calibrado. **Resultado nuevo: validation macro-F1 0,488281, gap 0,003112 — supera a los cuatro individuales, incluido el Champion (0,484859).** Detalle en la sección "Actualización" de `reports/experiments/ensemble_abcd_review.md`.
 - Cierre 2026-07-28: a petición explícita del equipo, el ensemble se promovió formalmente a Champion (ver enmienda en `docs/decisions/0003-four-candidate-models.md` y actualización de T-2.6). T-4.1 queda cerrada: el ensemble es comparable, documentado y ahora también seleccionado.
 
-### [~] T-4.2 Aplicar validación cruzada y tuning
+### [x] T-4.2 Aplicar validación cruzada y tuning
 
 - Responsable: I2 con colaboración de los propietarios de candidatos.
 - Dependencias: T-4.1.
 - Criterio de aceptación: búsqueda reproducible sin usar test final.
 - Avance 2026-07-27 (I2) — retune de B: ver nota en T-4.1 (grid search de 256 combinaciones sobre `validation`, gap 0,376 -> 0,042). Reproducible: `./.venv/Scripts/python.exe scripts/run_candidate_b.py`.
 - Avance 2026-07-27 (I2) — integración de la calibración de D en el Champion: `src/candidates/model_d/pipeline.py` deja de usar `probability=True` (deprecado desde sklearn 1.9) y reutiliza `build_calibrated_svc` de I4 (`src/ensemble/svc_calibrated.py`, construido en T-4.1): `CalibratedClassifierCV(method="temperature", cv=StratifiedKFold(5), ensemble=False)`. Validation macro-F1 0,483744 -> 0,484859; gap 0,009166 -> 0,007564. `scripts/select_champion.py` re-ejecutado: D calibrado sigue siendo Champion (decisión tomada solo con `validation`, sin usar test). **Nota de gobernanza:** esto implicó una segunda evaluación del test protegido para D (la primera fue el 26/07 con el D original); el resultado en test fue prácticamente idéntico (macro-F1 0,470529, igual hasta el 6º decimal — mismas predicciones, solo cambian las probabilidades reportadas). `0_constitution.md` establece una única evaluación de test; este caso (actualizar la implementación interna de un Champion ya seleccionado, sin tocar la decisión de cuál candidato gana) no estaba contemplado explícitamente. Queda documentado en `reports/experiments/champion_d_calibration_review.md` para que el equipo decida si amerita una regla nueva en `2_spec.md`. Integración verificada end-to-end: backend + frontend levantados manualmente, predicción real solicitada y validada; suite completa 36/36 en verde.
+- Cierre 2026-07-28 (I2) — validación cruzada formal: `src/evaluation/cross_validation.py` aplica `TimeSeriesSplit(n_splits=4)` **exclusivamente sobre `split == "train"`**; `validation` y `test` nunca se leen. Ejecutada para los cuatro candidatos (`scripts/run_cross_validation.py`); resultado: los cuatro mejoran de forma monótona con más historial (macro-F1 ~0,37-0,40 con poco historial hasta ~0,43-0,46 con la ventana completa de train), sin señales de inestabilidad temporal ni degradación. C es el más estable (std 0,024); D el más sensible a la cantidad de datos (std 0,038). No se encontró motivo para cambiar ningún hiperparámetro ya elegido. `experiments_table.csv` actualizada: `cv_summary_reference` ahora apunta a `reports/experiments/candidate_{a,b,c,d}_cv_summary.json` en vez de `not_applied_temporal_holdout_only`. Detalle completo en `reports/experiments/cross_validation_review.md`. 6 tests nuevos (`tests/unit/test_cross_validation.py`); suite completa 56/56 en verde.
 
-### [ ] T-4.3 Implementar feedback
+### [x] T-4.3 Implementar feedback
 
 - Responsable: I3 e I4.
 - Revisores: I1 e I2.
 - Dependencias: T-3.7.
 - Criterio de aceptación: feedback validado y recuperable.
+- Cierre 2026-07-28 (I2, a petición del equipo — pendiente revisión cruzada de I3/I4 por ser tarea de su responsabilidad): `src/feedback/store.py` implementa un almacén append-only y validado (equipos distintos, `actual_result`/`predicted_result` en {H,D,A}, comentario ≤500 caracteres) sobre `data/feedback/predictions_feedback.csv`; el feedback inválido nunca llega a escribirse. `POST /api/v1/feedback` (`app/backend/main.py`, esquemas en `app/backend/schemas.py`) expone el contrato validado, siguiendo el mismo patrón de error uniforme que `/api/v1/predictions`. No depende de una base de datos (esa es T-5.3); es un CSV recuperable fila a fila vía `load_feedback`. Verificado end-to-end con el backend real: caso válido guardado y recuperado, caso inválido (mismo equipo local/visitante) rechazado con 422. 11 tests nuevos (8 unitarios de `store.py`, 3 de integración del endpoint); suite completa 56/56 en verde.
 
-### [ ] T-4.4 Preparar ingestión de datos nuevos
+### [x] T-4.4 Preparar ingestión de datos nuevos
 
 - Responsable: I1 e I4.
 - Revisor: I2.
 - Dependencias: T-4.3.
 - Criterio de aceptación: datos nuevos pueden validarse y reutilizarse sin mezclarse automáticamente con entrenamiento.
+- Cierre 2026-07-28 (I2, a petición del equipo — pendiente revisión cruzada de I1/I4 por ser tarea de su responsabilidad): `src/data/ingestion.py` reutiliza la limpieza ya aprobada de `src/data/laliga_loader.py` (T-1.1/T-1.4) para partidos nuevos en el mismo esquema raw (`Date`, `HomeTeam`, `AwayTeam`, `FTHG`, `FTAG`, `FTR`, ...) sin modificar ese módulo. Valida columnas mínimas, limpieza (misma lógica que las fuentes originales), rechaza duplicados contra `match_id` del histórico y filas no posteriores a la fecha máxima conocida, y escribe los partidos aceptados en `data/processed/staging/pending_matches.csv` — **nunca** en `data/processed/laliga_matches_clean.csv`. Incorporar lo aceptado al entrenamiento requeriría un paso manual y explícito aparte, no implementado aquí a propósito (sería mezcla automática, justo lo que el criterio de aceptación prohíbe). Verificado end-to-end con `scripts/ingest_new_matches.py`: SHA-256 del dataset canónico confirmado idéntico antes y después de la ingesta. 6 tests nuevos (`tests/unit/test_ingestion.py`); suite completa 56/56 en verde.
 
 ## Fase 5 — Nivel Avanzado
 
