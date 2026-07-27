@@ -21,6 +21,8 @@ const TEAMS = [
   "Girona FC",
 ];
 
+const API_URL = "http://127.0.0.1:8000/api/v1/predictions";
+
 const FACTORS = [
   { label: "Forma reciente local", weight: 0.22, icon: "🔥" },
   { label: "Rendimiento como visitante", weight: 0.18, icon: "🚌" },
@@ -47,63 +49,18 @@ function populateSelects() {
   });
 }
 
-function seededRandom(seed) {
-  let s = seed % 2147483647;
-  if (s <= 0) s += 2147483646;
-  return function () {
-    s = (s * 16807) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
-}
-
-function hashString(str) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash << 5) - hash + str.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
-
-function predict(home, away, date) {
-  const seed = hashString(`${home}|${away}|${date}`);
-  const rng = seededRandom(seed + 12345);
-
-  const homeIndex = TEAMS.indexOf(home);
-  const awayIndex = TEAMS.indexOf(away);
-  const baseHome = 0.45 + (TEAMS.length - homeIndex) * 0.005;
-  const baseAway = 0.30 + (TEAMS.length - awayIndex) * 0.005;
-
-  let homeProb = baseHome + rng() * 0.18;
-  let awayProb = baseAway + rng() * 0.18;
-  let drawProb = 1 - homeProb - awayProb;
-
-  if (drawProb < 0.05) {
-    drawProb = 0.05;
-    const scale = 1 - drawProb;
-    homeProb = (homeProb / (homeProb + awayProb)) * scale;
-    awayProb = scale - homeProb;
-  }
-
-  const total = homeProb + drawProb + awayProb;
-  homeProb /= total;
-  drawProb /= total;
-  awayProb /= total;
-
-  let outcome;
-  if (homeProb > awayProb && homeProb > drawProb) outcome = "Victoria local";
-  else if (awayProb > homeProb && awayProb > drawProb) outcome = "Victoria visitante";
-  else outcome = "Empate";
-
-  const confidence = Math.round(Math.max(homeProb, drawProb, awayProb) * 100);
-
-  return {
-    home: Math.round(homeProb * 100),
-    draw: Math.round(drawProb * 100),
-    away: Math.round(awayProb * 100),
-    outcome,
-    confidence,
-  };
+async function predict(home, away, date) {
+  const response = await fetch(API_URL, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ home_team: home, away_team: away, match_date: date }),
+  });
+  const payload = await response.json();
+  if (!response.ok) throw new Error(payload.message || "No se pudo obtener la predicción.");
+  const labels = { H: "Victoria local", D: "Empate", A: "Victoria visitante" };
+  const homeProb = payload.probabilities.H;
+  const drawProb = payload.probabilities.D;
+  const awayProb = payload.probabilities.A;
+  return { home: Math.round(homeProb * 100), draw: Math.round(drawProb * 100), away: Math.round(awayProb * 100), outcome: labels[payload.prediction], confidence: Math.round(Math.max(homeProb, drawProb, awayProb) * 100) };
 }
 
 function setGauge(value) {
@@ -171,7 +128,7 @@ function showResult(home, away, result) {
   resultSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const home = homeSelect.value;
   const away = awaySelect.value;
@@ -183,9 +140,13 @@ form.addEventListener("submit", (e) => {
     return;
   }
 
-  const result = predict(home, away, date);
-  showResult(home, away, result);
-  addHistory(home, away, date, result);
+  try {
+    const result = await predict(home, away, date);
+    showResult(home, away, result);
+    addHistory(home, away, date, result);
+  } catch (error) {
+    alert(error.message);
+  }
 });
 
 clearHistoryBtn.addEventListener("click", () => {

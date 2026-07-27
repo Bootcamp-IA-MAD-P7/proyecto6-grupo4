@@ -1,0 +1,59 @@
+{
+  "feature_generator_version": "historical_features_v1",
+  "generator_module": "src.data.historical_features",
+  "parameters": {
+    "rolling_window": 5,
+    "initial_elo": 1500.0,
+    "elo_k_factor": 20.0
+  },
+  "source_dataset": {
+    "path": "data/processed/laliga_matches_clean.csv",
+    "sha256": "6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c",
+    "rows": 11944
+  },
+  "features_output": {
+    "path": "data/processed/laliga_historical_features_v1.csv",
+    "sha256": "563634a73e265ab71f4d1b3795d1245eedf33a82c26328a61e99d16d8f8d2c81",
+    "rows": 11944
+  },
+  "schema": {
+    "metadata_columns_excluded_from_model": [
+      "match_id",
+      "season",
+      "match_date",
+      "split",
+      "result_ft"
+    ],
+    "categorical_model_features": [
+      "home_team",
+      "away_team"
+    ],
+    "numeric_model_features": [
+      "home_matches_played",
+      "away_matches_played",
+      "home_points_per_match_5",
+      "away_points_per_match_5",
+      "home_goals_for_per_match_5",
+      "away_goals_for_per_match_5",
+      "home_goals_against_per_match_5",
+      "away_goals_against_per_match_5",
+      "home_win_rate_5",
+      "away_win_rate_5",
+      "home_elo_pre_match",
+      "away_elo_pre_match",
+      "elo_difference_home",
+      "home_days_since_last_match",
+      "away_days_since_last_match"
+    ]
+  },
+  "temporal_policy": "batch_by_match_date_then_update; strictly_prior_dates_only",
+  "split_counts": {
+    "test": 1140,
+    "train": 9607,
+    "validation": 1197
+  },
+  "date_range": {
+    "min": "1995-09-02",
+    "max": "2026-05-24"
+  }
+}

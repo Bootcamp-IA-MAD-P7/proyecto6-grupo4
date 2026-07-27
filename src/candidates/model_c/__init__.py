@@ -1,0 +1,1 @@
+"""Candidato C: random forest."""

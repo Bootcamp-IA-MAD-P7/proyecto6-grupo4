@@ -39,16 +39,7 @@ Thumbs.db
 # Artefactos locales generados fuera de reports/
 outputs/
 
-# Datos: contratos, manifests y marcadores sí; datasets fila a fila solo locales
-# hasta disponer de permiso explícito de redistribución.
-data/raw/*
-!data/raw/.gitkeep
-data/interim/*
-!data/interim/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
-data/feedback/*
-!data/feedback/.gitkeep
+
 
 # Artefactos binarios de modelos
 models/**/*.pkl

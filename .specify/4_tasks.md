@@ -45,8 +45,8 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 | Evaluación | Cerrado | T-0.4/T-1.5: métrica, gap, ventanas temporales y particiones ratificados por el equipo en daily 2026-07-24 |
 | Candidatos | Cerrado | T-0.5: cuatro algoritmos asignados, ver `docs/decisions/0003-four-candidate-models.md` |
 | Aplicación | Cerrado | T-0.6: arquitectura y contrato aprobados por I1–I4 |
-| `Data Ready` | Abierto | T-1.8 y checklist de `2_spec.md` |
-| Nivel Esencial | No iniciado | Requiere `Data Ready` |
+| `Data Ready` | Cerrado | T-1.8: checklist de `2_spec.md` completada 2026-07-26 |
+| Nivel Esencial | Cerrado | T-3.7: gate de `3_plan.md` satisfecho 2026-07-26, Champion D integrado y 28 tests aprobados |
 
 ## Fase 0 — Decisiones bloqueantes
 
@@ -207,7 +207,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Cierre técnico I1 2026-07-24: limpieza determinista regenerada sin modificar raw, con política de columnas, reporte antes/después y 0 incoherencias marcador/target. Se añadió `verify_preprocessing_split_contract` para asegurar que dataset, `match_id`, huella y conteos coinciden con las particiones congeladas; 15/15 pruebas en verde. Todo cambio de limpieza obliga a regenerar preprocesamiento, splits y esta verificación antes de entrenar. Pendiente revisión de I4.
 - Revisión cruzada I4 2026-07-24: revisados `preprocess_sources`, la política de columnas, `load_processed_dataset` y el contrato con los splits. Se confirma que los CSV raw no se modifican, que la deduplicación con prioridad de fuente detallada resuelve 100 solapamientos y que la limpieza conserva 2 nulos opcionales de descanso sin imputarlos. Regeneración reproducida: 11.944 filas, 54 columnas, 0 IDs duplicados, 0 targets nulos, 0 incoherencias marcador/target y SHA-256 `6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c`; `verify_preprocessing_split_contract` valida 9.607/1.197/1.140 y la suite queda en **16 passed**. T-1.4 aceptada.
 
-### [ ] T-1.4a Implementar generador común de features históricas sin leakage
+### [x] T-1.4a Implementar generador común de features históricas sin leakage
 
 - Prioridad: **P0 — bloqueante para `Data Ready`**.
 - Responsable: I1.
@@ -218,6 +218,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: el generador es determinista, versionado y reutilizable por los cuatro pipelines; su schema, parámetros y origen de datos quedan documentados. Ningún resultado futuro modifica las features de partidos anteriores y las transformaciones ajustables se estiman solo en train. El test permanece protegido: no se usa para ajuste, selección ni cálculo de parámetros.
 - Verificación: ejecutar el generador sobre el dataset y splits congelados; comprobar schema, `match_id`, SHA-256 y conteos. Añadir pruebas unitarias de orden temporal, `shift(1)`, empate de fechas y no-leakage al alterar un resultado futuro, más una prueba de integración reproducible. Ejecutar `./.venv/Scripts/python.exe -m pytest -q`.
 - Evidencia esperada: implementación en `src/data/`, pruebas en `tests/unit/` y `tests/integration/`, manifest de features en `reports/metrics/` y contrato actualizado en `2_spec.md`.
+- Cierre 2026-07-26: revisión de I2 confirmada. `historical_features_v1` se regeneró con SHA `563634a…d8f8d2c81`, conserva 11.944 IDs y los conteos 9.607/1.197/1.140. Las pruebas cubren cold-start, orden estable, empates de fecha, equivalencia a `shift(1)` y mutación futura sin leakage.
 
 ### [x] T-1.5 Congelar particiones comunes
 
@@ -233,7 +234,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Regla acordada 2026-07-24: cualquier cambio en las reglas de limpieza de T-1.4 (o en los CSV raw) invalida el SHA-256 registrado y obliga a reejecutar `scripts/run_laliga_preprocessing.py` + `python -m src.evaluation.splits`, reconfirmando hash, 11.944 `match_id`, cortes por temporada y conteos 9.607/1.197/1.140 antes de que T-1.5 siga vigente. Detalle en `docs/decisions/0002-evaluation-protocol-proposal.md`.
 - Reverificación 2026-07-24: reejecutados `scripts/run_laliga_preprocessing.py` y `python -m src.evaluation.splits`. SHA-256 idéntico (`6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c`), 11.944 filas y 11.944 `match_id` únicos, mismos cortes por temporada (train 1995-96–2019-20, validación 2020-21–2022-23, test 2023-24–2025-26) y mismos conteos 9.607/1.197/1.140. Suite completa 15/15 en verde. Pendiente como criterio permanente de revisión en T-2.1–T-2.4: ningún pipeline debe leer filas `split == "test"` salvo en T-2.6.
 
-### [ ] T-1.6 Crear frontend simulado
+### [x] T-1.6 Crear frontend simulado
 
 - Responsable: I3.
 - Revisor: I4.
@@ -242,8 +243,9 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Acción: implementar o diseñar el flujo con respuestas mock según la arquitectura aprobada.
 - Criterio de aceptación: formulario, resultado y error pueden demostrarse sin modelo definitivo.
 - Evidencia: prueba visual o test de interfaz.
+- Cierre 2026-07-26: integrado el formulario y visualización desde `app/frontend/public/`; posteriormente conectado al contrato real de `/api/v1/predictions` en T-3.3.
 
-### [ ] T-1.7 Crear backend de inferencia simulado
+### [x] T-1.7 Crear backend de inferencia simulado
 
 - Responsable: I4.
 - Revisor: I3.
@@ -253,18 +255,20 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: contrato consumible por frontend.
 - Verificación: fixtures válidos e inválidos compartidos con I3.
 - Evidencia: prueba de contrato o llamada reproducible, comandos y resultados.
+- Cierre 2026-07-26: contrato implementado en FastAPI con validación Pydantic, respuestas y errores uniformes; sustituido por el Champion real sin cambiar ruta ni formato en T-3.2. Prueba de API incluida en la suite.
 
-### [ ] T-1.8 / T-1.INT Verificar gate `Data Ready`
+### [x] T-1.8 / T-1.INT Verificar gate `Data Ready`
 
 - Responsable: todo el equipo; coordina I2.
 - Dependencias: T-0.1, T-0.2b, T-0.4, T-0.5, T-1.1 a T-1.7 y T-1.4a.
 - Acción: completar la checklist de `2_spec.md`.
 - Criterio de aceptación: no quedan decisiones de datos, evaluación o candidatos que bloqueen el entrenamiento.
 - Evidencia: checklist completada y revisión cruzada.
+- Cierre 2026-07-26: checklist de `2_spec.md` completa, T-1.4a revisada por I2 y mocks integrados. El manifest de datos, splits y features queda fijado antes de los cuatro entrenamientos.
 
 ## Fase 2 — Cuatro candidatos en paralelo
 
-### [ ] T-2.1 Desarrollar Pipeline A + Modelo A
+### [x] T-2.1 Desarrollar Pipeline A + Modelo A
 
 - Responsable: I1.
 - Revisor: I2.
@@ -272,8 +276,9 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Acción: crear, entrenar, evaluar, serializar y documentar el candidato A.
 - Criterio de aceptación: cumple el contrato común de experimentación.
 - Evidencia: pipeline, artefacto, métricas, tests y registro.
+- Cierre 2026-07-26: revisión de I2 confirmada. Métrica de validation macro-F1 0,464836, gap 0,000000; evidencia y matriz en `reports/experiments/`.
 
-### [ ] T-2.2 Desarrollar Pipeline B + Modelo B
+### [x] T-2.2 Desarrollar Pipeline B + Modelo B
 
 - Responsable: I2.
 - Revisor: I3.
@@ -281,8 +286,9 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Acción: crear, entrenar, evaluar, serializar y documentar el candidato B.
 - Criterio de aceptación: cumple el contrato común de experimentación.
 - Evidencia: pipeline, artefacto, métricas, tests y registro.
+- Cierre técnico 2026-07-26: `HistGradientBoostingClassifier` bajo el contrato común; queda descartado por gap 0,376171.
 
-### [ ] T-2.3 Desarrollar Pipeline C + Modelo C
+### [x] T-2.3 Desarrollar Pipeline C + Modelo C
 
 - Responsable: I3.
 - Revisor: I4.
@@ -290,8 +296,9 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Acción: crear, entrenar, evaluar, serializar y documentar el candidato C sin abandonar el frente de frontend.
 - Criterio de aceptación: cumple el contrato común de experimentación y el frontend sigue integrable.
 - Evidencia: pipeline, artefacto, métricas, tests y registro.
+- Cierre técnico 2026-07-26: `RandomForestClassifier` bajo el contrato común; queda descartado por gap 0,261803.
 
-### [ ] T-2.4 Desarrollar Pipeline D + Modelo D
+### [x] T-2.4 Desarrollar Pipeline D + Modelo D
 
 - Responsable: I4.
 - Revisor: I1.
@@ -299,8 +306,9 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Acción: crear, entrenar, evaluar, serializar y documentar el candidato D sin abandonar el frente de backend.
 - Criterio de aceptación: cumple el contrato común de experimentación y el backend sigue integrable.
 - Evidencia: pipeline, artefacto, métricas, tests y registro.
+- Cierre de revisión I1 2026-07-26: entrega `SVC(kernel="rbf", probability=True)` reproducible, sin test en entrenamiento, con escalado ajustado en train, serialización, test unitario y registro. Validation macro-F1 0,483744; gap 0,009166.
 
-### [ ] T-2.5 Consolidar tabla de experimentos
+### [x] T-2.5 Consolidar tabla de experimentos
 
 - Responsable: I2.
 - Revisores: I1, I3 e I4.
@@ -308,9 +316,9 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Acción: verificar comparabilidad y registrar resultados de los cuatro candidatos.
 - Criterio de aceptación: ninguna comparación usa datos, métricas o reglas diferentes sin explicarlo.
 - Evidencia: tabla completa y observaciones de calidad.
-- Adelanto 2026-07-24 (spike, no cierra la tarea): plantilla vacía preparada en `reports/experiments/experiments_table.csv` (filas A–D en `status=pending`, sin resultados) y `reports/experiments/README.md` con el significado de cada columna y las reglas heredadas de `2_spec.md`/`0_constitution.md` (no usar el split de test, mismo `data_version_sha256` para los cuatro candidatos, no editar `candidate_id`/`member`/`algorithm` sin actualizar la ADR 0003). Sigue en `[ ]`: no hay resultados porque T-2.1–T-2.4 no han empezado.
+- Cierre 2026-07-26: tabla completa A–D con mismo SHA de datos, manifest de split y versión/hash de features. A y D cumplen gap; B y C quedan descalificados por sobreajuste.
 
-### [ ] T-2.6 Seleccionar y versionar Champion
+### [x] T-2.6 Seleccionar y versionar Champion
 
 - Responsable: todo el equipo; coordina I2.
 - Dependencias: T-2.5.
@@ -318,79 +326,93 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Acción: seleccionar con validación, congelar la decisión y solo después evaluar una vez el test final.
 - Criterio de aceptación: Champion cumple overfitting, integración y métricas aprobadas.
 - Evidencia: decisión, metadata, métricas finales y artefacto completo.
+- Cierre 2026-07-26: seleccionado D por macro-F1 de validation 0,483744 y gap 0,009166. Reentrenado en train+validation (10.804 filas) y evaluado una vez en test (1.140): macro-F1 0,470529. Metadata en `reports/experiments/champion_metadata.json`.
 
-### [ ] T-2.INT Verificar comparabilidad y selección
+### [x] T-2.INT Verificar comparabilidad y selección
 
 - Responsable: todo el equipo.
 - Dependencias: T-2.1 a T-2.6.
 - Acción: verificar versiones de datos, features, splits, métricas, gap, artefactos y uso único del test.
 - Criterio de aceptación: ninguna diferencia no aprobada invalida la comparación y el Champion tiene acta de selección.
 - Evidencia: checklist firmada y tabla de experimentos consolidada.
+- Cierre 2026-07-26: `src.evaluation.champion` valida igualdad de hashes, feature generator y manifest antes de seleccionar; registra el uso final único de test.
 
 ## Fase 3 — Integración y Nivel Esencial
 
-### [ ] T-3.1 Validar pipeline Champion para inferencia
+### [x] T-3.1 Validar pipeline Champion para inferencia
 
 - Responsable: I1.
 - Revisores: I2 e I4.
 - Dependencias: T-2.INT.
 - Acción: comprobar schema, transformaciones y casos límite.
 - Criterio de aceptación: entrenamiento e inferencia usan el mismo pipeline.
+- Cierre 2026-07-26: `ChampionPredictor` calcula las mismas `MODEL_FEATURES` desde partidos estrictamente anteriores; prueba de integración compara una fila real de validation con su feature de inferencia.
 
-### [ ] T-3.2 Integrar Champion en backend
+### [x] T-3.2 Integrar Champion en backend
 
 - Responsable: I4.
 - Revisores: I1 e I2.
 - Dependencias: T-2.INT, T-1.7.
 - Acción: cargar el artefacto real y responder según el contrato.
 - Criterio de aceptación: predicción reproducible, versionada y con errores controlados.
+- Cierre 2026-07-26: API FastAPI carga el artefacto D y metadata, devuelve contrato v1 y maneja equipos desconocidos, historial insuficiente y modelo no disponible.
 
-### [ ] T-3.3 Integrar frontend con predicción real
+### [x] T-3.3 Integrar frontend con predicción real
 
 - Responsable: I3.
 - Revisores: I1 e I4.
 - Dependencias: T-3.2, T-1.6.
 - Acción: sustituir mocks y completar el flujo de usuario.
 - Criterio de aceptación: una persona puede introducir datos y comprender el resultado.
+- Cierre 2026-07-26: frontend usa `POST /api/v1/predictions`, muestra probabilidades y errores controlados.
 
-### [ ] T-3.4 Completar tests esenciales distribuidos
+### [x] T-3.4 Completar tests esenciales distribuidos
 
 - Responsable: todos.
 - Dependencias: T-3.1 a T-3.3.
 - Acción: probar datos, métricas, interfaz, backend e integración.
 - Criterio de aceptación: suite relevante aprobada y fallos críticos resueltos.
 - Evidencia: comandos y resultados.
+- Cierre 2026-07-26: `pytest -q -p no:cacheprovider --basetemp=<temporal aislado>` pasa 28 tests; cubre datos, features, candidatos, Champion y API.
 
-### [ ] T-3.5 Redactar informe técnico inicial
+### [x] T-3.5 Redactar informe técnico inicial
 
 - Responsable: todos; coordina I2.
 - Dependencias: T-2.INT.
 - Acción: documentar EDA, candidatos, Champion, métricas, overfitting, errores y limitaciones.
 - Criterio de aceptación: cifras coherentes con artefactos y pruebas.
+- Cierre 2026-07-26: informe `reports/technical_report.md` enlaza EDA, candidatos, Champion, métricas, errores y limitaciones.
 
-### [ ] T-3.6 Ejecutar smoke test esencial
+### [x] T-3.6 Ejecutar smoke test esencial
 
 - Responsable: I3 e I4.
 - Revisores: I1 e I2.
 - Dependencias: T-3.3, T-3.4.
 - Acción: ejecutar flujo completo con casos válidos e inválidos.
 - Criterio de aceptación: aplicación funcional y evidencia registrada.
+- Cierre 2026-07-26: prueba de API válida e inválida incluida en `test_prediction_api_returns_the_versioned_contract_and_controlled_errors`.
 
-### [ ] T-3.7 / T-3.INT Verificar cierre del Nivel Esencial
+### [x] T-3.7 / T-3.INT Verificar cierre del Nivel Esencial
 
 - Responsable: todo el equipo.
 - Dependencias: T-3.1 a T-3.6.
 - Acción: completar el gate de `3_plan.md`.
 - Criterio de aceptación: ningún requisito esencial carece de evidencia.
+- Cierre 2026-07-26: gate de `3_plan.md` satisfecho por EDA, Champion reproducible e integrado, métricas/overfitting documentados, aplicación, informe y 28 tests aprobados.
 
 ## Fase 4 — Nivel Medio
 
-### [ ] T-4.1 Entrenar y comparar ensemble
+### [~] T-4.1 Entrenar y comparar ensemble
 
 - Responsable: I1 e I2.
 - Revisores: I3 e I4.
 - Dependencias: T-3.7.
 - Criterio de aceptación: ensemble comparable y documentado.
+- Avance I4 2026-07-27: implementado un componente SVC con kernel RBF y calibración explícita de probabilidades mediante `CalibratedClassifierCV(method="temperature")`. El estimador base se ajusta sin probabilidades internas, utiliza `C=0.5`, `gamma="scale"` y balanceo de clases; el calibrador usa cinco folds estratificados dentro de train y `ensemble=False`.
+- Protección de datos: entrenamiento con 9.607 partidos, evaluación con 1.197 partidos de validación y 0 filas del test protegido. Se mantienen las features históricas comunes y los splits congelados.
+- Resultado de validación: macro-F1 0,484859, accuracy 0,497076, balanced accuracy 0,490231, log loss 1,051532, Brier multiclase 0,634072, ECE 0,070104 y gap train-validación 0,007564.
+- Evidencia: `src/ensemble/svc_calibrated.py`, `scripts/run_ensemble_svc_calibrated.py`, `tests/unit/test_calibrated_svc.py` y `reports/experiments/ensemble_svc_calibrated_*`. La comparación documenta también las variantes sigmoid temporal y sigmoid estratificada descartadas.
+- Estado: el componente queda listo para revisión e integración, pero T-4.1 sigue abierta hasta combinar los estimadores, comparar el ensemble completo y recibir la revisión de I1–I3.
 
 ### [ ] T-4.2 Aplicar validación cruzada y tuning
 
@@ -497,7 +519,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 
 | Campo | Valor |
 |---|---|
-| Estado | v1.0 — T-0.2b, T-0.4, T-0.5, T-0.6 y T-1.5 ratificados el 2026-07-24 |
-| Fecha | 24/07/2026 |
-| Siguiente trabajo bloqueante | T-1.4a y T-1.6–T-1.7 antes de `T-1.8` |
+| Estado | v1.1 — Nivel Esencial cerrado (T-3.7) el 2026-07-26; T-4.1 en progreso |
+| Fecha | 27/07/2026 |
+| Siguiente trabajo | Completar T-4.1 integrando y comparando el ensemble; después T-4.2, sin usar el split de test |
 | Regla | Marcar `[x]` solo con verificación, evidencia y revisión cruzada |

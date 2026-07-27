@@ -102,9 +102,39 @@ Este documento se actualizará al finalizar cada daily. Solo contendrá informac
 - Decisiones: se ratifican `T-0.2b`, `T-0.4`, `T-0.5` y `T-1.5`. El protocolo usa `macro-F1` como métrica principal, `gap < 0.05`, semilla `42` y particiones cronológicas: train 1995-96–2019-20, validación 2020-21–2022-23 y test protegido 2023-24–2025-26. Los modelos asignados son regresión logística multinomial para I1, gradient boosting para I2, random forest para I3 y SVM con kernel RBF para I4. `T-0.6` permanece abierto y la posible inclusión de probabilidades de goles deberá aprobarse antes de incorporarse al contrato.
 - Issues o PR relacionados: PR #40 de protocolo y particiones; PR #42 y PR #43 de `T-0.2b`; `docs/decisions/0001-laliga-dataset-target-proposal.md`, `docs/decisions/0002-evaluation-protocol-proposal.md` y `docs/decisions/0003-four-candidate-models.md`; `src/evaluation/splits.py`; rama `feature/t-0.6-backend-contract`; backlog actualizado en `.specify/4_tasks.md`.
 
+## Daily 27/07/2026
+
+### Arnaldo
+
+- Realizado: cerró como I1 `T-1.1` a `T-1.4` y el generador común de features históricas `T-1.4a`, con carga reproducible, auditoría de 54 columnas, EDA sin uso del test, limpieza determinista y pruebas de no leakage. Completó Pipeline A + Modelo A (`T-2.1`) y validó la compatibilidad del Champion para inferencia (`T-3.1`).
+- Siguiente: verificar reproducibilidad de datos, features y Champion; revisar la coherencia entrenamiento–inferencia y aportar EDA, limitaciones y análisis de errores a la documentación final.
+- Bloqueos: ninguno registrado.
+
+### Johans
+
+- Realizado: coordinó el cierre de `Data Ready` (`T-1.8`), entrenó el candidato B (`T-2.2`), consolidó la comparativa A–D (`T-2.5`) y coordinó la selección del Champion (`T-2.6`). El candidato D fue seleccionado por `macro-F1` de validación 0,483744 y gap 0,009166; tras reentrenar con train+validación obtuvo `macro-F1` 0,470529 en el test protegido, utilizado una sola vez.
+- Siguiente: revisar las métricas, el gap de overfitting, los errores y la coherencia del informe técnico final.
+- Bloqueos: ninguno registrado.
+
+### César
+
+- Realizado: completó el frontend simulado (`T-1.6`), el candidato C (`T-2.3`) y la integración del frontend con la predicción real (`T-3.3`). La interfaz consume `POST /api/v1/predictions`, muestra probabilidades y trata errores controlados.
+- Siguiente: revisar el flujo de demo de usuario y contribuir a la presentación de negocio.
+- Bloqueos: ninguno registrado.
+
+### Fernanda
+
+- Realizado: cerró el contrato de aplicación (`T-0.6`), implementó el backend mock y posteriormente integró el Champion real (`T-1.7`, `T-3.2`). Completó el candidato D (`T-2.4`), seleccionado como Champion, y participó en el smoke test esencial (`T-3.6`). La API FastAPI devuelve el contrato versionado y controla equipos desconocidos, historial insuficiente y modelo no disponible.
+- Siguiente: comprobar la ejecución extremo a extremo, preparar instrucciones técnicas y dejar Docker/despliegue como mejora posterior al Nivel Esencial.
+- Bloqueos: ninguno registrado.
+
+### Decisiones y evidencias
+
+- Decisiones: `Data Ready` quedó cerrado el 26/07/2026; los cuatro candidatos se evaluaron con el mismo dataset, splits y features históricas sin leakage. B y C quedaron descartados por sobreajuste. Se seleccionó el candidato D, SVC con kernel RBF, como Champion. El Nivel Esencial (`T-3.7`) se considera cerrado con aplicación integrada, informe técnico y evidencia de pruebas.
+- Evidencias: `reports/metrics/data_ready_gate.md`; `reports/experiments/experiments_table.csv`; `reports/experiments/champion_metadata.json`; `reports/experiments/champion_test_metrics.json`; `reports/technical_report.md`; `models/champion/laliga_champion_v1.joblib`; y `pytest -q -p no:cacheprovider --basetemp=<temporal aislado>` con **28 tests aprobados**.
+
 ## Próximas dailys
 
-- 27/07/2026.
 - 28/07/2026.
 - 29/07/2026.
 - 30/07/2026.

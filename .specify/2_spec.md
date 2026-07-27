@@ -285,6 +285,18 @@ Los cuatro candidatos consumirán una tabla de features generada por una única 
 | Encuentro actual | Excluidos goles, resultado, tiros, faltas, córners, tarjetas y todas sus derivadas |
 | Metadatos | `match_id` y proxies de fuente o cobertura quedan fuera del modelo |
 
+Implementación versionada: `src/data/historical_features.py` genera
+`historical_features_v1`. Usa una ventana de cinco encuentros, puntos, goles a
+favor/en contra, tasa de victorias, días desde el último partido y Elo
+(`1500`, factor K `20`). Las filas se ordenan de forma estable por
+`match_date` y `match_id`, pero se calculan por lotes de fecha: todas las
+features de la fecha se emiten antes de incorporar sus resultados. De este modo
+un partido del mismo día tampoco se considera pasado de otro. `match_id`,
+`season`, `match_date`, `split` y `result_ft` permanecen como metadata y no se
+entregan al estimador. La regeneración local se realiza con
+`python scripts/run_historical_features.py` y su evidencia queda en
+`reports/metrics/historical_features_manifest.json`.
+
 Reglas obligatorias:
 
 - Toda agregación histórica aplica `shift(1)` o una operación equivalente antes de cualquier ventana.
@@ -357,8 +369,8 @@ No podrá comenzar el entrenamiento individual hasta verificar:
 - [x] Target y clases aprobados.
 - [x] EDA inicial completado (T-1.3: revisión compartida I1–I4 el 2026-07-24).
 - [x] Reglas comunes de limpieza aprobadas (T-1.4: revisión I2/I4; regeneración y contrato de splits verificados el 2026-07-24).
-- [ ] Variables con leakage excluidas.
-- [ ] Generador común de features históricas aprobado y probado (T-1.4a, bloqueante de `Data Ready`).
+- [x] Variables con leakage excluidas técnicamente por el contrato y el generador histórico, revisado por I2.
+- [x] Generador común de features históricas aprobado y probado (`historical_features_v1`; manifest y pruebas reproducibles).
 - [x] Contrato de datos aprobado (T-1.2: diccionario y auditoría revisados por I3 el 2026-07-24).
 - [x] Particiones comunes reproducibles.
 - [x] Test final protegido.
@@ -422,6 +434,19 @@ Cada experimento deberá registrar:
 - Resultado de validación cruzada cuando corresponda.
 
 La comparación solo será válida si los cuatro candidatos respetan este contrato.
+
+### Contrato de calibración para el ensemble
+
+Los componentes que aporten probabilidades a T-4.1 deberán cumplir además:
+
+- Ajustar estimador, preprocesamiento y calibrador únicamente con train; validation se utiliza para comparar alternativas y el test final permanece protegido.
+- Conservar el dataset, las features históricas y los splits comunes, registrando sus versiones o huellas.
+- Evaluar `macro-F1` como métrica principal y complementar con log loss, Brier multiclase, ECE, suma de probabilidades, matriz de confusión y gap train-validación.
+- Guardar el pipeline completo de forma reproducible, pero mantener los artefactos binarios `.joblib` fuera de Git; las métricas y la configuración sí se versionan.
+
+El primer componente registrado por I4 es un SVC RBF con `C=0.5`, `gamma="scale"` y `class_weight="balanced"`. El SVC base no activa su estimación probabilística interna: se envuelve en `CalibratedClassifierCV(method="temperature")`, con cinco folds estratificados dentro de train y `ensemble=False`. Esta configuración produce probabilidades multiclase explícitas y comparables sin consultar el test protegido.
+
+Este componente no sustituye al Champion actual ni cierra T-4.1 por sí solo. Su inclusión definitiva depende de la integración con los demás estimadores, la comparación del ensemble completo y la revisión cruzada asignada.
 
 ## Selección del Champion
 
@@ -635,12 +660,13 @@ Cambios sobre dataset, target, limpieza, splits, métricas, overfitting, contrat
 | ML-01 Datos sin leakage | T-1.1–T-1.5 | manifest, diccionario, generador de features y test temporal |
 | ML-02 Cuatro candidatos | T-2.1–T-2.5 | registros de experimentos comparables |
 | ML-03 Champion | T-2.6, T-3.1 | decisión, artefacto, metadata y evaluación final |
+| ML-04 Ensemble probabilístico | T-4.1–T-4.2 | componentes calibrados, métricas de probabilidad, comparación y revisión |
 | RNF-01–RNF-06 | T-3.4, T-3.6, T-5.1–T-5.4 | comandos, resultados, logs, contenedor y despliegue |
 
 ## Estado del documento
 
 | Campo | Valor |
 |---|---|
-| Estado | v1.0 — T-0.2b, T-0.4, T-0.5, T-0.6 y T-1.5 ratificados el 2026-07-24 |
-| Fecha | 24/07/2026 |
-| Bloqueos | T-1.4a y T-1.6–T-1.7 antes de `Data Ready` |
+| Estado | v1.1 — Nivel Esencial cerrado; contrato de calibración de T-4.1 añadido |
+| Fecha | 27/07/2026 |
+| Bloqueos | Completar la integración y comparación del ensemble de T-4.1 antes de T-4.2 |
