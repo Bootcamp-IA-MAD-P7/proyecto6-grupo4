@@ -1,8 +1,8 @@
 {
-  "champion_candidate_id": "D",
-  "champion_model_version": "candidate_d_svc_rbf_calibrated_v1",
+  "champion_candidate_id": "ENSEMBLE_ABCD",
+  "champion_model_version": "ensemble_abcd_soft_voting_v1",
   "selection_rule": "Mayor macro-F1 de validation entre candidatos con gap < 0.05; empate por menor latencia.",
-  "selection_timestamp_utc": "2026-07-27T21:36:00.842227+00:00",
+  "selection_timestamp_utc": "2026-07-27T22:04:19.480847+00:00",
   "comparability": {
     "data_version_sha256": "6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c",
     "features_sha256": "563634a73e265ab71f4d1b3795d1245eedf33a82c26328a61e99d16d8f8d2c81",
@@ -10,26 +10,26 @@
     "split_manifest_reference": "reports/metrics/split_manifest.json"
   },
   "validation": {
-    "macro_f1": 0.4848588228891235,
-    "accuracy": 0.49707602339181284,
-    "balanced_accuracy": 0.49023102978193744,
-    "log_loss": 1.0515315594467083
+    "macro_f1": 0.4882812882911914,
+    "accuracy": 0.5029239766081871,
+    "balanced_accuracy": 0.4930478647908358,
+    "log_loss": 1.02109233541757
   },
   "train": {
-    "macro_f1": 0.4924223311705944,
-    "accuracy": 0.5008847715207662,
-    "balanced_accuracy": 0.5020415576826576,
-    "log_loss": 1.0447755102675638
+    "macro_f1": 0.4913929216052865,
+    "accuracy": 0.5031747683980431,
+    "balanced_accuracy": 0.49909225282729014,
+    "log_loss": 1.0116101749600876
   },
-  "overfitting_gap_macro_f1": 0.007563508281470899,
+  "overfitting_gap_macro_f1": 0.0031116333140951413,
   "final_fit_rows": 10804,
   "test_rows": 1140,
   "test_used_once": true,
   "test": {
-    "macro_f1": 0.47052911743489023,
-    "accuracy": 0.4868421052631579,
-    "balanced_accuracy": 0.4757235042442905,
-    "log_loss": 1.0482107180231874
+    "macro_f1": 0.479580007386363,
+    "accuracy": 0.506140350877193,
+    "balanced_accuracy": 0.48588220443414337,
+    "log_loss": 1.0104280079743169
   },
   "test_confusion_matrix": {
     "labels": [
@@ -39,23 +39,23 @@
     ],
     "matrix": [
       [
-        273,
-        149,
-        100
+        302,
+        118,
+        102
       ],
       [
-        79,
-        102,
-        116
+        87,
+        89,
+        121
       ],
       [
-        55,
-        86,
-        180
+        63,
+        72,
+        186
       ]
     ]
   },
-  "final_fit_seconds": 164.03773229999933,
+  "final_fit_seconds": 157.96688189997803,
   "artifact_path": "models/champion/laliga_champion_v1.joblib",
   "feature_columns": [
     "home_team",

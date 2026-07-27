@@ -32,3 +32,17 @@ Cuatro familias distintas: lineal (A), boosting de árboles (B), bagging de árb
 
 - Confirmación individual de I1, I3 e I4 sobre su algoritmo asignado si alguno objeta la propuesta de representante.
 - Ajustar hiperparámetros por defecto/rango de búsqueda cuando se implemente cada pipeline (T-2.1–T-2.4).
+
+## Enmienda 2026-07-28 (T-4.1/T-4.2)
+
+La consecuencia original ("El Champion se elige entre estos cuatro
+candidatos") se amplía: tras corregir el sobreajuste de B y C, e integrar la
+calibración de probabilidades de D (T-4.2), el ensemble por votación suave
+de los cuatro (`ENSEMBLE_ABCD`) superó a los cuatro individuales en
+`validation` (macro-F1 0,488281 vs. 0,484859 del mejor individual) y también
+en el test protegido (macro-F1 0,479580 vs. 0,470529). A petición explícita
+del equipo, se amplía la elegibilidad de Champion para incluir también el
+ensemble de los cuatro candidatos aprobados, no solo cada uno por separado.
+No se admite ningún candidato o ensemble fuera de A, B, C, D y su
+combinación. Detalle de la selección en
+`reports/experiments/champion_metadata.json` y en T-2.6 de `4_tasks.md`.
