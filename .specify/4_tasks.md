@@ -402,12 +402,17 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 
 ## Fase 4 — Nivel Medio
 
-### [ ] T-4.1 Entrenar y comparar ensemble
+### [~] T-4.1 Entrenar y comparar ensemble
 
 - Responsable: I1 e I2.
 - Revisores: I3 e I4.
 - Dependencias: T-3.7.
 - Criterio de aceptación: ensemble comparable y documentado.
+- Avance I4 2026-07-27: implementado un componente SVC con kernel RBF y calibración explícita de probabilidades mediante `CalibratedClassifierCV(method="temperature")`. El estimador base se ajusta sin probabilidades internas, utiliza `C=0.5`, `gamma="scale"` y balanceo de clases; el calibrador usa cinco folds estratificados dentro de train y `ensemble=False`.
+- Protección de datos: entrenamiento con 9.607 partidos, evaluación con 1.197 partidos de validación y 0 filas del test protegido. Se mantienen las features históricas comunes y los splits congelados.
+- Resultado de validación: macro-F1 0,484859, accuracy 0,497076, balanced accuracy 0,490231, log loss 1,051532, Brier multiclase 0,634072, ECE 0,070104 y gap train-validación 0,007564.
+- Evidencia: `src/ensemble/svc_calibrated.py`, `scripts/run_ensemble_svc_calibrated.py`, `tests/unit/test_calibrated_svc.py` y `reports/experiments/ensemble_svc_calibrated_*`. La comparación documenta también las variantes sigmoid temporal y sigmoid estratificada descartadas.
+- Estado: el componente queda listo para revisión e integración, pero T-4.1 sigue abierta hasta combinar los estimadores, comparar el ensemble completo y recibir la revisión de I1–I3.
 
 ### [ ] T-4.2 Aplicar validación cruzada y tuning
 
@@ -514,7 +519,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 
 | Campo | Valor |
 |---|---|
-| Estado | v1.1 — Nivel Esencial cerrado (T-3.7) el 2026-07-26; Fase 4 en adelante sin iniciar |
+| Estado | v1.1 — Nivel Esencial cerrado (T-3.7) el 2026-07-26; T-4.1 en progreso |
 | Fecha | 27/07/2026 |
-| Siguiente trabajo | T-4.1 (ensemble) y T-4.2 (validación cruzada/tuning), sin usar el split de test |
+| Siguiente trabajo | Completar T-4.1 integrando y comparando el ensemble; después T-4.2, sin usar el split de test |
 | Regla | Marcar `[x]` solo con verificación, evidencia y revisión cruzada |
