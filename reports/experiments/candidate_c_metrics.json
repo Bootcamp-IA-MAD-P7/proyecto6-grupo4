@@ -37,13 +37,13 @@
     "ccp_alpha": 0.0,
     "class_weight": "balanced",
     "criterion": "gini",
-    "max_depth": null,
+    "max_depth": 6,
     "max_features": "sqrt",
     "max_leaf_nodes": null,
     "max_samples": null,
     "min_impurity_decrease": 0.0,
-    "min_samples_leaf": 8,
-    "min_samples_split": 2,
+    "min_samples_leaf": 15,
+    "min_samples_split": 30,
     "min_weight_fraction_leaf": 0.0,
     "monotonic_cst": null,
     "n_estimators": 300,
@@ -54,21 +54,21 @@
     "warm_start": false
   },
   "train": {
-    "macro_f1": 0.7171387012486354,
-    "accuracy": 0.7194753825335692,
-    "balanced_accuracy": 0.728847499396319,
-    "log_loss": 0.8839871889577322
+    "macro_f1": 0.4678593341447152,
+    "accuracy": 0.4857916102841678,
+    "balanced_accuracy": 0.4724584357644819,
+    "log_loss": 1.0266927429315602
   },
   "validation": {
-    "macro_f1": 0.4553361065925328,
-    "accuracy": 0.48955722639933164,
-    "balanced_accuracy": 0.4646361760838204,
-    "log_loss": 1.015186650114607
+    "macro_f1": 0.4741942086410394,
+    "accuracy": 0.5071010860484545,
+    "balanced_accuracy": 0.48488982896281146,
+    "log_loss": 1.0225512899188869
   },
-  "overfitting_gap_macro_f1": 0.2618025946561026,
-  "absolute_macro_f1_difference": 0.2618025946561026,
-  "training_time_seconds": 1.1132585000013933,
-  "inference_time_ms_per_row": 0.19256558067748072,
+  "overfitting_gap_macro_f1": 0.0,
+  "absolute_macro_f1_difference": 0.006334874496324194,
+  "training_time_seconds": 2.618986400018912,
+  "inference_time_ms_per_row": 0.8412620718703732,
   "artifact_path": "models/candidates/model_c/candidate_c_random_forest_v1.joblib",
   "test_protection": "El estimador recibe únicamente train y validation; test_used es siempre 0."
 }
