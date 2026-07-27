@@ -45,8 +45,8 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 | Evaluación | Cerrado | T-0.4/T-1.5: métrica, gap, ventanas temporales y particiones ratificados por el equipo en daily 2026-07-24 |
 | Candidatos | Cerrado | T-0.5: cuatro algoritmos asignados, ver `docs/decisions/0003-four-candidate-models.md` |
 | Aplicación | Cerrado | T-0.6: arquitectura y contrato aprobados por I1–I4 |
-| `Data Ready` | Abierto | T-1.8 y checklist de `2_spec.md` |
-| Nivel Esencial | No iniciado | Requiere `Data Ready` |
+| `Data Ready` | Cerrado | T-1.8: checklist de `2_spec.md` completada 2026-07-26 |
+| Nivel Esencial | Cerrado | T-3.7: gate de `3_plan.md` satisfecho 2026-07-26, Champion D integrado y 28 tests aprobados |
 
 ## Fase 0 — Decisiones bloqueantes
 
@@ -514,7 +514,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 
 | Campo | Valor |
 |---|---|
-| Estado | v1.0 — T-0.2b, T-0.4, T-0.5, T-0.6 y T-1.5 ratificados el 2026-07-24 |
-| Fecha | 24/07/2026 |
-| Siguiente trabajo bloqueante | T-1.4a y T-1.6–T-1.7 antes de `T-1.8` |
+| Estado | v1.1 — Nivel Esencial cerrado (T-3.7) el 2026-07-26; Fase 4 en adelante sin iniciar |
+| Fecha | 27/07/2026 |
+| Siguiente trabajo | T-4.1 (ensemble) y T-4.2 (validación cruzada/tuning), sin usar el split de test |
 | Regla | Marcar `[x]` solo con verificación, evidencia y revisión cruzada |
