@@ -14,8 +14,16 @@ def _sample() -> tuple[pd.DataFrame, pd.Series]:
     return frame, pd.Series(["H", "D", "A"] * 3)
 
 
+def _larger_sample() -> tuple[pd.DataFrame, pd.Series]:
+    # build_pipeline_b usa early_stopping interno (validation_fraction=.15); necesita
+    # suficientes filas por clase para poder separar su propio holdout interno.
+    rows = 60
+    frame = pd.DataFrame({"home_team": ["A", "B", "C"] * 20, "away_team": ["B", "C", "A"] * 20, **{column: [float((index + row) % 7) for row in range(rows)] for index, column in enumerate(MODEL_FEATURES[2:])}})
+    return frame, pd.Series(["H", "D", "A"] * 20)
+
+
 def test_candidate_b_c_and_d_fit_only_the_common_feature_schema() -> None:
-    features, labels = _sample()
+    features, labels = _larger_sample()
     for pipeline in (build_pipeline_b(), build_pipeline_c(), build_pipeline_d()):
         pipeline.fit(features.loc[:, MODEL_FEATURES], labels)
         assert set(pipeline.predict(features.loc[:, MODEL_FEATURES])).issubset({"H", "D", "A"})
