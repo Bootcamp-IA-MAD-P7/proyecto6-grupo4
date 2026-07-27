@@ -413,6 +413,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Resultado de validación: macro-F1 0,484859, accuracy 0,497076, balanced accuracy 0,490231, log loss 1,051532, Brier multiclase 0,634072, ECE 0,070104 y gap train-validación 0,007564.
 - Evidencia: `src/ensemble/svc_calibrated.py`, `scripts/run_ensemble_svc_calibrated.py`, `tests/unit/test_calibrated_svc.py` y `reports/experiments/ensemble_svc_calibrated_*`. La comparación documenta también las variantes sigmoid temporal y sigmoid estratificada descartadas.
 - Estado: el componente queda listo para revisión e integración, pero T-4.1 sigue abierta hasta combinar los estimadores, comparar el ensemble completo y recibir la revisión de I1–I3.
+- Avance 2026-07-27 (I2), primera iteración: implementado `src/candidates/ensemble.py`, votación suave entre A y D sin reajustar hiperparámetros. Resultado: validation macro-F1 0,431291 (por debajo de A y D), gap 0,016469. No desplaza al Champion D. Detalle en `reports/experiments/ensemble_review.md`. Este PR se cerró sin fusionar (decisión del equipo) para retomarlo con el B retunado y los 4 candidatos.
 
 ### [ ] T-4.2 Aplicar validación cruzada y tuning
 
