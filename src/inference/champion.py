@@ -9,7 +9,11 @@ from typing import Any
 import joblib
 import pandas as pd
 
-from src.data.historical_features import MODEL_FEATURES, build_historical_features
+from src.data.historical_features import (
+    MODEL_FEATURES,
+    HistoricalFeatureSnapshot,
+    build_historical_features,
+)
 from src.data.laliga_loader import TARGET_COLUMN, load_processed_dataset
 
 
@@ -30,11 +34,19 @@ class ChampionPredictor:
             raise InferenceError("MODEL_UNAVAILABLE", "El Champion no está disponible.", 503)
         self.pipeline = joblib.load(self.artifact_path)
         self.teams = set(self.history["home_team"]) | set(self.history["away_team"])
+        self.latest_history_date = self.history["match_date"].max()
+        self.latest_snapshot = HistoricalFeatureSnapshot.from_frame(self.history)
 
     def feature_row(self, home_team: str, away_team: str, match_date: date) -> pd.DataFrame:
         if home_team not in self.teams or away_team not in self.teams:
             raise InferenceError("TEAM_NOT_FOUND", "Alguno de los equipos no pertenece al catálogo disponible.", 404)
         timestamp = pd.Timestamp(match_date)
+        if timestamp > self.latest_history_date:
+            return self.latest_snapshot.feature_row(
+                home_team,
+                away_team,
+                timestamp,
+            )
         prior = self.history.loc[self.history["match_date"] < timestamp].copy()
         if prior.empty:
             raise InferenceError("INSUFFICIENT_HISTORY", "No existe historial anterior para la fecha solicitada.", 409)
