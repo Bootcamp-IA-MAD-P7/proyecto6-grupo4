@@ -133,9 +133,39 @@ Este documento se actualizará al finalizar cada daily. Solo contendrá informac
 - Decisiones: `Data Ready` quedó cerrado el 26/07/2026; los cuatro candidatos se evaluaron con el mismo dataset, splits y features históricas sin leakage. B y C quedaron descartados por sobreajuste. Se seleccionó el candidato D, SVC con kernel RBF, como Champion. El Nivel Esencial (`T-3.7`) se considera cerrado con aplicación integrada, informe técnico y evidencia de pruebas.
 - Evidencias: `reports/metrics/data_ready_gate.md`; `reports/experiments/experiments_table.csv`; `reports/experiments/champion_metadata.json`; `reports/experiments/champion_test_metrics.json`; `reports/technical_report.md`; `models/champion/laliga_champion_v1.joblib`; y `pytest -q -p no:cacheprovider --basetemp=<temporal aislado>` con **28 tests aprobados**.
 
+## Daily 28/07/2026
+
+### Arnaldo
+
+- Realizado: integró en `develop` el frontend de `T-1.6` mediante la PR #54 y mantuvo la trazabilidad de los cambios que amplían el producto después del cierre del Nivel Esencial.
+- Siguiente: revisar la reproducibilidad de los datos, el preprocesamiento y las features históricas tras los avances de Nivel Medio y Avanzado; confirmar que los artefactos del Champion y la inferencia conservan el contrato de datos.
+- Bloqueos: ninguno registrado.
+
+### Johans
+
+- Realizado: completó `T-4.1`–`T-4.4` y `T-5.1`–`T-5.3`: ensemble y validación cruzada temporal, feedback validado, ingesta de datos nuevos sin mezclar entrenamiento, cobertura ampliada de tests, Docker y persistencia PostgreSQL. También actualizó el README como guía de ejecución del proyecto. El ensemble A+B+C+D fue promovido como Champion y las verificaciones alcanzaron 76 tests aprobados antes de los cambios posteriores de despliegue.
+- Siguiente: revisar métricas, overfitting, validación cruzada y la documentación final del Champion para el cierre de `T-7.1` y el informe técnico.
+- Bloqueos: ninguno registrado.
+
+### César
+
+- Realizado: actualizó el Modelo C para corregir el gap de overfitting, contribuyó a la integración del frontend y preparó la presentación técnica de LaLiga Predictor (`T-7.3`).
+- Siguiente: completar la revisión de la experiencia de demo y preparar, junto al equipo, la presentación orientada a negocio y la checklist de entrega.
+- Bloqueos: ninguno registrado.
+
+### Fernanda
+
+- Realizado: desplegó la aplicación en Render con PostgreSQL; verificó frontend, API, Champion y predicciones; optimizó la inferencia de más de 36 s a unos 0,54 s; y dejó la suite completa con 80 tests aprobados. La optimización está publicada en la PR #71.
+- Siguiente: fusionar la PR #71, ejecutar el despliegue manual en Render, verificar la latencia y cerrar `T-5.4` en `.specify`.
+- Bloqueos: ninguno técnico. Pendiente fusionar y redesplegar la PR #71.
+
+### Decisiones y evidencias
+
+- Decisiones: el Champion pasa a ser el ensemble A+B+C+D tras la comparación documentada; las mejoras de Nivel Medio y Avanzado quedan incorporadas sin alterar el dataset canónico ni los splits protegidos. `T-5.4` continúa en progreso hasta que la optimización de la PR #71 esté fusionada, desplegada y comprobada en Render.
+- Evidencias: PR #54, PR #63, PR #66–#70 y PR #71; `render.yaml`; `docker-compose.yml`; `docs/database_schema.md`; `reports/experiments/cross_validation_review.md`; `reports/experiments/champion_metadata.json`; y la suite de 80 tests registrada por Fernanda.
+
 ## Próximas dailys
 
-- 28/07/2026.
 - 29/07/2026.
 - 30/07/2026.
 
