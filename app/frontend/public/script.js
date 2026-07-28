@@ -1,8 +1,24 @@
 const TEAMS = [
   "Real Madrid",
-  "Barcelona", "Ath Madrid", "Sevilla", "Betis", "Sociedad", "Ath Bilbao",
-  "Villarreal", "Valencia", "Celta", "Getafe", "Osasuna", "Vallecano",
-  "Mallorca", "Las Palmas", "Alaves", "Granada", "Cadiz", "Almeria", "Girona",
+  "FC Barcelona",
+  "Atlético de Madrid",
+  "Sevilla FC",
+  "Real Betis",
+  "Real Sociedad",
+  "Athletic Club",
+  "Villarreal CF",
+  "Valencia CF",
+  "RC Celta",
+  "Getafe CF",
+  "CA Osasuna",
+  "Rayo Vallecano",
+  "RCD Mallorca",
+  "UD Las Palmas",
+  "Deportivo Alavés",
+  "Granada CF",
+  "Cádiz CF",
+  "UD Almería",
+  "Girona FC",
 ];
 
 const API_URL = "http://127.0.0.1:8000/api/v1/predictions";
