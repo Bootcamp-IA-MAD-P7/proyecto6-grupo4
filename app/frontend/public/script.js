@@ -1,24 +1,28 @@
+// `value` debe coincidir exactamente con el nombre de equipo tal como aparece
+// en el dataset histórico (data/processed/laliga_matches_clean.csv), que es
+// contra lo que el backend valida el catálogo de equipos conocidos.
+// `label` es solo el nombre comercial que ve el usuario.
 const TEAMS = [
-  "Real Madrid",
-  "FC Barcelona",
-  "Atlético de Madrid",
-  "Sevilla FC",
-  "Real Betis",
-  "Real Sociedad",
-  "Athletic Club",
-  "Villarreal CF",
-  "Valencia CF",
-  "RC Celta",
-  "Getafe CF",
-  "CA Osasuna",
-  "Rayo Vallecano",
-  "RCD Mallorca",
-  "UD Las Palmas",
-  "Deportivo Alavés",
-  "Granada CF",
-  "Cádiz CF",
-  "UD Almería",
-  "Girona FC",
+  { label: "Real Madrid", value: "Real Madrid" },
+  { label: "FC Barcelona", value: "Barcelona" },
+  { label: "Atlético de Madrid", value: "Ath Madrid" },
+  { label: "Sevilla FC", value: "Sevilla" },
+  { label: "Real Betis", value: "Betis" },
+  { label: "Real Sociedad", value: "Sociedad" },
+  { label: "Athletic Club", value: "Ath Bilbao" },
+  { label: "Villarreal CF", value: "Villarreal" },
+  { label: "Valencia CF", value: "Valencia" },
+  { label: "RC Celta", value: "Celta" },
+  { label: "Getafe CF", value: "Getafe" },
+  { label: "CA Osasuna", value: "Osasuna" },
+  { label: "Rayo Vallecano", value: "Vallecano" },
+  { label: "RCD Mallorca", value: "Mallorca" },
+  { label: "UD Las Palmas", value: "Las Palmas" },
+  { label: "Deportivo Alavés", value: "Alaves" },
+  { label: "Granada CF", value: "Granada" },
+  { label: "Cádiz CF", value: "Cadiz" },
+  { label: "UD Almería", value: "Almeria" },
+  { label: "Girona FC", value: "Girona" },
 ];
 
 const API_ORIGIN =
@@ -48,8 +52,8 @@ const clearHistoryBtn = document.getElementById("clear-history");
 
 function populateSelects() {
   TEAMS.forEach((team) => {
-    homeSelect.add(new Option(team, team));
-    awaySelect.add(new Option(team, team));
+    homeSelect.add(new Option(team.label, team.value));
+    awaySelect.add(new Option(team.label, team.value));
   });
 }
 
@@ -136,6 +140,8 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const home = homeSelect.value;
   const away = awaySelect.value;
+  const homeLabel = homeSelect.selectedOptions[0]?.text ?? home;
+  const awayLabel = awaySelect.selectedOptions[0]?.text ?? away;
   const date = dateInput.value;
 
   if (!home || !away || !date) return;
@@ -146,8 +152,8 @@ form.addEventListener("submit", async (e) => {
 
   try {
     const result = await predict(home, away, date);
-    showResult(home, away, result);
-    addHistory(home, away, date, result);
+    showResult(homeLabel, awayLabel, result);
+    addHistory(homeLabel, awayLabel, date, result);
   } catch (error) {
     alert(error.message);
   }
