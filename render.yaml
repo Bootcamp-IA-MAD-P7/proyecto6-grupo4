@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: laliga-predictor-grupo4
+    runtime: docker
+    plan: free
+    region: frankfurt
+    branch: develop
+    dockerfilePath: ./docker/backend.Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeployTrigger: off
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: laliga-predictor-grupo4-db
+          property: connectionString
+
+databases:
+  - name: laliga-predictor-grupo4-db
+    plan: free
+    region: frankfurt
+    databaseName: laliga
+    user: laliga

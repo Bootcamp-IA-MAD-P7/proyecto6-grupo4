@@ -10,6 +10,15 @@ def test_health_endpoint_reports_ok_status() -> None:
     response = client.get("/health")
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
+    assert response.json()["model_loaded"] is True
+    assert response.json()["model_version"] == "ensemble_abcd_soft_voting_v1"
+
+
+def test_root_serves_the_client_demo() -> None:
+    client = TestClient(app)
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "LaLiga" in response.text
 
 
 def test_predictions_endpoint_returns_404_for_unknown_team() -> None:
