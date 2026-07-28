@@ -22,7 +22,10 @@ _session_factory: sessionmaker[Session] | None = None
 
 
 def get_database_url() -> str:
-    return os.environ.get("DATABASE_URL", "sqlite:///:memory:")
+    url = os.environ.get("DATABASE_URL", "sqlite:///:memory:")
+    if url.startswith("postgresql://"):
+        return url.replace("postgresql://", "postgresql+psycopg://", 1)
+    return url
 
 
 def get_engine() -> Engine:

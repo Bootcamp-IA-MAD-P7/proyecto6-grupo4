@@ -1,10 +1,5 @@
-# T-5.2: imagen de servicio del backend. Los artefactos del Champion
-# (models/champion/, data/processed/*.csv) se generan con el pipeline ya
-# documentado en el repo (scripts/run_laliga_preprocessing.py,
-# scripts/run_historical_features.py, scripts/run_candidate_{a,b,c,d}.py,
-# scripts/run_ensemble_abcd.py, scripts/select_champion.py) ANTES de
-# construir esta imagen: no se re-entrenan en el build (sería un build de
-# ~10 minutos por el SVC calibrado). Ver docker/README.md.
+# T-5.4: imagen desplegable del backend y frontend. El Champion se descarga
+# desde un release público versionado y se verifica antes de copiar el código.
 FROM python:3.13-slim
 
 WORKDIR /app
@@ -12,11 +7,16 @@ WORKDIR /app
 COPY requirements-backend.txt .
 RUN pip install --no-cache-dir -r requirements-backend.txt
 
+ARG CHAMPION_MODEL_URL=https://github.com/Bootcamp-IA-MAD-P7/proyecto6-grupo4/releases/download/model-ensemble-abcd-soft-voting-v1/laliga_champion_v1.joblib
+ARG CHAMPION_MODEL_SHA256=6333eb87342f9997d764ba416b3a7a434ab2d20df801fa210c0b08bbb7a1bd77
+RUN mkdir -p models/champion && \
+    python -c "from hashlib import sha256; from pathlib import Path; from urllib.request import urlretrieve; target=Path('models/champion/laliga_champion_v1.joblib'); urlretrieve('${CHAMPION_MODEL_URL}', target); actual=sha256(target.read_bytes()).hexdigest(); assert actual == '${CHAMPION_MODEL_SHA256}', f'SHA-256 inesperado: {actual}'"
+
 COPY src ./src
 COPY app/backend ./app/backend
+COPY app/frontend/public ./app/frontend/public
 COPY data/processed/laliga_matches_clean.csv ./data/processed/laliga_matches_clean.csv
 COPY reports/experiments/champion_metadata.json ./reports/experiments/champion_metadata.json
-COPY models/champion ./models/champion
 
-EXPOSE 8000
-CMD ["python", "-m", "uvicorn", "app.backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+EXPOSE 10000
+CMD ["sh", "-c", "python -m uvicorn app.backend.main:app --host 0.0.0.0 --port ${PORT:-10000}"]

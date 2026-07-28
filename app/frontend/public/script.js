@@ -21,7 +21,11 @@ const TEAMS = [
   "Girona FC",
 ];
 
-const API_URL = "http://127.0.0.1:8000/api/v1/predictions";
+const API_ORIGIN =
+  window.location.port === "5173"
+    ? `${window.location.protocol}//${window.location.hostname}:8000`
+    : window.location.origin;
+const API_URL = `${API_ORIGIN}/api/v1/predictions`;
 
 const FACTORS = [
   { label: "Forma reciente local", weight: 0.22, icon: "🔥" },

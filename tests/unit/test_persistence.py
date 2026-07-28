@@ -6,6 +6,7 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from src.persistence.db import get_database_url
 from src.persistence.models import Base
 from src.persistence.repository import (
     count_feedback,
@@ -86,3 +87,15 @@ def test_feedback_id_is_unique(session) -> None:
         save_feedback(
             session, feedback_id="fb-dup", home_team="C", away_team="D", match_date=date(2026, 1, 2), actual_result="A",
         )
+
+
+def test_render_postgres_url_uses_the_installed_psycopg_driver(monkeypatch) -> None:
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        "postgresql://user:password@internal-host:5432/laliga",
+    )
+
+    assert (
+        get_database_url()
+        == "postgresql+psycopg://user:password@internal-host:5432/laliga"
+    )

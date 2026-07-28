@@ -9,6 +9,7 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.backend.schemas import ErrorResponse, FeedbackRequest, FeedbackResponse, PredictionRequest, PredictionResponse
 from src.feedback.store import FeedbackRecord, FeedbackValidationError, append_feedback
@@ -73,7 +74,18 @@ async def validation_error(_: Request, exc: RequestValidationError) -> JSONRespo
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok", "model_loaded": _predictor is not None}
+    try:
+        predictor = get_predictor()
+    except Exception:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "error", "model_loaded": False},
+        )
+    return {
+        "status": "ok",
+        "model_loaded": True,
+        "model_version": predictor.metadata["champion_model_version"],
+    }
 
 
 @app.post("/api/v1/predictions", response_model=PredictionResponse, responses={404: {"model": ErrorResponse}, 409: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
@@ -122,3 +134,8 @@ def create_feedback(payload: FeedbackRequest):
         data_version=stored.data_version, comment=stored.comment,
     )
     return FeedbackResponse(feedback_id=stored.feedback_id)
+
+
+FRONTEND_PATH = ROOT / "app/frontend/public"
+if FRONTEND_PATH.exists():
+    app.mount("/", StaticFiles(directory=FRONTEND_PATH, html=True), name="frontend")
