@@ -6,6 +6,7 @@ import pytest
 from src.data.historical_features import (
     MODEL_FEATURES,
     HistoricalFeatureConfig,
+    HistoricalFeatureSnapshot,
     build_historical_features,
 )
 
@@ -92,3 +93,41 @@ def test_output_is_deterministic_and_uses_stable_chronological_order() -> None:
 def test_rejects_invalid_generator_parameters() -> None:
     with pytest.raises(ValueError, match="rolling_window"):
         build_historical_features(_matches(), HistoricalFeatureConfig(rolling_window=0))
+
+
+def test_latest_snapshot_matches_full_generator_for_a_future_request() -> None:
+    request = pd.DataFrame(
+        [
+            (
+                "__inference_request__",
+                "inference",
+                "2020-02-01",
+                "Alpha",
+                "Beta",
+                0,
+                0,
+                "D",
+            )
+        ],
+        columns=_matches().columns,
+    )
+    expected = build_historical_features(
+        pd.concat([_matches(), request], ignore_index=True)
+    )
+    expected = expected.loc[
+        expected["match_id"].eq("__inference_request__"),
+        list(MODEL_FEATURES),
+    ]
+
+    snapshot = HistoricalFeatureSnapshot.from_frame(_matches())
+    actual = snapshot.feature_row(
+        "Alpha",
+        "Beta",
+        pd.Timestamp("2020-02-01"),
+    )
+
+    pd.testing.assert_frame_equal(
+        actual.reset_index(drop=True),
+        expected.reset_index(drop=True),
+        check_dtype=False,
+    )

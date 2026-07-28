@@ -157,13 +157,33 @@ def _update_after_match(
     away: _TeamState,
     config: HistoricalFeatureConfig,
 ) -> None:
-    home_points, away_points, home_win, away_win = _result_points(row[TARGET_COLUMN])
+    _update_team_states(
+        home,
+        away,
+        result=row[TARGET_COLUMN],
+        home_goals=float(row["home_goals_ft"]),
+        away_goals=float(row["away_goals_ft"]),
+        match_date=row["match_date"],
+        config=config,
+    )
+
+
+def _update_team_states(
+    home: _TeamState,
+    away: _TeamState,
+    *,
+    result: str,
+    home_goals: float,
+    away_goals: float,
+    match_date: pd.Timestamp,
+    config: HistoricalFeatureConfig,
+) -> None:
+    home_points, away_points, home_win, away_win = _result_points(result)
     expected_home = 1.0 / (1.0 + 10.0 ** ((away.rating - home.rating) / 400.0))
-    actual_home = 1.0 if row[TARGET_COLUMN] == "H" else 0.0 if row[TARGET_COLUMN] == "A" else 0.5
+    actual_home = 1.0 if result == "H" else 0.0 if result == "A" else 0.5
     rating_change = config.elo_k_factor * (actual_home - expected_home)
     home.rating += rating_change
     away.rating -= rating_change
-    home_goals, away_goals = float(row["home_goals_ft"]), float(row["away_goals_ft"])
     for state, points, goals_for, goals_against, win in (
         (home, home_points, home_goals, away_goals, home_win),
         (away, away_points, away_goals, home_goals, away_win),
@@ -173,7 +193,65 @@ def _update_after_match(
         state.goals_for.append(goals_for)
         state.goals_against.append(goals_against)
         state.wins.append(win)
-        state.last_match_date = row["match_date"]
+        state.last_match_date = match_date
+
+
+@dataclass
+class HistoricalFeatureSnapshot:
+    """Estado acumulado reutilizable para inferencias posteriores al histórico."""
+
+    config: HistoricalFeatureConfig
+    states: dict[str, _TeamState]
+
+    @classmethod
+    def from_frame(
+        cls,
+        frame: pd.DataFrame,
+        config: HistoricalFeatureConfig | None = None,
+    ) -> "HistoricalFeatureSnapshot":
+        config = config or HistoricalFeatureConfig()
+        ordered = _validate_input(frame)
+        states: dict[str, _TeamState] = {}
+        for row in ordered.itertuples(index=False):
+            home = states.setdefault(row.home_team, _TeamState.create(config))
+            away = states.setdefault(row.away_team, _TeamState.create(config))
+            _update_team_states(
+                home,
+                away,
+                result=getattr(row, TARGET_COLUMN),
+                home_goals=float(row.home_goals_ft),
+                away_goals=float(row.away_goals_ft),
+                match_date=row.match_date,
+                config=config,
+            )
+        return cls(config=config, states=states)
+
+    def feature_row(
+        self,
+        home_team: str,
+        away_team: str,
+        match_date: pd.Timestamp,
+    ) -> pd.DataFrame:
+        """Construye una fila futura en O(1) sin recorrer otra vez los partidos."""
+
+        if home_team not in self.states or away_team not in self.states:
+            raise KeyError("Alguno de los equipos no existe en el snapshot histórico.")
+        request = pd.Series(
+            {
+                "match_id": "__inference_request__",
+                "season": "inference",
+                "match_date": pd.Timestamp(match_date),
+                "home_team": home_team,
+                "away_team": away_team,
+                TARGET_COLUMN: "D",
+            }
+        )
+        values = _pre_match_row(
+            request,
+            self.states[home_team],
+            self.states[away_team],
+        )
+        return pd.DataFrame([values]).loc[:, list(MODEL_FEATURES)]
 
 
 def build_historical_features(
