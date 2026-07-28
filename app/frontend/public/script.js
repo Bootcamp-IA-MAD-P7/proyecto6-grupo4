@@ -1,178 +1,385 @@
-// `value` debe coincidir exactamente con el nombre de equipo tal como aparece
-// en el dataset histórico (data/processed/laliga_matches_clean.csv), que es
-// contra lo que el backend valida el catálogo de equipos conocidos.
-// `label` es solo el nombre comercial que ve el usuario.
-const TEAMS = [
-  { label: "Real Madrid", value: "Real Madrid" },
-  { label: "FC Barcelona", value: "Barcelona" },
-  { label: "Atlético de Madrid", value: "Ath Madrid" },
-  { label: "Sevilla FC", value: "Sevilla" },
-  { label: "Real Betis", value: "Betis" },
-  { label: "Real Sociedad", value: "Sociedad" },
-  { label: "Athletic Club", value: "Ath Bilbao" },
-  { label: "Villarreal CF", value: "Villarreal" },
-  { label: "Valencia CF", value: "Valencia" },
-  { label: "RC Celta", value: "Celta" },
-  { label: "Getafe CF", value: "Getafe" },
-  { label: "CA Osasuna", value: "Osasuna" },
-  { label: "Rayo Vallecano", value: "Vallecano" },
-  { label: "RCD Mallorca", value: "Mallorca" },
-  { label: "UD Las Palmas", value: "Las Palmas" },
-  { label: "Deportivo Alavés", value: "Alaves" },
-  { label: "Granada CF", value: "Granada" },
-  { label: "Cádiz CF", value: "Cadiz" },
-  { label: "UD Almería", value: "Almeria" },
-  { label: "Girona FC", value: "Girona" },
+// ============================================================
+// NAVEGACIÓN ENTRE SECCIONES (one-pager, sin recarga de página)
+// ============================================================
+const sections = ["inicio", "modelo", "historico", "login", "admin"];
+let isLoggedIn = false;
+
+function showSection(name, scrollToId) {
+  if (name === "admin" && !isLoggedIn) name = "login";
+
+  sections.forEach((s) => {
+    document.getElementById("page-" + s).classList.toggle("is-hidden", s !== name);
+  });
+
+  document.querySelectorAll(".nav-link").forEach((a) => {
+    const linkTarget = a.dataset.scroll ? "inicio" : a.dataset.section;
+    a.classList.toggle("is-active", linkTarget === name || (name === "admin" && a.dataset.section === "login"));
+  });
+
+  document.getElementById("loginNavLink").textContent = isLoggedIn ? "Admin" : "Login";
+  document.getElementById("loginNavLink").dataset.section = isLoggedIn ? "admin" : "login";
+
+  if (scrollToId) {
+    // Espera a que la sección esté visible antes de medir su posición
+    requestAnimationFrame(() => {
+      document.getElementById(scrollToId).scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  } else {
+    window.scrollTo(0, 0);
+  }
+  document.getElementById("navLinks").classList.remove("is-open");
+}
+
+document.querySelectorAll(".nav-link").forEach((a) => {
+  a.addEventListener("click", (e) => {
+    e.preventDefault();
+    showSection(a.dataset.section, a.dataset.scroll);
+  });
+});
+document.querySelectorAll("[data-scroll]:not(.nav-link)").forEach((el) => {
+  el.addEventListener("click", () => {
+    document.getElementById(el.dataset.scroll).scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
+document.getElementById("navToggle").addEventListener("click", () => {
+  document.getElementById("navLinks").classList.toggle("is-open");
+});
+
+// ============================================================
+// INICIO — fixtures ilustrativos de la temporada 2026/27
+// ============================================================
+// ============================================================
+// MARQUESINA — próxima fecha, horizontal, clicable para precargar el predictor
+// ============================================================
+function renderMarquee() {
+  const nextJornada = FIXTURES_2026_27[0].jornada;
+  const items = FIXTURES_2026_27.filter((f) => f.jornada === nextJornada);
+
+  const chip = (f) => `
+    <button type="button" class="marquee__chip" data-home="${f.home}" data-away="${f.away}" data-date="${f.date}">
+      <span class="marquee__chip-date">${formatDate(f.date)}</span>
+      <span class="marquee__chip-teams">${f.home} <span class="marquee__chip-vs">vs</span> ${f.away}</span>
+    </button>`;
+
+  // Se duplica la lista para que la animación de scroll infinito no muestre un salto/corte.
+  const html = items.map(chip).join("") + items.map(chip).join("");
+  const track = document.getElementById("marqueeTrack");
+  track.innerHTML = html;
+
+  track.querySelectorAll(".marquee__chip").forEach((chipEl) => {
+    chipEl.addEventListener("click", () => {
+      homeSelect.value = chipEl.dataset.home;
+      awaySelect.value = chipEl.dataset.away;
+      dateInput.value = chipEl.dataset.date;
+      updatePredictBtn();
+      document.getElementById("predictor-section").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+}
+
+function formatDate(iso) {
+  const [y, m, d] = iso.split("-");
+  const dias = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
+  const dt = new Date(Number(y), Number(m) - 1, Number(d));
+  return `${dias[dt.getDay()]} ${d}/${m}/${y}`;
+}
+
+// ============================================================
+// PREDICCIÓN — mismo mock de antes, con equipos reales
+// ============================================================
+const FACTOR_DEFS = [
+  { label: "Forma reciente (últimos 5 partidos)", icon: "🔥" },
+  { label: "Rendimiento como visitante", icon: "🚌" },
+  { label: "Historial directo (H2H)", icon: "⚔️" },
+  { label: "Bajas y sanciones", icon: "🚑" },
+  { label: "Motivación y posición en tabla", icon: "📊" },
+  { label: "Descanso entre partidos", icon: "⏱️" },
 ];
 
-const API_ORIGIN =
-  window.location.port === "5173"
-    ? `${window.location.protocol}//${window.location.hostname}:8000`
-    : window.location.origin;
-const API_URL = `${API_ORIGIN}/api/v1/predictions`;
-
-const FACTORS = [
-  { label: "Forma reciente local", weight: 0.22, icon: "🔥" },
-  { label: "Rendimiento como visitante", weight: 0.18, icon: "🚌" },
-  { label: "Historial de enfrentamientos", weight: 0.16, icon: "⚔️" },
-  { label: "Lesiones y sanciones", weight: 0.14, icon: "🚑" },
-  { label: "Motivación y posición", weight: 0.13, icon: "📊" },
-  { label: "Descanso entre partidos", weight: 0.10, icon: "⏱️" },
-  { label: "Clima y condiciones", weight: 0.07, icon: "🌤️" },
-];
+function mockFactors() {
+  const raw = FACTOR_DEFS.map(() => Math.random());
+  const total = raw.reduce((a, b) => a + b, 0);
+  const normalized = raw.map((v) => Math.round((v / total) * 100));
+  return FACTOR_DEFS.map((def, i) => ({ ...def, weight: normalized[i] })).sort((a, b) => b.weight - a.weight);
+}
 
 const homeSelect = document.getElementById("home-team");
 const awaySelect = document.getElementById("away-team");
 const dateInput = document.getElementById("match-date");
-const form = document.getElementById("predict-form");
-const resultSection = document.getElementById("result-section");
-const historyList = document.getElementById("history-list");
-const historyEmpty = document.getElementById("history-empty");
-const clearHistoryBtn = document.getElementById("clear-history");
+const predictForm = document.getElementById("predict-form");
+const predictBtn = document.getElementById("predict-btn");
+const spinner = document.getElementById("spinner");
+const resultOk = document.getElementById("result-ok");
+const resultError = document.getElementById("result-error");
 
-function populateSelects() {
-  TEAMS.forEach((team) => {
-    homeSelect.add(new Option(team.label, team.value));
-    awaySelect.add(new Option(team.label, team.value));
-  });
+LALIGA_TEAMS.forEach((t) => {
+  homeSelect.add(new Option(t, t));
+  awaySelect.add(new Option(t, t));
+});
+dateInput.value = new Date().toISOString().slice(0, 10);
+
+function updatePredictBtn() {
+  predictBtn.disabled = !(homeSelect.value && awaySelect.value && dateInput.value);
 }
-
-async function predict(home, away, date) {
-  const response = await fetch(API_URL, {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ home_team: home, away_team: away, match_date: date }),
-  });
-  const payload = await response.json();
-  if (!response.ok) throw new Error(payload.message || "No se pudo obtener la predicción.");
-  const labels = { H: "Victoria local", D: "Empate", A: "Victoria visitante" };
-  const homeProb = payload.probabilities.H;
-  const drawProb = payload.probabilities.D;
-  const awayProb = payload.probabilities.A;
-  return { home: Math.round(homeProb * 100), draw: Math.round(drawProb * 100), away: Math.round(awayProb * 100), outcome: labels[payload.prediction], confidence: Math.round(Math.max(homeProb, drawProb, awayProb) * 100) };
+function handleHomeChange() {
+  if (homeSelect.value === awaySelect.value) awaySelect.value = "";
+  updatePredictBtn();
 }
-
-function setGauge(value) {
-  const arc = document.getElementById("gauge-arc");
-  const circumference = 2 * Math.PI * 54;
-  const offset = circumference - (value / 100) * circumference;
-  arc.style.strokeDashoffset = offset;
+function handleAwayChange() {
+  if (awaySelect.value === homeSelect.value) homeSelect.value = "";
+  updatePredictBtn();
 }
+homeSelect.addEventListener("change", handleHomeChange);
+awaySelect.addEventListener("change", handleAwayChange);
+dateInput.addEventListener("change", updatePredictBtn);
 
-function renderFactors() {
-  const list = document.getElementById("factors-list");
-  list.innerHTML = "";
-  FACTORS.forEach((factor) => {
-    const li = document.createElement("li");
-    li.className = "factor";
-    li.innerHTML = `
-      <span class="factor__icon">${factor.icon}</span>
-      <span class="factor__label">${factor.label}</span>
-      <div class="factor__weight"><span style="width: 0%"></span></div>
-    `;
-    list.appendChild(li);
+let history = [];
+
+function mockPredict(home, away) {
+  return new Promise((resolve) => {
     setTimeout(() => {
-      li.querySelector(".factor__weight span").style.width = `${factor.weight * 100}%`;
-    }, 50);
+      const probH = Math.round(Math.random() * 60 + 20) / 100;
+      const probD = Math.round(Math.random() * (100 - probH * 100) * 0.4) / 100;
+      const probA = Math.round((1 - probH - probD) * 100) / 100;
+      const probs = { H: probH, D: probD, A: probA };
+      const prediction = Object.keys(probs).reduce((a, b) => (probs[a] > probs[b] ? a : b));
+      resolve({
+        status: "ok", prediction, probabilities: probs,
+        model_version: CHAMPION.modelVersion, data_version: "laliga_matches_1995_96_to_2025_26_v1",
+        latency_ms: 400,
+      });
+    }, 500);
   });
 }
 
-function formatDate(dateStr) {
-  const [y, m, d] = dateStr.split("-");
-  return `${d}/${m}/${y}`;
+const OUTCOME_LABELS = { H: "Victoria local", D: "Empate", A: "Victoria visitante" };
+const RESULT_COLORS = { H: "home", D: "draw", A: "away" };
+const RADIUS = 54, CIRC = 2 * Math.PI * RADIUS;
+
+function renderResult(result, home, away) {
+  resultError.style.display = "none";
+  resultOk.style.display = "block";
+
+  document.getElementById("result-teams").innerHTML =
+    `<span style="color:var(--green)">${home}</span> <span style="color:var(--gold);font-size:0.85em;">VS</span> <span style="color:var(--sky)">${away}</span>`;
+  document.getElementById("result-prediction").textContent = OUTCOME_LABELS[result.prediction];
+
+  const pct = Math.round(result.probabilities[result.prediction] * 100);
+  document.getElementById("gaugeValue").textContent = pct + "%";
+  const offset = CIRC - (pct / 100) * CIRC;
+  document.getElementById("gaugeArc").style.strokeDasharray = CIRC;
+  document.getElementById("gaugeArc").style.strokeDashoffset = offset;
+
+  const barsEl = document.getElementById("probBars");
+  barsEl.innerHTML = ["H", "D", "A"].map((k) => {
+    const p = Math.round(result.probabilities[k] * 100);
+    const label = k === "H" ? "Local" : k === "D" ? "Empate" : "Visitante";
+    return `<div class="bar">
+      <span class="bar__label">${label}</span>
+      <div class="bar__track"><div class="bar__fill bar__fill--${RESULT_COLORS[k]}" style="width:${p}%"></div></div>
+      <span class="bar__value">${p}%</span>
+    </div>`;
+  }).join("");
+
+  const factors = mockFactors();
+  document.getElementById("factorsList").innerHTML = factors.map((f) => `
+    <li class="factor">
+      <span class="factor__icon">${f.icon}</span>
+      <span class="factor__label">${f.label}</span>
+      <div class="factor__weight"><span style="width:${f.weight}%"></span></div>
+    </li>
+  `).join("");
+
+  document.getElementById("result-meta").textContent =
+    `Modelo: ${result.model_version} · Datos: ${result.data_version} · ${result.latency_ms} ms`;
 }
 
-function addHistory(home, away, date, result) {
-  const li = document.createElement("li");
-  li.className = "history__item";
-  li.innerHTML = `
-    <div>
-      <strong>${home}</strong> vs <strong>${away}</strong>
-      <br><small>${formatDate(date)} · ${result.outcome}</small>
-    </div>
-    <span class="bar__value">${result.confidence}%</span>
-  `;
-  historyList.prepend(li);
-  historyEmpty.hidden = true;
+function renderHistory() {
+  const listEl = document.getElementById("historyList");
+  const emptyEl = document.getElementById("historyEmpty");
+  const clearBtn = document.getElementById("clearHistoryBtn");
+  emptyEl.style.display = history.length ? "none" : "block";
+  clearBtn.style.display = history.length ? "inline-flex" : "none";
+  listEl.innerHTML = history.map((h) => `
+    <li class="history__item">
+      <div><strong>${h.home}</strong> vs <strong>${h.away}</strong><br><small>${formatDate(h.date)} · ${h.status === "error" ? "Error de validación" : OUTCOME_LABELS[h.prediction]}</small></div>
+      <span class="bar__value">${h.status === "error" ? "—" : h.confidencePct + "%"}</span>
+    </li>
+  `).join("");
+}
+document.getElementById("clearHistoryBtn").addEventListener("click", () => { history = []; renderHistory(); });
+
+// ---- Parámetros de búsqueda + resultados recientes (se llenan tras predecir) ----
+function renderParamsSummary(home, away, date, result) {
+  document.getElementById("paramHome").textContent = home;
+  document.getElementById("paramAway").textContent = away;
+  document.getElementById("paramDate").textContent = formatDate(date);
+  document.getElementById("paramResult").textContent =
+    result && result.status === "ok" ? OUTCOME_LABELS[result.prediction] : "Error de validación";
 }
 
-function showResult(home, away, result) {
-  document.getElementById("result-home").textContent = home;
-  document.getElementById("result-away").textContent = away;
-  document.getElementById("result-prediction").textContent = result.outcome;
+function renderRecentResults(home, away) {
+  const grid = document.getElementById("recentResultsGrid");
+  document.getElementById("recentResultsNote").style.display = "none";
 
-  document.getElementById("prob-home").textContent = `${result.home}%`;
-  document.getElementById("prob-draw").textContent = `${result.draw}%`;
-  document.getElementById("prob-away").textContent = `${result.away}%`;
+  function column(team) {
+    const matches = (HISTORICAL_RESULTS[team] || []).slice(0, 3);
+    const items = matches.map((m) => `
+      <li class="history__item">
+        <div><strong>${m.home}</strong> ${m.home_goals} - ${m.away_goals} <strong>${m.away}</strong><br><small>${formatDate(m.date)}</small></div>
+      </li>
+    `).join("");
+    return `<div class="recent-results-col">
+      <h4 class="recent-results-col__title">${team}</h4>
+      <ul class="history__list">${items || '<li class="history__empty">Sin datos recientes.</li>'}</ul>
+    </div>`;
+  }
 
-  document.getElementById("confidence-value").textContent = `${result.confidence}%`;
-  setGauge(result.confidence);
-
-  document.getElementById("bar-home").style.width = `${result.home}%`;
-  document.getElementById("bar-draw").style.width = `${result.draw}%`;
-  document.getElementById("bar-away").style.width = `${result.away}%`;
-
-  renderFactors();
-  resultSection.hidden = false;
-  resultSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  grid.innerHTML = column(home) + column(away);
 }
 
-form.addEventListener("submit", async (e) => {
+predictForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const home = homeSelect.value;
-  const away = awaySelect.value;
-  const homeLabel = homeSelect.selectedOptions[0]?.text ?? home;
-  const awayLabel = awaySelect.selectedOptions[0]?.text ?? away;
-  const date = dateInput.value;
+  const home = homeSelect.value, away = awaySelect.value, date = dateInput.value;
 
-  if (!home || !away || !date) return;
-  if (home === away) {
-    alert("El equipo local y visitante deben ser diferentes.");
+  resultOk.style.display = "none";
+  resultError.style.display = "none";
+  spinner.style.display = "block";
+  predictBtn.disabled = true;
+
+  if (home.toLowerCase() === away.toLowerCase()) {
+    spinner.style.display = "none";
+    resultError.style.display = "block";
+    document.getElementById("error-code").textContent = "INVALID_INPUT";
+    document.getElementById("error-message").textContent = "El equipo local y el visitante deben ser distintos.";
+    history.unshift({ home, away, date, status: "error" });
+    renderHistory();
+    renderParamsSummary(home, away, date, { status: "error" });
+    updatePredictBtn();
     return;
   }
 
-  try {
-    const result = await predict(home, away, date);
-    showResult(homeLabel, awayLabel, result);
-    addHistory(homeLabel, awayLabel, date, result);
-  } catch (error) {
-    alert(error.message);
-  }
+  const result = await mockPredict(home, away);
+  spinner.style.display = "none";
+  updatePredictBtn();
+  renderResult(result, home, away);
+  renderParamsSummary(home, away, date, result);
+  renderRecentResults(home, away);
+
+  history.unshift({
+    home, away, date, status: "ok", prediction: result.prediction,
+    confidencePct: Math.round(result.probabilities[result.prediction] * 100),
+  });
+  renderHistory();
 });
 
-clearHistoryBtn.addEventListener("click", () => {
-  historyList.innerHTML = "";
-  historyEmpty.hidden = false;
+// ============================================================
+// MODELO — tabla de candidatos + champion (vista pública)
+// ============================================================
+function renderCandidatesTable(targetId, detailed) {
+  const rows = MODEL_CANDIDATES.map((c) => `
+    <tr>
+      <td><span class="pill">${c.id}</span></td>
+      <td>${c.algorithm}</td>
+      <td>${c.member}</td>
+      <td>${c.valF1.toFixed(3)}</td>
+      <td>${c.gap.toFixed(3)}</td>
+      <td><span class="status-badge status-badge--${c.status}">${c.status}</span></td>
+      ${detailed ? `<td>${c.trainF1.toFixed(3)}</td>` : ""}
+    </tr>
+  `).join("");
+  const header = `<tr>
+    <th>Modelo</th><th>Algoritmo</th><th>Responsable</th><th>macro-F1 val.</th><th>Gap</th><th>Estado</th>
+    ${detailed ? "<th>macro-F1 train</th>" : ""}
+  </tr>`;
+  document.getElementById(targetId).innerHTML = `<thead>${header}</thead><tbody>${rows}</tbody>`;
+}
+
+function renderChampionGrid() {
+  const items = [
+    ["Algoritmo", CHAMPION.algorithm.split("(")[0]],
+    ["macro-F1 validación", CHAMPION.valMacroF1.toFixed(3)],
+    ["Gap de overfitting", CHAMPION.gap.toFixed(3)],
+    ["macro-F1 test (evaluación única)", CHAMPION.testMacroF1.toFixed(3)],
+  ];
+  document.getElementById("championGrid").innerHTML = items.map(([l, v]) => `
+    <div><span class="objective-label">${l}</span><span class="objective-value">${v}</span></div>
+  `).join("");
+}
+
+function renderTargetBar() {
+  const d = DATASET_INFO.targetDistribution;
+  const bar = document.getElementById("targetBar");
+  bar.innerHTML = `
+    <span style="width:${d.H * 100}%;background:var(--green)">${Math.round(d.H * 100)}% H</span>
+    <span style="width:${d.D * 100}%;background:var(--gold)">${Math.round(d.D * 100)}% D</span>
+    <span style="width:${d.A * 100}%;background:var(--sky)">${Math.round(d.A * 100)}% A</span>
+  `;
+  document.getElementById("targetNote").textContent =
+    `${DATASET_INFO.totalMatches.toLocaleString("es-ES")} partidos, temporadas ${DATASET_INFO.seasons}. Ratio de desbalance mayoritaria/minoritaria: ${DATASET_INFO.imbalanceRatio}.`;
+}
+
+// ============================================================
+// HISTÓRICO — resultados reales del dataset
+// ============================================================
+const historicoSelect = document.getElementById("historico-team");
+LALIGA_TEAMS.forEach((t) => historicoSelect.add(new Option(t, t)));
+historicoSelect.addEventListener("change", () => {
+  const list = document.getElementById("historicoList");
+  const matches = HISTORICAL_RESULTS[historicoSelect.value] || [];
+  if (!matches.length) { list.innerHTML = ""; return; }
+  list.innerHTML = matches.map((m) => `
+    <li class="history__item">
+      <div><strong>${m.home}</strong> ${m.home_goals} - ${m.away_goals} <strong>${m.away}</strong><br><small>${formatDate(m.date)} · Temporada ${m.season}</small></div>
+    </li>
+  `).join("");
 });
 
-homeSelect.addEventListener("change", () => {
-  if (homeSelect.value === awaySelect.value) awaySelect.value = "";
+// ============================================================
+// LOGIN SIMULADO + ADMIN
+// ============================================================
+document.getElementById("loginForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const user = document.getElementById("login-user").value.trim();
+  const pass = document.getElementById("login-pass").value.trim();
+  if (!user || !pass) return; // simulado: solo exige que no estén vacíos
+  isLoggedIn = true;
+  renderAdmin();
+  showSection("admin");
+});
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  isLoggedIn = false;
+  document.getElementById("login-user").value = "";
+  document.getElementById("login-pass").value = "";
+  showSection("login");
 });
 
-awaySelect.addEventListener("change", () => {
-  if (awaySelect.value === homeSelect.value) homeSelect.value = "";
-});
+function renderAdmin() {
+  document.getElementById("datasetGrid").innerHTML = `
+    <div><span class="objective-label">Partidos totales</span><span class="objective-value">${DATASET_INFO.totalMatches.toLocaleString("es-ES")}</span></div>
+    <div><span class="objective-label">Temporadas</span><span class="objective-value">${DATASET_INFO.seasons}</span></div>
+    <div><span class="objective-label">Métrica</span><span class="objective-value">${DATASET_INFO.metric}</span></div>
+    <div><span class="objective-label">Límite de gap</span><span class="objective-value">&lt; ${DATASET_INFO.gapLimit}</span></div>
+  `;
+  renderCandidatesTable("adminCandidatesTable", true);
 
-// Default date to today
-dateInput.valueAsDate = new Date();
+  document.getElementById("championHyperparams").textContent =
+    JSON.stringify(CHAMPION.hyperparameters, null, 2) +
+    `\n\nfinal_fit_rows: ${CHAMPION.finalFitRows}\ntest_rows: ${CHAMPION.testRows}\nselection_rule: "${CHAMPION.selectionRule}"`;
 
-populateSelects();
+  document.getElementById("trainingTimeline").innerHTML = TRAINING_LOG.map((t) => `
+    <li>
+      <span class="t-date">${t.date}</span>
+      <div>${t.event}<span class="t-actor">${t.actor}</span></div>
+    </li>
+  `).join("");
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderMarquee();
+renderCandidatesTable("candidatesTable", false);
+renderChampionGrid();
+renderTargetBar();
+showSection("inicio");

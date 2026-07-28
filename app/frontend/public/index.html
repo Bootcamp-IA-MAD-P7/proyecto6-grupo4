@@ -1,115 +1,255 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LaLiga Predictor — Predicción de resultados</title>
-  <meta name="description" content="Predictor deportivo de resultados de LaLiga española. Estadísticas, probabilidades y factores clave en una interfaz limpia y responsive." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaLiga Predictor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!-- ============ NAV ============ -->
+<nav class="navbar" id="navbar">
+  <div class="navbar__inner">
+    <span class="navbar__brand">⚽ LaLiga Predictor</span>
+    <button class="navbar__toggle" id="navToggle" aria-label="Abrir menú">☰</button>
+    <ul class="navbar__links" id="navLinks">
+      <li><a href="#" data-section="inicio" class="nav-link is-active">Inicio</a></li>
+      <li><a href="#" data-section="inicio" data-scroll="predictor-section" class="nav-link">Predicción</a></li>
+      <li><a href="#" data-section="modelo" class="nav-link">Modelo</a></li>
+      <li><a href="#" data-section="historico" class="nav-link">Histórico</a></li>
+      <li><a href="#" data-section="login" class="nav-link nav-link--login" id="loginNavLink">Login</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ============ INICIO (incluye el predictor, ancla de "Predicción") ============ -->
+<section class="page" id="page-inicio">
   <header class="hero">
     <div class="hero__overlay"></div>
     <div class="hero__content">
-      <span class="hero__badge">LaLiga EA Sports</span>
+      <span class="hero__badge">LaLiga · Proyecto6-Grupo4</span>
       <h1 class="hero__title">Predictor de Resultados</h1>
       <p class="hero__subtitle">Análisis, probabilidades y factores clave para cada enfrentamiento.</p>
+      <button class="btn btn--primary hero__cta" data-scroll="predictor-section">Hacer una predicción</button>
     </div>
   </header>
 
-  <main class="container">
-    <section class="panel predictor" aria-labelledby="predictor-title">
-      <h2 id="predictor-title" class="panel__title">Nueva predicción</h2>
+  <div class="container">
 
+    <!-- Predictor -->
+    <section class="panel predictor" id="predictor-section" aria-labelledby="predictor-title">
+      <h2 id="predictor-title" class="panel__title">Nueva predicción</h2>
+      <p class="section-note">
+        Estimación <strong>prepartido</strong> (H/D/A) con base en histórico — variable <code>result_ft</code>,
+        métrica <strong>macro-F1</strong>, gap de overfitting &lt; 0.05.
+      </p>
       <form id="predict-form" class="predictor__form" novalidate>
         <div class="field">
           <label for="home-team">Equipo local</label>
-          <select id="home-team" required>
-            <option value="" disabled selected>Selecciona local</option>
-          </select>
+          <select id="home-team" required><option value="" disabled selected>Selecciona local</option></select>
         </div>
-
         <div class="field">
           <label for="away-team">Equipo visitante</label>
-          <select id="away-team" required>
-            <option value="" disabled selected>Selecciona visitante</option>
-          </select>
+          <select id="away-team" required><option value="" disabled selected>Selecciona visitante</option></select>
         </div>
-
         <div class="field">
           <label for="match-date">Fecha del partido</label>
-          <input type="date" id="match-date" required />
+          <input id="match-date" type="date" required>
         </div>
-
-        <button type="submit" class="btn btn--primary">Predecir resultado</button>
+        <button type="submit" id="predict-btn" class="btn btn--primary" disabled>Predecir resultado</button>
       </form>
     </section>
 
-    <section id="result-section" class="panel result" aria-live="polite" hidden>
-      <div class="result__header">
-        <div class="result__teams">
-          <span id="result-home" class="result__team result__team--home"></span>
-          <span class="result__vs">VS</span>
-          <span id="result-away" class="result__team result__team--away"></span>
-        </div>
-        <div id="result-prediction" class="result__prediction"></div>
-      </div>
+    <p class="spinner" id="spinner" style="display:none;">Calculando...</p>
 
+    <section class="panel result result--ok" id="result-ok" style="display:none;">
+      <div class="result__header">
+        <div class="result__teams" id="result-teams"></div>
+        <div class="result__prediction" id="result-prediction"></div>
+      </div>
       <div class="result__grid">
-        <div class="gauge">
+        <div class="gauge" id="gauge">
           <svg viewBox="0 0 120 120" class="gauge__svg" aria-hidden="true">
             <circle class="gauge__track" cx="60" cy="60" r="54"></circle>
-            <circle id="gauge-arc" class="gauge__arc" cx="60" cy="60" r="54"></circle>
+            <circle class="gauge__arc" id="gaugeArc" cx="60" cy="60" r="54"></circle>
           </svg>
-          <div class="gauge__value">
-            <span id="confidence-value">0%</span>
-            <small>confianza</small>
-          </div>
+          <div class="gauge__value"><span id="gaugeValue">0%</span><small>confianza</small></div>
         </div>
-
         <div class="probabilities">
           <h3 class="probabilities__title">Probabilidades</h3>
-          <div class="bar">
-            <span class="bar__label">Local</span>
-            <div class="bar__track"><div id="bar-home" class="bar__fill bar__fill--home"></div></div>
-            <span id="prob-home" class="bar__value">0%</span>
-          </div>
-          <div class="bar">
-            <span class="bar__label">Empate</span>
-            <div class="bar__track"><div id="bar-draw" class="bar__fill bar__fill--draw"></div></div>
-            <span id="prob-draw" class="bar__value">0%</span>
-          </div>
-          <div class="bar">
-            <span class="bar__label">Visitante</span>
-            <div class="bar__track"><div id="bar-away" class="bar__fill bar__fill--away"></div></div>
-            <span id="prob-away" class="bar__value">0%</span>
-          </div>
+          <div id="probBars"></div>
         </div>
       </div>
-
       <div class="factors">
-        <h3 class="factors__title">Factores considerados</h3>
-        <ul id="factors-list" class="factors__list"></ul>
+        <h3 class="factors__title">Factores considerados <span class="illustrative-tag">ilustrativo</span></h3>
+        <p class="factors__note">Valores de ejemplo — no provienen de un modelo entrenado todavía.</p>
+        <ul class="factors__list" id="factorsList"></ul>
+      </div>
+      <p class="result__meta" id="result-meta"></p>
+    </section>
+
+    <section class="panel result result--error" id="result-error" style="display:none;">
+      <strong id="error-code"></strong>
+      <p id="error-message"></p>
+    </section>
+
+    <!-- Marquesina de la próxima fecha -->
+    <section class="panel marquee-panel">
+      <div class="section-heading">
+        <h2 class="panel__title">Partidos de la próxima fecha</h2>
+        <span class="tag tag--info">Temporada 2026/27 · ilustrativo</span>
+      </div>
+      <p class="section-note">Desliza o haz clic en un partido para precargarlo en el predictor de arriba.</p>
+      <div class="marquee" id="marquee">
+        <div class="marquee__track" id="marqueeTrack"></div>
       </div>
     </section>
 
+    <!-- Parámetros de búsqueda (resumen de la última consulta) -->
+    <section class="panel">
+      <h2 class="panel__title">Parámetros de búsqueda</h2>
+      <div class="params-summary" id="paramsSummary">
+        <div><span class="objective-label">Local</span><span class="objective-value" id="paramHome">—</span></div>
+        <div><span class="objective-label">Visitante</span><span class="objective-value" id="paramAway">—</span></div>
+        <div><span class="objective-label">Fecha</span><span class="objective-value" id="paramDate">—</span></div>
+        <div><span class="objective-label">Predicción</span><span class="objective-value" id="paramResult">—</span></div>
+      </div>
+    </section>
+
+    <!-- Resultados recientes de ambos equipos (referencia real) -->
+    <section class="panel">
+      <div class="section-heading">
+        <h2 class="panel__title">Resultados recientes de los equipos seleccionados</h2>
+        <span class="tag tag--info">Datos reales — temporada 2025/26</span>
+      </div>
+      <p class="section-note" id="recentResultsNote">Haz una predicción arriba para ver el estado de forma reciente de ambos equipos.</p>
+      <div class="recent-results-grid" id="recentResultsGrid"></div>
+    </section>
+
+    <!-- Historial de esta sesión -->
     <section class="panel history" aria-labelledby="history-title">
       <div class="history__header">
-        <h2 id="history-title" class="panel__title">Historial</h2>
-        <button id="clear-history" type="button" class="btn btn--ghost">Limpiar</button>
+        <h2 id="history-title" class="panel__title">Historial de esta sesión</h2>
+        <button type="button" class="btn btn--ghost" id="clearHistoryBtn" style="display:none;">Limpiar</button>
       </div>
-      <ul id="history-list" class="history__list"></ul>
-      <p id="history-empty" class="history__empty">Aún no hay predicciones. Empieza seleccionando un partido.</p>
+      <p class="history__empty" id="historyEmpty">Aún no hay predicciones. Empieza seleccionando un partido.</p>
+      <ul class="history__list" id="historyList"></ul>
     </section>
-  </main>
 
-  <footer class="footer">
-    <p>LaLiga Predictor · Predicción basada en histórico real de LaLiga</p>
-  </footer>
+  </div>
+</section>
 
-  <script src="script.js"></script>
+<!-- ============ MODELO ============ -->
+<section class="page is-hidden" id="page-modelo">
+  <div class="container container--top">
+    <div class="section-heading">
+      <h2 class="page-title">Análisis del modelo</h2>
+      <span class="tag tag--gold">Vista pública</span>
+    </div>
+
+    <section class="panel">
+      <h2 class="panel__title">Cuatro candidatos, un mismo protocolo</h2>
+      <p class="section-note">Cada integrante entrenó y evaluó un candidato distinto, bajo las mismas reglas: mismos splits, misma métrica, mismo límite de overfitting (gap &lt; 0.05).</p>
+      <div class="table-wrap">
+        <table class="data-table" id="candidatesTable"></table>
+      </div>
+    </section>
+
+    <section class="panel champion-panel">
+      <span class="tag tag--gold">Champion</span>
+      <h2 class="panel__title">Modelo D — SVM (kernel RBF)</h2>
+      <div class="champion-grid" id="championGrid"></div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">Distribución del target</h2>
+      <div class="target-bar" id="targetBar"></div>
+      <p class="section-note" id="targetNote"></p>
+    </section>
+  </div>
+</section>
+
+<!-- ============ HISTÓRICO ============ -->
+<section class="page is-hidden" id="page-historico">
+  <div class="container container--top">
+    <div class="section-heading">
+      <h2 class="page-title">Histórico de resultados</h2>
+      <span class="tag tag--info">Datos reales — temporada 2025/26</span>
+    </div>
+    <section class="panel">
+      <p class="section-note">Selecciona un equipo para ver sus últimos 5 resultados reales, tal como constan en el dataset del proyecto (no son datos simulados).</p>
+      <div class="field field--inline">
+        <label for="historico-team">Equipo</label>
+        <select id="historico-team"><option value="">Selecciona un equipo</option></select>
+      </div>
+      <ul class="history__list" id="historicoList" style="margin-top:1.2rem;"></ul>
+    </section>
+  </div>
+</section>
+
+<!-- ============ LOGIN ============ -->
+<section class="page is-hidden" id="page-login">
+  <div class="container container--top container--narrow">
+    <section class="panel login-panel">
+      <h2 class="panel__title">Acceso administrador</h2>
+      <p class="section-note">Login simulado — cualquier usuario/contraseña no vacíos entran. No hay autenticación real.</p>
+      <form id="loginForm" class="predictor__form" novalidate>
+        <div class="field">
+          <label for="login-user">Usuario</label>
+          <input id="login-user" type="text" placeholder="admin" autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="login-pass">Contraseña</label>
+          <input id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn--primary">Entrar</button>
+      </form>
+    </section>
+  </div>
+</section>
+
+<!-- ============ ADMIN (requiere login simulado) ============ -->
+<section class="page is-hidden" id="page-admin">
+  <div class="container container--top">
+    <div class="section-heading">
+      <h2 class="page-title">Panel técnico</h2>
+      <button type="button" class="btn btn--ghost" id="logoutBtn">Cerrar sesión</button>
+    </div>
+
+    <section class="panel">
+      <h2 class="panel__title">Ficha del dataset</h2>
+      <div class="objective-grid" id="datasetGrid"></div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">Los 4 candidatos — detalle técnico</h2>
+      <div class="table-wrap">
+        <table class="data-table" id="adminCandidatesTable"></table>
+      </div>
+    </section>
+
+    <section class="panel champion-panel">
+      <span class="tag tag--gold">Champion</span>
+      <h2 class="panel__title">Hiperparámetros del modelo en producción</h2>
+      <pre class="code-block" id="championHyperparams"></pre>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">Bitácora de entrenamiento</h2>
+      <ul class="timeline" id="trainingTimeline"></ul>
+    </section>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>LaLiga Predictor · Demo visual · Datos simulados para predicción, reales para histórico (T-1.6)</p>
+</footer>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
