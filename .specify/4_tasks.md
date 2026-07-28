@@ -446,25 +446,28 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 
 ## Fase 5 — Nivel Avanzado
 
-### [ ] T-5.1 Completar tests unitarios y de integración
+### [x] T-5.1 Completar tests unitarios y de integración
 
 - Responsable: todos según `2_spec.md`.
 - Dependencias: T-3.7.
 - Criterio de aceptación: contratos críticos cubiertos y suite aprobada.
+- Cierre 2026-07-28 (I2, con autorización explícita del equipo): auditoría de cobertura identificó contratos críticos sin test dedicado: selección de Champion (`src/evaluation/champion.py`), rutas de error de inferencia (`TEAM_NOT_FOUND`, `INSUFFICIENT_HISTORY`, `MODEL_UNAVAILABLE`), los mismos códigos a nivel de API (404/409), `/health`, y el contrato de `src/candidates/common.py` (particiones inválidas, esquema de `experiments_table.csv`). Se añaden `tests/unit/test_champion_selection.py`, `tests/unit/test_champion_inference_errors.py`, `tests/integration/test_backend_contract.py` y `tests/unit/test_candidates_common.py`. 16 tests nuevos; suite completa **72/72 en verde**.
 
-### [ ] T-5.2 Dockerizar la solución
+### [x] T-5.2 Dockerizar la solución
 
 - Responsable: I4.
 - Revisores: I1 e I3.
 - Dependencias: T-3.7.
 - Criterio de aceptación: contenedor levanta la aplicación y carga el Champion.
+- Cierre 2026-07-28 (I2, con autorización explícita del equipo): `docker/backend.Dockerfile` (FastAPI + Champion), `docker/frontend.Dockerfile` (nginx sirviendo `app/frontend/public`) y `docker-compose.yml` (orquesta `postgres` + `backend` + `frontend`, con `depends_on`/`healthcheck` para que el backend espere a Postgres). El build del backend copia los artefactos ya generados por el pipeline (no re-entrena en el build, sería de varios minutos); prerrequisito documentado en `docker/README.md`. Se detectó y corrigió un problema real: `requirements-backend.txt` no declaraba `pandas`/`numpy`/`scikit-learn`/`joblib`, necesarios para cargar el Champion — sin este fix el contenedor no arrancaba. **Verificación real con `docker compose up --build`:** los tres contenedores arrancan, Postgres queda `healthy`, el backend carga el Champion (`ensemble_abcd_soft_voting_v1`) y sirve una predicción real y un feedback real vía HTTP, ambos persistidos y confirmados con una consulta directa a Postgres dentro del contenedor. El frontend (nginx) responde 200 y se probó en navegador de punta a punta (Girona vs Alaves → Victoria visitante 40%). Stack detenido tras la verificación.
 
-### [ ] T-5.3 Conectar persistencia
+### [x] T-5.3 Conectar persistencia
 
 - Responsable: I3 e I4.
 - Revisores: I1 e I2.
 - Dependencias: T-4.3.
 - Criterio de aceptación: datos persisten tras reinicio y schema está documentado.
+- Cierre 2026-07-28 (I2, con autorización explícita del equipo): persistencia en **PostgreSQL** vía SQLAlchemy 2.0 + `psycopg` v3 (`src/persistence/`), configurable por `DATABASE_URL`. Tablas `predictions` y `feedback`, esquema documentado en `docs/database_schema.md`. Integrado en `app/backend/main.py` de forma *best-effort*: si la base de datos no está disponible, `/api/v1/predictions` y `/api/v1/feedback` siguen respondiendo con normalidad (el feedback conserva además su ruta CSV de T-4.3 sin cambios). **Verificación real, no simulada:** contenedor `postgres:16` con volumen nombrado, esquema inicializado, predicción y feedback insertados vía el backend real (`DATABASE_URL` apuntando al contenedor), **contenedor reiniciado (`docker restart`)** y datos confirmados intactos tras el reinicio — la prueba explícita que pide el criterio de aceptación. 4 tests unitarios nuevos (`tests/unit/test_persistence.py`, con SQLite en memoria para no requerir infraestructura en CI; la verificación con Postgres real fue manual y queda documentada). Suite completa 76/76 en verde. Contenedor y volumen de verificación eliminados tras la prueba (no quedan artefactos de infraestructura en el repo).
 
 ### [ ] T-5.4 Desplegar y verificar
 
