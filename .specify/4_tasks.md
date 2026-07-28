@@ -469,7 +469,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Criterio de aceptación: datos persisten tras reinicio y schema está documentado.
 - Cierre 2026-07-28 (I2, con autorización explícita del equipo): persistencia en **PostgreSQL** vía SQLAlchemy 2.0 + `psycopg` v3 (`src/persistence/`), configurable por `DATABASE_URL`. Tablas `predictions` y `feedback`, esquema documentado en `docs/database_schema.md`. Integrado en `app/backend/main.py` de forma *best-effort*: si la base de datos no está disponible, `/api/v1/predictions` y `/api/v1/feedback` siguen respondiendo con normalidad (el feedback conserva además su ruta CSV de T-4.3 sin cambios). **Verificación real, no simulada:** contenedor `postgres:16` con volumen nombrado, esquema inicializado, predicción y feedback insertados vía el backend real (`DATABASE_URL` apuntando al contenedor), **contenedor reiniciado (`docker restart`)** y datos confirmados intactos tras el reinicio — la prueba explícita que pide el criterio de aceptación. 4 tests unitarios nuevos (`tests/unit/test_persistence.py`, con SQLite en memoria para no requerir infraestructura en CI; la verificación con Postgres real fue manual y queda documentada). Suite completa 76/76 en verde. Contenedor y volumen de verificación eliminados tras la prueba (no quedan artefactos de infraestructura en el repo).
 
-### [~] T-5.4 Desplegar y verificar
+### [x] T-5.4 Desplegar y verificar
 
 - Responsable: I4 con apoyo de todo el equipo.
 - Dependencias: T-5.1 a T-5.3.
@@ -477,7 +477,8 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Avance I4 2026-07-28: preparada una única imagen Docker desplegable que sirve FastAPI y el frontend desde el mismo dominio, respeta el puerto `PORT` de producción y adapta la cadena PostgreSQL de Render al driver `psycopg`.
 - Artefacto: Champion `ensemble_abcd_soft_voting_v1` publicado fuera del historial Git en el release `model-ensemble-abcd-soft-voting-v1`; el build verifica SHA-256 `6333eb87342f9997d764ba416b3a7a434ab2d20df801fa210c0b08bbb7a1bd77`.
 - Evidencia local: imagen `laliga-predictor:t54` construida desde cero; smoke test HTTP con raíz 200, `/health` en estado `ok`, `model_loaded=true` y predicción real `Real Madrid`–`Barcelona`.
-- Infraestructura: `render.yaml` define servicio web Docker y PostgreSQL gratuitos en Frankfurt. Pendiente activar el Blueprint en una cuenta Render, registrar la URL pública y repetir allí health, predicción y persistencia para cerrar T-5.4.
+- Infraestructura: `render.yaml` define servicio web Docker y PostgreSQL gratuitos en Frankfurt.
+- Cierre I4 2026-07-28: Blueprint activado desde `develop` y despliegue público operativo en `https://laliga-predictor-grupo4.onrender.com/`. Verificación externa: raíz HTTP 200; `/health` con `status=ok`, `model_loaded=true` y Champion `ensemble_abcd_soft_voting_v1`; predicción Real Madrid–Barcelona `H`, probabilidades sumando 1 y latencia final de 241 ms observados / 50,49 ms internos. La optimización de PR #71 evita regenerar los 11.944 partidos en cada consulta. Suite completa: 80 tests aprobados. Evidencia detallada en `reports/experiments/deployment_verification.md`. T-5.4 y el Nivel Avanzado quedan cerrados.
 
 ## Fase 6 — Nivel Experto opcional
 
@@ -536,7 +537,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 
 | Campo | Valor |
 |---|---|
-| Estado | v1.1 — Nivel Esencial cerrado (T-3.7) el 2026-07-26; T-4.1 en progreso |
-| Fecha | 27/07/2026 |
-| Siguiente trabajo | Completar T-4.1 integrando y comparando el ensemble; después T-4.2, sin usar el split de test |
+| Estado | v1.2 — Nivel Avanzado cerrado con despliegue público verificado |
+| Fecha | 28/07/2026 |
+| Siguiente trabajo | Decidir si se ejecuta el Nivel Experto opcional o avanzar al cierre T-7.1–T-7.4 |
 | Regla | Marcar `[x]` solo con verificación, evidencia y revisión cruzada |
