@@ -147,8 +147,8 @@
         "both_sources": 100
       },
       "path": "data/processed/laliga_matches_clean.csv",
-      "bytes": 2105641,
-      "sha256": "6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c"
+      "bytes": 2105717,
+      "sha256": "56e59efa9200042f76638beafd47feaf67a41a28c00c02aa521192739a607104"
     }
   },
   "canonical_audit": {
