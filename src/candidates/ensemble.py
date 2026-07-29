@@ -1,14 +1,17 @@
-"""T-4.1: ensemble comparable de los candidatos que superan el gap de overfitting.
+"""Ensembles de candidatos: A+D (histórico, T-4.1) y A+B+C+D (vigente, T-2.6).
 
-Combina, por votación suave (promedio de probabilidades), los únicos dos
-candidatos que quedaron `ready_for_comparison` en T-2.5: A (logística
-multinomial) y D (SVC RBF, el Champion actual). B y C quedaron
-descalificados por sobreajuste (`overfitting_gap_macro_f1` > 0.05) y no
-entran al ensemble para no arrastrar ese sobreajuste.
+`build_ensemble_pipeline_abcd` / `train_ensemble_abcd` son el flujo VIGENTE:
+producen el Champion actual (`ENSEMBLE_ABCD`, ver
+`reports/experiments/champion_metadata.json`), con los cuatro candidatos.
 
-Reutiliza los mismos hiperparámetros ya aprobados de A y D: este módulo no
-reajusta ni afina nada (eso es T-4.2); solo mide si combinarlos aporta sobre
-el mejor individual.
+`build_ensemble_pipeline` / `train_ensemble` (sufijo `_AD`, `candidate_id`
+`ENSEMBLE_AD`) son el ensemble ORIGINAL de T-4.1, cuando solo A y D habían
+superado el gap de overfitting en T-2.5 (B y C fueron descalificados en esa
+ronda y luego re-tuneados/regularizados hasta calificar en T-4.2/T-2.6). Se
+conserva por trazabilidad histórica y porque sus tests (`ENSEMBLE_AD` en
+`tests/unit/test_ensemble_pipeline.py`) documentan ese punto del proyecto,
+pero NINGÚN script de producción ni de selección de Champion lo usa: no lo
+ejecutes esperando obtener el Champion vigente, usa `run_ensemble_abcd.py`.
 """
 
 from __future__ import annotations
@@ -37,7 +40,12 @@ ENSEMBLE_ABCD_VERSION = "ensemble_abcd_soft_voting_v1"
 
 
 def build_ensemble_pipeline(seed: int = ENSEMBLE_SEED) -> Pipeline:
-    """Preprocesamiento común + votación suave entre la logística A y el SVC D."""
+    """[HISTÓRICO T-4.1] Preprocesamiento común + votación suave entre A y D.
+
+    Superado por `build_ensemble_pipeline_abcd`. Usa `SVC(probability=True)`,
+    deprecado desde sklearn 1.9; se mantiene sin cambios para no alterar la
+    evidencia histórica ya registrada de T-4.1.
+    """
 
     preprocessing = ColumnTransformer(
         transformers=[
@@ -71,7 +79,10 @@ def build_ensemble_pipeline(seed: int = ENSEMBLE_SEED) -> Pipeline:
 
 
 def train_ensemble(**paths: Any) -> dict[str, Any]:
-    """Ajusta el ensemble solo en train y mide en validation, igual que A-D."""
+    """[HISTÓRICO T-4.1] Ajusta el ensemble A+D solo en train y mide en validation.
+
+    No es el flujo de promoción del Champion; usa `train_ensemble_abcd` para eso.
+    """
 
     return train_candidate(
         candidate_id="ENSEMBLE_AD",
