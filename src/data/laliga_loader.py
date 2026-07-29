@@ -158,6 +158,13 @@ CRITICAL_SOURCE_COLUMNS = [
     "FTR",
 ]
 
+# Erratas puntuales detectadas en las fuentes raw: mismo equipo, nombre
+# inconsistente entre temporadas. Se normalizan al nombre correcto para no
+# fragmentar el historial (Elo, rachas, medias móviles) de ese equipo.
+TEAM_NAME_ALIASES = {
+    "Villareal": "Villarreal",
+}
+
 DERIVED_COLUMNS = [
     "match_year", "match_month", "iso_weekday", "total_goals", "goal_diff_home",
     "both_teams_scored", "over_2_5", "clean_sheet_home", "clean_sheet_away",
@@ -325,6 +332,9 @@ def _clean_source(
     ]
     for column in string_columns:
         cleaned[column] = cleaned[column].astype("string").str.strip()
+    for column in ["HomeTeam", "AwayTeam"]:
+        if column in cleaned:
+            cleaned[column] = cleaned[column].replace(TEAM_NAME_ALIASES)
     for column in ["FTR", "HTR"]:
         if column in cleaned:
             cleaned[column] = cleaned[column].str.upper()
