@@ -164,9 +164,39 @@ Este documento se actualizará al finalizar cada daily. Solo contendrá informac
 - Decisiones: el Champion pasa a ser el ensemble A+B+C+D tras la comparación documentada; las mejoras de Nivel Medio y Avanzado quedan incorporadas sin alterar el dataset canónico ni los splits protegidos. `T-5.4` continúa en progreso hasta que la optimización de la PR #71 esté fusionada, desplegada y comprobada en Render.
 - Evidencias: PR #54, PR #63, PR #66–#70 y PR #71; `render.yaml`; `docker-compose.yml`; `docs/database_schema.md`; `reports/experiments/cross_validation_review.md`; `reports/experiments/champion_metadata.json`; y la suite de 80 tests registrada por Fernanda.
 
+## Daily 29/07/2026
+
+### Arnaldo
+
+- Realizado: mantuvo la integración y trazabilidad en `develop` de los avances de aplicación, datos y Champion, incluidos los cambios que cierran el Nivel Avanzado.
+- Siguiente: realizar la comprobación final de reproducibilidad del dataset, preprocesamiento, features históricas y compatibilidad del Champion para la entrega.
+- Bloqueos: ninguno registrado.
+
+### Johans
+
+- Realizado: corrigió el mapeo de nombres de equipos entre frontend y el catálogo real del backend (PR #73), evitando errores de predicción por discrepancias de nombres. Mantiene como evidencia los cierres de evaluación, ensemble Champion, validación cruzada, Docker, PostgreSQL y README.
+- Siguiente: cerrar `T-7.1` con la revisión final de métricas y overfitting, y verificar la coherencia de las cifras entre artefactos, informe y presentación.
+- Bloqueos: ninguno registrado.
+
+### César
+
+- Realizado: base de React para integrar con backend y modificación del frontend.
+- Siguiente: publicar versión React.
+- Bloqueos: de momento ninguno.
+
+### Fernanda
+
+- Realizado: fusionó la optimización de la PR #71, desplegó la aplicación pública en Render con PostgreSQL y cerró `T-5.4`. La URL `https://laliga-predictor-grupo4.onrender.com/` responde correctamente; `/health` informa Champion cargado y una predicción Real Madrid–Barcelona completó en 241 ms observados y 50,49 ms internos. La suite completa alcanza 80 tests aprobados.
+- Siguiente: apoyar las comprobaciones finales de aplicación, despliegue y demo, y aportar las evidencias técnicas a la presentación y checklist de entrega.
+- Bloqueos: ninguno técnico.
+
+### Decisiones y evidencias
+
+- Decisiones: `T-5.4` y el Nivel Avanzado quedan cerrados. Se prioriza el cierre de Fase 7 (`T-7.1`–`T-7.4`): revisión final de métricas, presentaciones, README, smoke test y checklist, sin añadir alcance de Nivel Experto.
+- Evidencias: PR #71, PR #72 y PR #73; `render.yaml`; `reports/experiments/deployment_verification.md`; `https://laliga-predictor-grupo4.onrender.com/`; y `.specify/4_tasks.md` con el cierre de `T-5.4`.
+
 ## Próximas dailys
 
-- 29/07/2026.
 - 30/07/2026.
 
 ## Plantilla de actualización
