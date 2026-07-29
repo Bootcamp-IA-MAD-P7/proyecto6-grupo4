@@ -1,7 +1,10 @@
 // `value` debe coincidir exactamente con el nombre de equipo tal como aparece
 // en el dataset histórico (data/processed/laliga_matches_clean.csv), que es
 // contra lo que el backend valida el catálogo de equipos conocidos.
-// `label` es solo el nombre comercial que ve el usuario.
+// `label` es el nombre real/oficial que ve el usuario. Lista = los 20 equipos
+// que disputaron LaLiga en la temporada 2025-26 (la más reciente en los
+// datos); equipos descendidos en temporadas previas (Las Palmas, Granada,
+// Cádiz, Almería...) ya no aparecen aquí para no ofrecer partidos irreales.
 const TEAMS = [
   { label: "Real Madrid", value: "Real Madrid" },
   { label: "FC Barcelona", value: "Barcelona" },
@@ -17,12 +20,12 @@ const TEAMS = [
   { label: "CA Osasuna", value: "Osasuna" },
   { label: "Rayo Vallecano", value: "Vallecano" },
   { label: "RCD Mallorca", value: "Mallorca" },
-  { label: "UD Las Palmas", value: "Las Palmas" },
   { label: "Deportivo Alavés", value: "Alaves" },
-  { label: "Granada CF", value: "Granada" },
-  { label: "Cádiz CF", value: "Cadiz" },
-  { label: "UD Almería", value: "Almeria" },
   { label: "Girona FC", value: "Girona" },
+  { label: "RCD Espanyol", value: "Espanol" },
+  { label: "Elche CF", value: "Elche" },
+  { label: "Levante UD", value: "Levante" },
+  { label: "Real Oviedo", value: "Oviedo" },
 ];
 
 const API_ORIGIN =
