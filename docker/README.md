@@ -17,9 +17,16 @@ La huella esperada también se conserva en
 docker compose up --build
 ```
 
-- Backend: `http://localhost:8000` (`/health`, `/api/v1/predictions`, `/api/v1/feedback`).
-- Frontend: `http://localhost:5173`.
+- Backend + frontend (mismo servicio, igual que en producción): `http://localhost:8000`
+  (`/`, `/health`, `/api/v1/predictions`, `/api/v1/feedback`).
 - Postgres: `localhost:5432` (usuario/clave/base `laliga`; ver `docker-compose.yml`).
+
+`docker-compose.yml` ya no levanta un servicio `frontend` con nginx aparte:
+`docker/backend.Dockerfile` monta `app/frontend/public` como estáticos dentro
+de la misma app FastAPI (ver `app/backend/main.py`), tal cual se despliega en
+Render. Antes había dos formas de servir el frontend en local (nginx en 5173
+y el backend en 8000 simultáneamente) sin ninguna razón para mantener ambas;
+se eliminó `docker/frontend.Dockerfile` y el servicio `frontend` del compose.
 
 El backend espera a que Postgres esté `healthy` (`depends_on` con
 `healthcheck`) antes de arrancar. Si Postgres no está disponible, el backend
