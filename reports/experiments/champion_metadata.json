@@ -2,7 +2,7 @@
   "champion_candidate_id": "ENSEMBLE_ABCD",
   "champion_model_version": "ensemble_abcd_soft_voting_v1",
   "selection_rule": "Mayor macro-F1 de validation entre candidatos con gap < 0.05; empate por menor latencia.",
-  "selection_timestamp_utc": "2026-07-27T22:04:19.480847+00:00",
+  "selection_timestamp_utc": "2026-07-29T11:11:07.739456+00:00",
   "comparability": {
     "data_version_sha256": "6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c",
     "features_sha256": "563634a73e265ab71f4d1b3795d1245eedf33a82c26328a61e99d16d8f8d2c81",
@@ -22,40 +22,21 @@
     "log_loss": 1.0116101749600876
   },
   "overfitting_gap_macro_f1": 0.0031116333140951413,
-  "final_fit_rows": 10804,
-  "test_rows": 1140,
-  "test_used_once": true,
-  "test": {
-    "macro_f1": 0.479580007386363,
-    "accuracy": 0.506140350877193,
-    "balanced_accuracy": 0.48588220443414337,
-    "log_loss": 1.0104280079743169
-  },
-  "test_confusion_matrix": {
-    "labels": [
-      "H",
-      "D",
-      "A"
+  "promotion_contract": {
+    "fit_splits": [
+      "train",
+      "validation"
     ],
-    "matrix": [
-      [
-        302,
-        118,
-        102
-      ],
-      [
-        87,
-        89,
-        121
-      ],
-      [
-        63,
-        72,
-        186
-      ]
-    ]
+    "fit_rows": 10804,
+    "test_rows_used": 0,
+    "test_metrics_recomputed": false
   },
-  "final_fit_seconds": 157.96688189997803,
+  "historical_test_evidence": {
+    "status": "frozen_not_recomputed",
+    "path": "reports/experiments/champion_test_metrics.json",
+    "sha256": "3e221ba196fa1fff7b3b588ced8df8e468a9367098cdd2fb0d5644872f63af4b"
+  },
+  "final_fit_seconds": 113.15610979998019,
   "artifact_path": "models/champion/laliga_champion_v1.joblib",
   "feature_columns": [
     "home_team",
@@ -78,5 +59,31 @@
   ],
   "feature_generator_version": "historical_features_v1",
   "source_data_sha256": "6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c",
+  "artifact_sha256": "af96caf22177a968783bf5f2bc00b6f22f755ccaac320cad845029f5fb573319",
+  "artifact_descriptor": {
+    "root_type": "Pipeline",
+    "pipeline_steps": [
+      "classifier"
+    ],
+    "classifier_type": "VotingClassifier",
+    "classes": [
+      "A",
+      "D",
+      "H"
+    ],
+    "voting": "soft",
+    "estimator_names": [
+      "logistic_a",
+      "hgb_b",
+      "rf_c",
+      "svc_d"
+    ],
+    "member_classifier_types": {
+      "logistic_a": "LogisticRegression",
+      "hgb_b": "HistGradientBoostingClassifier",
+      "rf_c": "RandomForestClassifier",
+      "svc_d": "CalibratedClassifierCV"
+    }
+  },
   "limitations": "Predicción orientativa; se apoya únicamente en histórico. Equipos nuevos usan cold-start y no se usan cuotas."
 }

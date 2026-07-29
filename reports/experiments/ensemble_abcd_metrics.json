@@ -550,8 +550,8 @@
   },
   "overfitting_gap_macro_f1": 0.0031116333140951413,
   "absolute_macro_f1_difference": 0.0031116333140951413,
-  "training_time_seconds": 83.06863660004456,
-  "inference_time_ms_per_row": 2.3450974101525923,
+  "training_time_seconds": 115.42986979999114,
+  "inference_time_ms_per_row": 2.180089557281973,
   "artifact_path": "models/ensemble/ensemble_abcd_soft_voting_v1.joblib",
   "test_protection": "El estimador recibe únicamente train y validation; test_used es siempre 0."
 }

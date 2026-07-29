@@ -5,7 +5,10 @@ import json
 import pandas as pd
 import pytest
 
-from src.evaluation.champion import select_and_evaluate_champion
+from src.evaluation.champion import (
+    select_and_evaluate_champion,
+    select_and_promote_champion,
+)
 
 
 def _metrics(candidate_id, macro_f1, gap, artifact_path, **overrides):
@@ -93,6 +96,9 @@ def test_champion_is_chosen_by_highest_validation_macro_f1_among_eligible(tmp_pa
     assert result["champion_candidate_id"] == "B"
     assert result["test_used_once"] is True
     assert (tmp_path / "champion.joblib").exists()
+    assert len(result["artifact_sha256"]) == 64
+    assert result["artifact_descriptor"]["root_type"] == "Pipeline"
+    assert result["artifact_descriptor"]["classifier_type"] == "LogisticRegression"
 
 
 def test_champion_selection_raises_when_no_candidate_meets_overfitting_threshold(tmp_path) -> None:
@@ -145,3 +151,53 @@ def test_champion_selection_never_uses_test_rows_to_pick_the_winner(tmp_path) ->
     )
     assert result["champion_candidate_id"] == "B"
     assert result["test_rows"] == 15
+
+
+def test_champion_promotion_fits_train_and_validation_without_evaluating_test(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    features_path, source_path, artifact_path = _write_features_and_fit_artifact(tmp_path)
+    features = pd.read_csv(features_path)
+    features.loc[features["split"].eq("test"), "result_label"] = "BROKEN_TEST_LABEL"
+    features.to_csv(features_path, index=False)
+
+    path_a = _write_json(
+        tmp_path / "a.json",
+        _metrics("A", 0.50, 0.01, artifact_path),
+    )
+    path_b = _write_json(
+        tmp_path / "b.json",
+        _metrics("B", 0.51, 0.01, artifact_path),
+    )
+    historical_test_path = tmp_path / "historical_test.json"
+    historical_test_path.write_text('{"status":"frozen"}', encoding="utf-8")
+
+    def fail_if_test_is_evaluated(*_args, **_kwargs):
+        raise AssertionError("La promoción no debe calcular métricas.")
+
+    monkeypatch.setattr(
+        "src.evaluation.champion.metric_summary",
+        fail_if_test_is_evaluated,
+    )
+
+    result = select_and_promote_champion(
+        metrics_paths=[path_a, path_b],
+        features_path=features_path,
+        source_dataset_path=source_path,
+        artifact_path=tmp_path / "promoted.joblib",
+        metadata_path=tmp_path / "champion_metadata.json",
+        historical_test_metrics_path=historical_test_path,
+    )
+
+    assert result["champion_candidate_id"] == "B"
+    assert result["promotion_contract"] == {
+        "fit_splits": ["train", "validation"],
+        "fit_rows": 45,
+        "test_rows_used": 0,
+        "test_metrics_recomputed": False,
+    }
+    assert result["historical_test_evidence"]["status"] == "frozen_not_recomputed"
+    assert "test" not in result
+    assert "test_confusion_matrix" not in result
+    assert (tmp_path / "promoted.joblib").exists()
