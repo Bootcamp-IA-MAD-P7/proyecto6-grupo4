@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import logging
+from contextlib import asynccontextmanager
 from pathlib import Path
 from time import perf_counter
+from typing import AsyncIterator
 from uuid import uuid4
 
 from fastapi import FastAPI, Request
@@ -19,20 +21,20 @@ from src.persistence import repository as persistence_repository
 
 
 logger = logging.getLogger("laliga.backend")
-app = FastAPI(title="LaLiga Prediction API", version="0.1.0")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
-    allow_methods=["POST", "GET"],
-    allow_headers=["Content-Type"],
-)
 ROOT = Path(__file__).resolve().parents[2]
 FEEDBACK_PATH = ROOT / "data/feedback/predictions_feedback.csv"
 _predictor: ChampionPredictor | None = None
 
 
-@app.on_event("startup")
-def on_startup() -> None:
+def get_predictor() -> ChampionPredictor:
+    global _predictor
+    if _predictor is None:
+        _predictor = ChampionPredictor(ROOT / "data/processed/laliga_matches_clean.csv", ROOT / "models/champion/laliga_champion_v1.joblib", ROOT / "reports/experiments/champion_metadata.json")
+    return _predictor
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     try:
         init_schema()
     except Exception:
@@ -41,6 +43,16 @@ def on_startup() -> None:
         get_predictor()
     except Exception:
         logger.exception("El Champion no superó la validación de arranque.")
+    yield
+
+
+app = FastAPI(title="LaLiga Prediction API", version="0.1.0", lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_methods=["POST", "GET"],
+    allow_headers=["Content-Type"],
+)
 
 
 def _persist_prediction_best_effort(**kwargs) -> None:
@@ -61,13 +73,6 @@ def _persist_feedback_best_effort(**kwargs) -> None:
 
 def _error(request_id: str, code: str, message: str, *, details: list[dict] | None = None, status_code: int = 422) -> JSONResponse:
     return JSONResponse(status_code=status_code, content=ErrorResponse(request_id=request_id, error=code, message=message, details=details or []).model_dump())
-
-
-def get_predictor() -> ChampionPredictor:
-    global _predictor
-    if _predictor is None:
-        _predictor = ChampionPredictor(ROOT / "data/processed/laliga_matches_clean.csv", ROOT / "models/champion/laliga_champion_v1.joblib", ROOT / "reports/experiments/champion_metadata.json")
-    return _predictor
 
 
 @app.exception_handler(RequestValidationError)
