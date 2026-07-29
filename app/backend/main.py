@@ -37,6 +37,10 @@ def on_startup() -> None:
         init_schema()
     except Exception:
         logger.exception("No se pudo inicializar el esquema de persistencia; la API sigue disponible.")
+    try:
+        get_predictor()
+    except Exception:
+        logger.exception("El Champion no superó la validación de arranque.")
 
 
 def _persist_prediction_best_effort(**kwargs) -> None:
