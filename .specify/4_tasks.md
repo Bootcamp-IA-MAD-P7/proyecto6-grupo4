@@ -133,6 +133,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 - Avance 2026-07-24: I3/I4 seleccionan frontend React + TypeScript con Vite y backend FastAPI + Pydantic servido con Uvicorn, en procesos separados comunicados mediante HTTP/JSON. La ruta de predicción será `POST /api/v1/predictions`. César conserva la propiedad exclusiva de `app/frontend/` y Fernanda la de `app/backend/` para evitar solapamientos.
 - Contrato listo para revisión 2026-07-24: definidos códigos HTTP, error uniforme, límites de entrada, objetivo de latencia p95, observabilidad mínima y reglas de versionado/compatibilidad en `2_spec.md`.
 - Cierre 2026-07-24: I1 e I2 confirmaron su aprobación del contrato preparado por I3/I4. Quedan aprobadas las tecnologías, la arquitectura separada, la ruta versionada, los esquemas JSON, los errores, los límites, la latencia y el versionado. La implementación y sus fixtures corresponden a T-1.6/T-1.7.
+- Revisión 2026-07-29: la implementación final de `app/frontend/` no usa React, TypeScript ni Vite (no hay `package.json` ni build); es HTML + CSS + JavaScript plano servido como estático por FastAPI/nginx. El resto del contrato de T-0.6 (separación frontend/backend, ruta `POST /api/v1/predictions`, esquemas y errores) se cumplió tal cual se aprobó.
 
 ### [x] T-0.7 Definir estrategia Git
 
