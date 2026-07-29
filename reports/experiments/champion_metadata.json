@@ -2,26 +2,26 @@
   "champion_candidate_id": "ENSEMBLE_ABCD",
   "champion_model_version": "ensemble_abcd_soft_voting_v1",
   "selection_rule": "Mayor macro-F1 de validation entre candidatos con gap < 0.05; empate por menor latencia.",
-  "selection_timestamp_utc": "2026-07-29T21:15:28.583239+00:00",
+  "selection_timestamp_utc": "2026-07-29T22:29:37.098605+00:00",
   "comparability": {
-    "data_version_sha256": "6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c",
-    "features_sha256": "563634a73e265ab71f4d1b3795d1245eedf33a82c26328a61e99d16d8f8d2c81",
+    "data_version_sha256": "56e59efa9200042f76638beafd47feaf67a41a28c00c02aa521192739a607104",
+    "features_sha256": "a092ae51f30f7de84c329a66b90ff11215e6f1009040f9fcf8e5840fcb0395aa",
     "feature_generator_version": "historical_features_v1",
     "split_manifest_reference": "reports/metrics/split_manifest.json"
   },
   "validation": {
-    "macro_f1": 0.4882812882911914,
-    "accuracy": 0.5029239766081871,
-    "balanced_accuracy": 0.4930478647908358,
-    "log_loss": 1.02109233541757
+    "macro_f1": 0.48663283374126004,
+    "accuracy": 0.5012531328320802,
+    "balanced_accuracy": 0.4913801570345215,
+    "log_loss": 1.0207399169279192
   },
   "train": {
-    "macro_f1": 0.4913929216052865,
-    "accuracy": 0.5031747683980431,
-    "balanced_accuracy": 0.49909225282729014,
-    "log_loss": 1.0116101749600876
+    "macro_f1": 0.49065820482645717,
+    "accuracy": 0.5026543145622984,
+    "balanced_accuracy": 0.4983375661913969,
+    "log_loss": 1.0120220498551726
   },
-  "overfitting_gap_macro_f1": 0.0031116333140951413,
+  "overfitting_gap_macro_f1": 0.004025371085197127,
   "promotion_contract": {
     "fit_splits": [
       "train",
@@ -36,7 +36,7 @@
     "path": "reports/experiments/champion_test_metrics.json",
     "sha256": "3e221ba196fa1fff7b3b588ced8df8e468a9367098cdd2fb0d5644872f63af4b"
   },
-  "final_fit_seconds": 136.0421617999673,
+  "final_fit_seconds": 117.27269719995093,
   "artifact_path": "models/champion/laliga_champion_v1.joblib",
   "feature_columns": [
     "home_team",
@@ -58,8 +58,8 @@
     "away_days_since_last_match"
   ],
   "feature_generator_version": "historical_features_v1",
-  "source_data_sha256": "6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c",
-  "artifact_sha256": "06738712e1ae6152a2c6d9ee96057eba57d209c8ece5fc48e2d09acf9871bcee",
+  "source_data_sha256": "56e59efa9200042f76638beafd47feaf67a41a28c00c02aa521192739a607104",
+  "artifact_sha256": "38fee61ac11493ce44312bda45279251cc6ae008ada18a5e314429b2c9a2c78a",
   "artifact_descriptor": {
     "root_type": "Pipeline",
     "pipeline_steps": [
