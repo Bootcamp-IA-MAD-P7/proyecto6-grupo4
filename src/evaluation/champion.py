@@ -1,4 +1,4 @@
-"""Selección, evaluación histórica y promoción operativa del Champion."""
+"""Selección y promoción operativa del Champion sin reevaluar el test protegido."""
 from __future__ import annotations
 
 import json
@@ -10,7 +10,7 @@ from typing import Any
 import joblib
 import pandas as pd
 
-from src.candidates.common import CLASS_LABELS, metric_summary
+from src.candidates.common import metric_summary
 from src.data.historical_features import FEATURE_GENERATOR_VERSION, MODEL_FEATURES
 from src.data.laliga_loader import TARGET_COLUMN, file_sha256
 from src.evaluation.artifact_integrity import build_artifact_identity
@@ -73,47 +73,6 @@ def _load_development_rows(features_path: str | Path) -> pd.DataFrame:
     if development.empty or set(development["split"]) != {"train", "validation"}:
         raise ValueError("Se requieren las particiones train y validation.")
     return development
-
-
-def select_and_evaluate_champion(
-    *, metrics_paths: list[str | Path], features_path: str | Path, source_dataset_path: str | Path,
-    artifact_path: str | Path, metadata_path: str | Path, final_metrics_path: str | Path,
-) -> dict[str, Any]:
-    """Escoge por validation y, solo después, evalúa una vez el test protegido."""
-
-    champion, comparability = _select_champion(metrics_paths)
-    features = pd.read_csv(features_path)
-    development = features.loc[features["split"].isin(["train", "validation"])].copy()
-    test = features.loc[features["split"].eq("test")].copy()
-    if test.empty or development.empty:
-        raise ValueError("No existen las particiones requeridas para la evaluación final.")
-    pipeline = joblib.load(champion["artifact_path"])
-    started = perf_counter()
-    pipeline.fit(development.loc[:, MODEL_FEATURES], development[TARGET_COLUMN])
-    fit_seconds = perf_counter() - started
-    test_metrics, test_matrix = metric_summary(pipeline, test.loc[:, MODEL_FEATURES], test[TARGET_COLUMN])
-    artifact = Path(artifact_path)
-    artifact.parent.mkdir(parents=True, exist_ok=True)
-    joblib.dump(pipeline, artifact)
-    artifact_identity = build_artifact_identity(artifact)
-    evidence = {
-        "champion_candidate_id": champion["candidate_id"], "champion_model_version": champion["model_version"],
-        "selection_rule": "Mayor macro-F1 de validation entre candidatos con gap < 0.05; empate por menor latencia.",
-        "selection_timestamp_utc": datetime.now(UTC).isoformat(),
-        "comparability": comparability,
-        "validation": champion["validation"], "train": champion["train"],
-        "overfitting_gap_macro_f1": champion["overfitting_gap_macro_f1"],
-        "final_fit_rows": len(development), "test_rows": len(test), "test_used_once": True,
-        "test": test_metrics, "test_confusion_matrix": {"labels": CLASS_LABELS, "matrix": test_matrix},
-        "final_fit_seconds": fit_seconds, "artifact_path": str(artifact).replace("\\", "/"),
-        "feature_columns": list(MODEL_FEATURES), "feature_generator_version": FEATURE_GENERATOR_VERSION,
-        "source_data_sha256": file_sha256(Path(source_dataset_path)),
-        **artifact_identity,
-        "limitations": "Predicción orientativa; se apoya únicamente en histórico. Equipos nuevos usan cold-start y no se usan cuotas.",
-    }
-    Path(metadata_path).write_text(json.dumps(evidence, ensure_ascii=False, indent=2), encoding="utf-8")
-    Path(final_metrics_path).write_text(json.dumps(evidence, ensure_ascii=False, indent=2), encoding="utf-8")
-    return evidence
 
 
 def select_and_promote_champion(

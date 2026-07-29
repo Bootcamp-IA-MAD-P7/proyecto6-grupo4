@@ -5,10 +5,7 @@ import json
 import pandas as pd
 import pytest
 
-from src.evaluation.champion import (
-    select_and_evaluate_champion,
-    select_and_promote_champion,
-)
+from src.evaluation.champion import select_and_promote_champion
 
 
 def _metrics(candidate_id, macro_f1, gap, artifact_path, **overrides):
@@ -79,22 +76,28 @@ def _write_features_and_fit_artifact(tmp_path):
     return features_path, source_path, str(artifact_path)
 
 
+def _write_historical_test(tmp_path):
+    historical_test_path = tmp_path / "historical_test.json"
+    historical_test_path.write_text('{"status":"frozen"}', encoding="utf-8")
+    return historical_test_path
+
+
 def test_champion_is_chosen_by_highest_validation_macro_f1_among_eligible(tmp_path) -> None:
     features_path, source_path, artifact_path = _write_features_and_fit_artifact(tmp_path)
     path_a = _write_json(tmp_path / "a.json", _metrics("A", 0.40, 0.01, artifact_path))
     path_b = _write_json(tmp_path / "b.json", _metrics("B", 0.55, 0.02, artifact_path))  # el mejor
     path_c = _write_json(tmp_path / "c.json", _metrics("C", 0.90, 0.20, artifact_path))  # descalificado por gap
 
-    result = select_and_evaluate_champion(
+    result = select_and_promote_champion(
         metrics_paths=[path_a, path_b, path_c],
         features_path=features_path,
         source_dataset_path=source_path,
         artifact_path=tmp_path / "champion.joblib",
         metadata_path=tmp_path / "champion_metadata.json",
-        final_metrics_path=tmp_path / "champion_test_metrics.json",
+        historical_test_metrics_path=_write_historical_test(tmp_path),
     )
     assert result["champion_candidate_id"] == "B"
-    assert result["test_used_once"] is True
+    assert result["promotion_contract"]["test_rows_used"] == 0
     assert (tmp_path / "champion.joblib").exists()
     assert len(result["artifact_sha256"]) == 64
     assert result["artifact_descriptor"]["root_type"] == "Pipeline"
@@ -107,13 +110,13 @@ def test_champion_selection_raises_when_no_candidate_meets_overfitting_threshold
     path_b = _write_json(tmp_path / "b.json", _metrics("B", 0.55, 0.40, artifact_path))
 
     with pytest.raises(ValueError, match="umbral de overfitting"):
-        select_and_evaluate_champion(
+        select_and_promote_champion(
             metrics_paths=[path_a, path_b],
             features_path=features_path,
             source_dataset_path=source_path,
             artifact_path=tmp_path / "champion.joblib",
             metadata_path=tmp_path / "champion_metadata.json",
-            final_metrics_path=tmp_path / "champion_test_metrics.json",
+            historical_test_metrics_path=_write_historical_test(tmp_path),
         )
 
 
@@ -123,34 +126,36 @@ def test_champion_selection_raises_when_candidates_are_not_comparable(tmp_path) 
     path_b = _write_json(tmp_path / "b.json", _metrics("B", 0.55, 0.02, artifact_path, data_version_sha256="different_sha"))
 
     with pytest.raises(ValueError, match="no son comparables"):
-        select_and_evaluate_champion(
+        select_and_promote_champion(
             metrics_paths=[path_a, path_b],
             features_path=features_path,
             source_dataset_path=source_path,
             artifact_path=tmp_path / "champion.joblib",
             metadata_path=tmp_path / "champion_metadata.json",
-            final_metrics_path=tmp_path / "champion_test_metrics.json",
+            historical_test_metrics_path=_write_historical_test(tmp_path),
         )
 
 
 def test_champion_selection_never_uses_test_rows_to_pick_the_winner(tmp_path) -> None:
     # B gana en validation aunque A hipoteticamente pudiera rendir mejor en test:
-    # la eleccion no debe usar test en absoluto (se verifica indirectamente
-    # comprobando que el ganador es 100% determinado por 'validation').
+    # la eleccion no debe usar test en absoluto (select_and_promote_champion
+    # jamas lee ni evalua el split test, solo train+validation).
     features_path, source_path, artifact_path = _write_features_and_fit_artifact(tmp_path)
     path_a = _write_json(tmp_path / "a.json", _metrics("A", 0.50, 0.01, artifact_path))
     path_b = _write_json(tmp_path / "b.json", _metrics("B", 0.51, 0.01, artifact_path))
 
-    result = select_and_evaluate_champion(
+    result = select_and_promote_champion(
         metrics_paths=[path_a, path_b],
         features_path=features_path,
         source_dataset_path=source_path,
         artifact_path=tmp_path / "champion.joblib",
         metadata_path=tmp_path / "champion_metadata.json",
-        final_metrics_path=tmp_path / "champion_test_metrics.json",
+        historical_test_metrics_path=_write_historical_test(tmp_path),
     )
     assert result["champion_candidate_id"] == "B"
-    assert result["test_rows"] == 15
+    assert result["promotion_contract"]["test_rows_used"] == 0
+    assert "test" not in result
+    assert "test_confusion_matrix" not in result
 
 
 def test_champion_promotion_fits_train_and_validation_without_evaluating_test(
@@ -170,8 +175,7 @@ def test_champion_promotion_fits_train_and_validation_without_evaluating_test(
         tmp_path / "b.json",
         _metrics("B", 0.51, 0.01, artifact_path),
     )
-    historical_test_path = tmp_path / "historical_test.json"
-    historical_test_path.write_text('{"status":"frozen"}', encoding="utf-8")
+    historical_test_path = _write_historical_test(tmp_path)
 
     def fail_if_test_is_evaluated(*_args, **_kwargs):
         raise AssertionError("La promoción no debe calcular métricas.")
