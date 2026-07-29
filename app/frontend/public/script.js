@@ -31,14 +31,19 @@ const API_ORIGIN =
     : window.location.origin;
 const API_URL = `${API_ORIGIN}/api/v1/predictions`;
 
+// Refleja las variables reales que usa el modelo (ver MODEL_FEATURES en
+// src/data/historical_features.py y feature_columns en champion_metadata.json).
+// El modelo NO usa lesiones, clima ni enfrentamientos directos: solo
+// estadísticas históricas de resultados/goles/Elo/descanso, calculadas
+// aparte para cada equipo. Los pesos son ilustrativos (agrupan variables
+// afines), no coeficientes exactos del ensemble.
 const FACTORS = [
-  { label: "Forma reciente local", weight: 0.22, icon: "🔥" },
-  { label: "Rendimiento como visitante", weight: 0.18, icon: "🚌" },
-  { label: "Historial de enfrentamientos", weight: 0.16, icon: "⚔️" },
-  { label: "Lesiones y sanciones", weight: 0.14, icon: "🚑" },
-  { label: "Motivación y posición", weight: 0.13, icon: "📊" },
+  { label: "Forma reciente (últimos 5 partidos)", weight: 0.30, icon: "🔥" },
+  { label: "Fortaleza histórica (Elo)", weight: 0.20, icon: "📈" },
+  { label: "Ataque reciente (goles a favor)", weight: 0.15, icon: "⚽" },
+  { label: "Defensa reciente (goles en contra)", weight: 0.15, icon: "🛡️" },
   { label: "Descanso entre partidos", weight: 0.10, icon: "⏱️" },
-  { label: "Clima y condiciones", weight: 0.07, icon: "🌤️" },
+  { label: "Partidos disputados en la temporada", weight: 0.10, icon: "📅" },
 ];
 
 const homeSelect = document.getElementById("home-team");
