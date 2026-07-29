@@ -141,10 +141,12 @@ def train_ensemble_abcd(**paths: Any) -> dict[str, Any]:
             "predict_proba, cada uno ajustado internamente solo en train."
         ),
         limitations=(
-            "B usa la configuración retunada de T-4.2 adelantado (gap 0.376 -> 0.042); C usa la "
-            "configuración regularizada de I3 (gap 0.256 -> 0.000); cuadruplica el costo de "
-            "inferencia frente a un candidato individual; cold-start de equipos nuevos; no usa "
-            "cuotas; test reservado."
+            "B usa la configuración retunada de T-4.2 adelantado (gap inicial 0.376; bajó a "
+            "0.042 en T-4.2 y a 0.0538 tras normalizar el alias 'Villareal'->'Villarreal' en "
+            "2026-07-30, por encima del umbral 0.05 individual, pero el gap del ensemble "
+            "combinado sigue sano: 0.004); C usa la configuración regularizada de I3 "
+            "(gap 0.256 -> 0.000); cuadruplica el costo de inferencia frente a un candidato "
+            "individual; cold-start de equipos nuevos; no usa cuotas; test reservado."
         ),
         **paths,
     )
