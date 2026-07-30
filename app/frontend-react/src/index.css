@@ -763,7 +763,7 @@ button {
   align-items: center;
   justify-content: center;
   z-index: 40;
-  background: linear-gradient(135deg, var(--pitch), var(--spain-red));
+  background: #157F8A;
   color: #fff;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
