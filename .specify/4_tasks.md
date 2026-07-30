@@ -41,7 +41,7 @@ Toda tarea nueva deberá incluir, cuando aplique: IDs `RF/ML/RNF/DEC`, archivos 
 |---|---|---|
 | Alineación | Cerrado | T-0.1: SDD reconciliado y aprobado por I1–I4 |
 | Dataset técnico | Cerrado | Daily 22/07, ADR-0001, loader y manifest |
-| Licencia | Cerrado | T-0.2b: ratificado por el equipo en daily 2026-07-24; uso local aceptado, incluida la permanencia de los CSV ya trackeados en Git |
+| Licencia | Cerrado | T-0.2b: ratificado por el equipo en daily 2026-07-24; uso local aceptado, incluida la permanencia de los CSV ya trackeados en Git. Reafirmado 2026-07-30: el repositorio es público en GitHub (se despliega desde `develop`), por lo que esa ratificación cubre explícitamente el riesgo de redistribución pública, no solo "uso local". Ver `docs/data_acquisition.md` y `team_risk_acceptance` en `src/data/laliga_loader.py` |
 | Evaluación | Cerrado | T-0.4/T-1.5: métrica, gap, ventanas temporales y particiones ratificados por el equipo en daily 2026-07-24 |
 | Candidatos | Cerrado | T-0.5: cuatro algoritmos asignados, ver `docs/decisions/0003-four-candidate-models.md` |
 | Aplicación | Cerrado | T-0.6: arquitectura y contrato aprobados por I1–I4 |

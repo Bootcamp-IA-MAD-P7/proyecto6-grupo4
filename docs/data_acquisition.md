@@ -2,14 +2,12 @@
 
 ## Política
 
-Los datos se descargan para ejecutar el proyecto de predicción de partidos. La revisión de T-0.2b no encontró una licencia abierta para los CSV raw o sus derivados fila a fila; la procedencia y la política aplicable quedan registradas. Por ello:
+Los datos se descargan para ejecutar el proyecto de predicción de partidos. La revisión de T-0.2b no encontró una licencia abierta para los CSV raw o sus derivados fila a fila; la procedencia y la política aplicable quedan registradas.
 
-- no se añadirán nuevos datasets a Git;
-- los archivos de `data/raw/` y `data/processed/` se mantendrán locales;
-- sí se versionarán código, schemas, diccionarios, manifests, huellas y métricas agregadas;
-- cualquier publicación debe conservar la atribución, URL de origen y fecha de consulta.
+**Estado real (revisado 2026-07-30):** los archivos de `data/raw/` y `data/processed/` **sí están versionados en Git** y por tanto son públicos en el repositorio de GitHub (se despliega directamente desde `develop`). El equipo ratificó explícitamente el riesgo de mantenerlos así el 24/07/2026 (T-0.2b, ver `.specify/4_tasks.md`) y lo reafirmó el 30/07/2026: no se trata de una autorización del proveedor de datos, sino de una decisión de riesgo aceptada por el equipo. Esa ratificación queda registrada en `SOURCE_PROVENANCE` (`src/data/laliga_loader.py`, campo `team_risk_acceptance`) y en `reports/metrics/source_provenance.json`.
 
-El 24/07/2026 se confirmó que los CSV se conservan dentro del directorio de trabajo para ejecutar el proyecto de forma reproducible. La política de redistribución se registra en `reports/metrics/source_provenance.json` y T-0.2b queda cerrada con esta decisión.
+- cualquier publicación debe conservar la atribución, URL de origen y fecha de consulta;
+- si el proveedor de datos reclamara derechos, el equipo retiraría los archivos afectados del historial de Git (operación destructiva, requiere coordinación completa antes de ejecutarse).
 
 Esta política es una decisión conservadora del proyecto y no constituye asesoramiento jurídico.
 

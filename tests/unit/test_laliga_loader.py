@@ -133,7 +133,11 @@ def test_processed_csv_round_trip_preserves_contract(tmp_path: Path) -> None:
     assert loaded["has_detailed_stats"].dtype.name == "boolean"
 
 
-def test_source_policy_rejects_public_redistribution_without_permission() -> None:
+def test_source_policy_documents_unconfirmed_license_and_team_risk_acceptance() -> None:
+    # Las fuentes no tienen licencia abierta confirmada del proveedor original,
+    # pero el equipo ratifico explicitamente el riesgo de mantener los CSV
+    # publicos en el repositorio (T-0.2b, daily 2026-07-24; reafirmado 2026-07-30).
+    # No es una autorizacion del proveedor: es la decision de riesgo del equipo.
     assert set(SOURCE_PROVENANCE) == {
         "LaLiga_Matches.csv",
         "laliga_2025_2026_stats.csv",
@@ -142,4 +146,5 @@ def test_source_policy_rejects_public_redistribution_without_permission() -> Non
         assert source["license_checked_at"] == "2026-07-23"
         assert source["open_license_identifier"] is None
         assert source["redistribution_status"] == "not_authorized_without_explicit_permission"
-        assert source["repository_policy"] == "local_only_no_public_raw_or_row_level_derivatives"
+        assert source["repository_policy"] == "public_repository_team_accepted_risk"
+        assert source["team_risk_acceptance"]["status"] == "ratified"

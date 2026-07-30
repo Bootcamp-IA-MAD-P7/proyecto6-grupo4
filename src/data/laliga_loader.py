@@ -42,7 +42,19 @@ SOURCE_PROVENANCE = {
             "abierta ni permiso explícito de redistribución."
         ),
         "redistribution_status": "not_authorized_without_explicit_permission",
-        "repository_policy": "local_only_no_public_raw_or_row_level_derivatives",
+        "repository_policy": "public_repository_team_accepted_risk",
+        "team_risk_acceptance": {
+            "status": "ratified",
+            "ratified_at": "2026-07-24",
+            "reference": ".specify/4_tasks.md T-0.2b (daily 2026-07-24)",
+            "reaffirmed_at": "2026-07-30",
+            "rationale": (
+                "El equipo acepta explicitamente el riesgo de mantener los CSV (crudos y "
+                "derivados) publicos en el repositorio de GitHub pese a no contar con una "
+                "licencia abierta confirmada de la fuente. Esta ratificacion documenta la "
+                "decision del equipo, no una autorizacion del proveedor de datos."
+            ),
+        },
         "provenance_confidence": "confirmed_by_filename_schema_and_dataset_card",
     },
     DETAILED_FILENAME: {
@@ -69,7 +81,19 @@ SOURCE_PROVENANCE = {
             "no equivale a autorización para republicar los archivos."
         ),
         "redistribution_status": "not_authorized_without_explicit_permission",
-        "repository_policy": "local_only_no_public_raw_or_row_level_derivatives",
+        "repository_policy": "public_repository_team_accepted_risk",
+        "team_risk_acceptance": {
+            "status": "ratified",
+            "ratified_at": "2026-07-24",
+            "reference": ".specify/4_tasks.md T-0.2b (daily 2026-07-24)",
+            "reaffirmed_at": "2026-07-30",
+            "rationale": (
+                "El equipo acepta explicitamente el riesgo de mantener los CSV (crudos y "
+                "derivados) publicos en el repositorio de GitHub pese a no contar con una "
+                "licencia abierta confirmada de la fuente. Esta ratificacion documenta la "
+                "decision del equipo, no una autorizacion del proveedor de datos."
+            ),
+        },
         "provenance_confidence": "confirmed_by_url_schema_season_and_380_match_rows",
     },
 }
