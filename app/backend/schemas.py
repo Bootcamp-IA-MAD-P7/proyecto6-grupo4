@@ -1,7 +1,10 @@
-from datetime import date
+import re
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+_EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
 class PredictionRequest(BaseModel):
@@ -65,6 +68,61 @@ class FeedbackResponse(BaseModel):
     feedback_id: str
     status: Literal["ok"] = "ok"
     message: str = "Feedback registrado."
+
+
+class RegisterRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(min_length=3, max_length=255)
+    password: str = Field(min_length=8, max_length=72)
+
+    @field_validator("email")
+    @classmethod
+    def valid_email(cls, value: str) -> str:
+        if not _EMAIL_PATTERN.match(value):
+            raise ValueError("El email no tiene un formato válido.")
+        return value.lower()
+
+
+class LoginRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    email: str = Field(min_length=3, max_length=255)
+    password: str = Field(min_length=1, max_length=72)
+
+    @field_validator("email")
+    @classmethod
+    def normalize_email(cls, value: str) -> str:
+        return value.lower()
+
+
+class UserSummary(BaseModel):
+    id: str
+    email: str
+
+
+class AuthResponse(BaseModel):
+    contract_version: Literal["1.0"] = "1.0"
+    status: Literal["ok"] = "ok"
+    access_token: str
+    token_type: Literal["bearer"] = "bearer"
+    user: UserSummary
+
+
+class PredictionHistoryItem(BaseModel):
+    request_id: str
+    home_team: str
+    away_team: str
+    match_date: date
+    prediction: Literal["H", "D", "A"]
+    probabilities: ClassProbabilities
+    model_version: str
+    data_version: str
+    created_at: datetime
+
+
+class HistoryResponse(BaseModel):
+    contract_version: Literal["1.0"] = "1.0"
+    status: Literal["ok"] = "ok"
+    items: list[PredictionHistoryItem]
 
 
 class ErrorDetail(BaseModel):

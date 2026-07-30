@@ -7,13 +7,29 @@ from time import perf_counter
 from typing import AsyncIterator
 from uuid import uuid4
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.backend.schemas import ErrorResponse, FeedbackRequest, FeedbackResponse, PredictionRequest, PredictionResponse
+from app.backend.dependencies import AuthenticatedUser, require_current_user
+from app.backend.schemas import (
+    AuthResponse,
+    ErrorResponse,
+    FeedbackRequest,
+    FeedbackResponse,
+    HistoryResponse,
+    LoginRequest,
+    PredictionHistoryItem,
+    PredictionRequest,
+    PredictionResponse,
+    RegisterRequest,
+    UserSummary,
+)
+from src.auth.errors import AuthError
+from src.auth.security import hash_password, verify_password
+from src.auth.tokens import create_access_token
 from src.feedback.store import FeedbackRecord, FeedbackValidationError, append_feedback
 from src.inference.champion import ChampionPredictor, InferenceError
 from src.persistence.db import init_schema, session_scope
@@ -134,6 +150,12 @@ async def validation_error(request: Request, exc: RequestValidationError) -> JSO
     return _error(request_id, "INVALID_INPUT", "La entrada no cumple el contrato.", details=[{"field": ".".join(map(str, item["loc"][1:])), "reason": item["type"]} for item in errors])
 
 
+@app.exception_handler(AuthError)
+async def auth_error(request: Request, exc: AuthError) -> JSONResponse:
+    request_id = getattr(request.state, "request_id", str(uuid4()))
+    return _error(request_id, exc.code, exc.message, status_code=exc.status_code)
+
+
 @app.get("/health")
 def health_check():
     try:
@@ -150,8 +172,67 @@ def health_check():
     }
 
 
-@app.post("/api/v1/predictions", response_model=PredictionResponse, responses={404: {"model": ErrorResponse}, 409: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
-def create_prediction(payload: PredictionRequest, request: Request):
+@app.post("/api/v1/auth/register", response_model=AuthResponse, responses={409: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
+def register(payload: RegisterRequest, request: Request):
+    request_id = request.state.request_id
+    try:
+        with session_scope() as session:
+            if persistence_repository.get_user_by_email(session, email=payload.email) is not None:
+                raise AuthError("EMAIL_ALREADY_REGISTERED", "Ya existe una cuenta con ese email.", 409)
+            user = persistence_repository.create_user(
+                session, email=payload.email, password_hash=hash_password(payload.password)
+            )
+            user_id, user_email = user.id, user.email
+    except AuthError:
+        raise
+    except Exception:
+        logger.exception("No se pudo registrar el usuario (base de datos no disponible).")
+        return _error(request_id, "AUTH_UNAVAILABLE", "No se pudo completar el registro. Intenta de nuevo.", status_code=503)
+    token = create_access_token(user_id=user_id, email=user_email)
+    return AuthResponse(access_token=token, user=UserSummary(id=user_id, email=user_email))
+
+
+@app.post("/api/v1/auth/login", response_model=AuthResponse, responses={401: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
+def login(payload: LoginRequest, request: Request):
+    request_id = request.state.request_id
+    try:
+        with session_scope() as session:
+            user = persistence_repository.get_user_by_email(session, email=payload.email)
+            valid = user is not None and verify_password(payload.password, user.password_hash)
+            if not valid:
+                raise AuthError("INVALID_CREDENTIALS", "Email o contraseña incorrectos.", 401)
+            user_id, user_email = user.id, user.email
+    except AuthError:
+        raise
+    except Exception:
+        logger.exception("No se pudo iniciar sesión (base de datos no disponible).")
+        return _error(request_id, "AUTH_UNAVAILABLE", "No se pudo iniciar sesión. Intenta de nuevo.", status_code=503)
+    token = create_access_token(user_id=user_id, email=user_email)
+    return AuthResponse(access_token=token, user=UserSummary(id=user_id, email=user_email))
+
+
+@app.get("/api/v1/history", response_model=HistoryResponse, responses={401: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
+def get_history(request: Request, current_user: AuthenticatedUser = Depends(require_current_user)):
+    request_id = request.state.request_id
+    try:
+        with session_scope() as session:
+            records = persistence_repository.list_predictions_for_user(session, user_id=current_user.id)
+            items = [
+                PredictionHistoryItem(
+                    request_id=r.request_id, home_team=r.home_team, away_team=r.away_team, match_date=r.match_date,
+                    prediction=r.prediction, probabilities={"H": r.probability_h, "D": r.probability_d, "A": r.probability_a},
+                    model_version=r.model_version, data_version=r.data_version, created_at=r.created_at,
+                )
+                for r in records
+            ]
+    except Exception:
+        logger.exception("No se pudo leer el historial (base de datos no disponible).")
+        return _error(request_id, "HISTORY_UNAVAILABLE", "No se pudo cargar el historial. Intenta de nuevo.", status_code=503)
+    return HistoryResponse(items=items)
+
+
+@app.post("/api/v1/predictions", response_model=PredictionResponse, responses={401: {"model": ErrorResponse}, 404: {"model": ErrorResponse}, 409: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
+def create_prediction(payload: PredictionRequest, request: Request, current_user: AuthenticatedUser = Depends(require_current_user)):
     request_id = request.state.request_id
     started = perf_counter()
     try:
@@ -164,15 +245,15 @@ def create_prediction(payload: PredictionRequest, request: Request):
     model_version = get_predictor().metadata["champion_model_version"]
     data_version = get_predictor().metadata["source_data_sha256"]
     _persist_prediction_best_effort(
-        request_id=request_id, home_team=payload.home_team, away_team=payload.away_team, match_date=payload.match_date,
+        request_id=request_id, user_id=current_user.id, home_team=payload.home_team, away_team=payload.away_team, match_date=payload.match_date,
         prediction=result["prediction"], probability_h=result["H"], probability_d=result["D"], probability_a=result["A"],
         model_version=model_version, data_version=data_version, latency_ms=latency_ms,
     )
     return PredictionResponse(request_id=request_id, prediction=result["prediction"], probabilities={"H": result["H"], "D": result["D"], "A": result["A"]}, model_version=model_version, data_version=data_version, latency_ms=latency_ms, message="Estimación probabilística basada únicamente en el histórico anterior.")
 
 
-@app.post("/api/v1/feedback", response_model=FeedbackResponse, responses={422: {"model": ErrorResponse}})
-def create_feedback(payload: FeedbackRequest, request: Request):
+@app.post("/api/v1/feedback", response_model=FeedbackResponse, responses={401: {"model": ErrorResponse}, 422: {"model": ErrorResponse}})
+def create_feedback(payload: FeedbackRequest, request: Request, current_user: AuthenticatedUser = Depends(require_current_user)):
     request_id = request.state.request_id
     try:
         stored = append_feedback(
