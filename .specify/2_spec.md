@@ -2,9 +2,9 @@
 
 ## Autoridad y estado
 
-Este documento define el contrato técnico del proyecto. Toda implementación debe respetarlo o detenerse hasta que el equipo apruebe y documente un cambio.
+Este documento define el contrato técnico del proyecto y está subordinado a `0_constitution.md` y `1_intent.md`. Toda implementación debe respetarlo o detenerse hasta que el equipo apruebe y documente un cambio.
 
-Estado actual: **definición inicial; implementación bloqueada por decisiones pendientes**.
+Estado actual: **EDA, target, contrato de evaluación y particiones aprobados por los cuatro integrantes el 24/07/2026; T-0.2b se cerró el mismo día con la política de procedencia y redistribución documentada. El entrenamiento de candidatos sigue sujeto al resto del gate `Data Ready` (T-1.8)**.
 
 ## Requisitos obligatorios de la consigna
 
@@ -29,13 +29,14 @@ La consigna también menciona una API como posible mecanismo de productivizació
 
 ### Restricción de overfitting
 
-El modelo productivizado deberá demostrar una diferencia inferior al 5 % entre entrenamiento y validación, calculada sobre la métrica que el equipo apruebe.
+Aprobada en T-0.4 (2026-07-23), ratificada en daily 2026-07-24:
 
-Pendiente de decisión:
-
-- Métrica utilizada para calcular el gap.
-- Diferencia absoluta, relativa o en puntos porcentuales.
-- Tratamiento de variaciones entre folds.
+- Métrica principal: `macro-F1`.
+- Gap: `max(0, macro_F1_train - macro_F1_validation)`.
+- Unidad: puntos absolutos de la métrica, no porcentaje relativo.
+- Umbral: `gap < 0.05`.
+- También se registrará `abs(macro_F1_train - macro_F1_validation)` para detectar diferencias anómalas en cualquier dirección.
+- Si se usa validación temporal por ventanas o folds, se informa la media, la desviación y el peor gap; la selección no puede ocultar un fold temporal degradado.
 
 Hasta resolver estas decisiones ningún modelo podrá declararse Champion.
 
@@ -77,21 +78,38 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 
 | Decisión | Estado | Valor |
 |---|---|---|
-| Dataset | Aprobada | Spanish Sign Language (LSE) Fingerspelling Dataset, Zenodo `10.5281/zenodo.21351703` |
-| Fuente y licencia | Aprobada | Zenodo; CC BY 4.0; cita obligatoria registrada en `5_dataset.md` |
-| Problema de negocio | Provisional | Reconocer una letra estática del alfabeto dactilológico LSE a partir de una imagen |
-| Usuario principal | Pendiente | No definido |
-| Target | Provisional | Etiqueta de letra LSE; 23 clases estáticas indicadas por el repositorio asociado, sujetas a auditoría del schema |
-| Tipo de clasificación | Provisional | Multiclase de imagen única |
-| Métrica principal | Pendiente | No definida |
-| Fórmula de overfitting | Pendiente | Debe demostrar gap menor al 5 % |
-| Modelos A, B, C y D | Pendiente | No seleccionados |
-| Tecnología frontend | Pendiente | No seleccionada |
-| Tecnología backend | Pendiente | No seleccionada |
+| Dataset | Aprobada 2026-07-24 (T-0.2b, uso local) | Partidos de LaLiga 1995-96–2025-26, dos CSV locales combinados mediante loader único; uso local, permanencia de las copias ya trackeadas aceptada por el equipo, sin publicar nuevos derivados fila a fila salvo permiso escrito |
+| Problema de negocio | Propuesta registrada | Predicción prepartido del resultado final; no se inicia entrenamiento hasta aprobación |
+| Usuario principal | Propuesta registrada | Persona usuaria interesada en análisis deportivo prepartido |
+| Target | Aprobada 2026-07-23 | `result_ft`: `H`, `D`, `A` |
+| Tipo de clasificación | Aprobada 2026-07-23 | Multiclase de tres clases |
+| Métrica principal | Aprobada 2026-07-23 (T-0.4) | `macro-F1` |
+| Métricas secundarias | Aprobada 2026-07-23 (T-0.4) | Accuracy, balanced accuracy, precisión/recall/F1 por clase, log loss, matriz de confusión |
+| Fórmula de overfitting | Aprobada 2026-07-23 (T-0.4) | `gap = macro-F1(train) − macro-F1(validación)`, en puntos absolutos; umbral `< 0.05` sobre medias de CV |
+| Estrategia de partición | Aprobada 2026-07-23 (T-0.4/T-1.5) | Cronológica por temporada, congelada: train 1995-96–2019-20 (9.607 filas), validación 2020-21–2022-23 (1.197 filas), test 2023-24–2025-26 (1.140 filas, protegido); semilla `42` |
+| Modelos A, B, C y D | Aprobada 2026-07-24 (T-0.5) | A: regresión logística multinomial (I1). B: gradient boosting (I2). C: random forest (I3). D: SVM kernel RBF (I4). Detalle en `docs/decisions/0003-four-candidate-models.md` |
+| Tecnología frontend | Aprobada 2026-07-24 (T-0.6); revisada 2026-07-29 | React + TypeScript con Vite fue lo aprobado en T-0.6, pero la implementación real en `app/frontend/public/` es HTML + CSS + JavaScript sin build, sin React/TypeScript/Vite y sin `package.json`. Propiedad de I3. |
+| Tecnología backend | Aprobada 2026-07-24 (T-0.6) | FastAPI + Pydantic, servido con Uvicorn; implementación propiedad de I4 |
+| Arquitectura de aplicación | Aprobada 2026-07-24 (T-0.6) | Frontend y backend separados: React consume por HTTP/JSON la API FastAPI versionada |
 | Persistencia | Pendiente | No seleccionada |
 | Despliegue | Pendiente | No seleccionado |
-| Gestión del equipo | Pendiente | Trello u otra herramienta |
+| Gestión del equipo | Aprobada | GitHub Project `Proyecto6-Grupo4`, issues #3–#35 |
 | Estrategia Git | Aprobada | `main` estable, `develop` integración y ramas `feature/` por ticket |
+
+### Spike exploratorio autorizado para T-1.1–T-1.4
+
+Las solicitudes de 2026-07-22 y 2026-07-23 autorizaron carga, auditoría, diccionario, limpieza reproducible y EDA antes de cerrar todos los gates. Este trabajo se clasifica como spike exploratorio: produce evidencia para decidir, pero no habilita splits ni entrenamiento y no altera la regla general de dependencias.
+
+- Dataset canónico aprobado técnicamente: `laliga_matches_1995_96_to_2025_26_v1`.
+- Fuentes raw locales: `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv`; se conservan inmutables. Las URL, huellas y adquisición local reproducible están documentadas en `docs/data_acquisition.md`. El equipo ratificó en daily 2026-07-24 la permanencia de las copias ya trackeadas en Git; no hay remediación pendiente sobre este punto.
+- Manifest con dimensiones y SHA-256: `reports/metrics/dataset_manifest.json`.
+- Dataset limpio canónico: `data/processed/laliga_matches_clean.csv`, generado únicamente desde los dos raw por `scripts/run_laliga_preprocessing.py`.
+- Evidencia del preprocesamiento: `notebooks/00_laliga_preprocessing.ipynb`, `reports/metrics/preprocessing_summary.json` y `reports/metrics/source_column_policy.csv`.
+- Target aprobado: `result_ft` (`H`, `D`, `A`).
+- Resultado de auditoría: 11.944 filas, 54 columnas, 31 temporadas, 0 IDs duplicados, 0 targets nulos y 0 incoherencias marcador/resultado.
+- EDA reproducible: `reports/laliga_eda.md`, `notebooks/01_laliga_eda.ipynb` y once figuras persistentes.
+- Las matrices de confusión de esta fase corresponden exclusivamente a reglas descriptivas fijas (clase mayoritaria y favorito de apertura); no son candidatos entrenados ni sustituyen T-0.4.
+- Procedencia y revisión I1 documentadas: el uso analítico local encaja con la finalidad declarada. El equipo ratificó en daily 2026-07-24 (I2/I3/I4) mantener las copias ya trackeadas sin remediación adicional.
 
 ## Estrategia Git aprobada
 
@@ -219,7 +237,7 @@ La estructura inicial es neutral respecto del dataset, los cuatro algoritmos y l
 
 Responsabilidades de las áreas principales:
 
-- `data/raw/`: dataset original inmutable; inicialmente ignorado por Git salvo marcador.
+- `data/raw/`: datasets originales inmutables; la trazabilidad y la política de uso se conservan en el manifest de procedencia.
 - `data/interim/`: resultados intermedios reproducibles.
 - `data/processed/`: base común posterior a las reglas aprobadas.
 - `src/data/`: conexión, auditoría y limpieza comunes.
@@ -238,9 +256,9 @@ No se crearán implementaciones dentro de estas carpetas hasta que exista un tic
 
 ### Dataset canónico
 
-El dataset canónico seleccionado es **Spanish Sign Language (LSE) Fingerspelling Dataset**, publicado en Zenodo con DOI `10.5281/zenodo.21351703`. La ficha reproducible, los enlaces de acceso, checksums, licencia, cita obligatoria, justificación y riesgos están en `5_dataset.md`. Su carga se implementará una sola vez y será reutilizada por los cuatro integrantes.
+El dataset canónico técnicamente aprobado es `laliga_matches_1995_96_to_2025_26_v1`. Combina `LaLiga_Matches.csv` y `laliga_2025_2026_stats.csv` mediante `src/data/laliga_loader.py`. La versión procesada común es `data/processed/laliga_matches_clean.csv`; su metadata y huellas viven en `reports/metrics/`.
 
-La unidad de predicción propuesta es una imagen de una única configuración manual estática. El target es la letra LSE indicada por la carpeta o metadata de clase. Antes de congelar el contrato deberá comprobarse el inventario real de clases y la relación entre captura original, resolución y representación derivada.
+La aprobación técnica y la revisión de procedencia constan documentadas. T-0.2b está cerrada; el resto de requisitos de `Data Ready` se gestionan en sus tareas correspondientes.
 
 El dataset original deberá:
 
@@ -254,14 +272,38 @@ El dataset original deberá:
 
 No se crearán cuatro mecanismos independientes de conexión o cuatro versiones incompatibles del dataset.
 
-Para evitar leakage específico de este dataset:
+### Contrato común de features prepartido
 
-- No se tratarán como observaciones independientes las versiones `Original`, `Keypoints` y `Original-Keypoints` de una misma captura.
-- Tampoco se mezclarán entre particiones las resoluciones `192x192` y `512x512` de una misma captura.
-- Se conservarán inicialmente los splits publicados (`Train`, `Validation` y `Evaluation`) y se auditará si separan personas o sesiones antes de aceptarlos.
-- El equipo elegirá una única resolución y representación canónicas para el Nivel Esencial; las demás quedarán para experimentos controlados.
-- Cualquier aumento de datos se aplicará únicamente dentro de entrenamiento.
-- El conjunto `Evaluation` permanecerá reservado como test final si la auditoría confirma que no existe solapamiento.
+Los cuatro candidatos consumirán una tabla de features generada por una única implementación común:
+
+| Grupo | Regla |
+|---|---|
+| Inputs directos | `home_team`, `away_team`, `match_date`; `match_time` solo si se aprueban su cobertura y tratamiento |
+| Features históricas | Forma reciente, puntos, goles a favor/en contra, fuerza o rating; siempre calculadas con filas anteriores |
+| Cuotas de apertura | Experimento opcional separado; no pueden ser requisito del MVP porque solo cubren 380 partidos |
+| Cuotas de cierre | Excluidas del MVP por riesgo de disponibilidad temporal |
+| Encuentro actual | Excluidos goles, resultado, tiros, faltas, córners, tarjetas y todas sus derivadas |
+| Metadatos | `match_id` y proxies de fuente o cobertura quedan fuera del modelo |
+
+Implementación versionada: `src/data/historical_features.py` genera
+`historical_features_v1`. Usa una ventana de cinco encuentros, puntos, goles a
+favor/en contra, tasa de victorias, días desde el último partido y Elo
+(`1500`, factor K `20`). Las filas se ordenan de forma estable por
+`match_date` y `match_id`, pero se calculan por lotes de fecha: todas las
+features de la fecha se emiten antes de incorporar sus resultados. De este modo
+un partido del mismo día tampoco se considera pasado de otro. `match_id`,
+`season`, `match_date`, `split` y `result_ft` permanecen como metadata y no se
+entregan al estimador. La regeneración local se realiza con
+`python scripts/run_historical_features.py` y su evidencia queda en
+`reports/metrics/historical_features_manifest.json`.
+
+Reglas obligatorias:
+
+- Toda agregación histórica aplica `shift(1)` o una operación equivalente antes de cualquier ventana.
+- El cálculo recorre los partidos en orden cronológico estable.
+- Los parámetros de imputación, codificación y escalado se ajustan solo con entrenamiento.
+- Una prueba de no-leakage demuestra que modificar un resultado futuro no cambia las features de partidos anteriores.
+- La tabla común se versiona con schema, rango temporal, generador y SHA-256.
 
 ### EDA y limpieza comunes
 
@@ -304,30 +346,37 @@ Las particiones de entrenamiento, validación y test se generarán una sola vez 
 
 Requisitos:
 
-- Semilla reproducible.
-- Estratificación cuando resulte apropiada.
+- Orden cronológico por `match_date` y clave estable de desempate.
+- Ventanas temporales explícitas y sin solapamiento.
+- Congelado en T-1.5 (ratificado 2026-07-24): train 1995-96–2019-20 (9.607 filas); validación 2020-21–2022-23 (1.197 filas); test 2023-24–2025-26 (1.140 filas, protegido). Implementado en `src/evaluation/splits.py`, versionado en `data/processed/splits/laliga_splits.csv` y `reports/metrics/split_manifest.json`.
+- La semilla (`42`) solo controla algoritmos y operaciones internas; no decide el split principal.
+- La estratificación aleatoria por filas no sustituye la separación temporal.
 - Índices o mecanismo de generación versionados.
 - Test final reservado.
 - Transformaciones ajustadas únicamente con entrenamiento.
+- Posible backtesting adicional con ventanas temporales expansivas, sin consultar el test final.
 
-El Integrante 2 coordinará este contrato con revisión del Integrante 1.
+**Regla de re-congelado:** cualquier cambio en las reglas comunes de limpieza de `T-1.4` (o en los CSV raw de origen) invalida automáticamente el SHA-256 registrado en `reports/metrics/split_manifest.json`. Antes de considerar vigente `T-1.5`, hay que volver a ejecutar `scripts/run_laliga_preprocessing.py` y `python -m src.evaluation.splits`, y reconfirmar: mismo SHA-256 y 11.944 `match_id`; mismos cortes por temporada (train 1995-96–2019-20, validación 2020-21–2022-23, test 2023-24–2025-26); mismos conteos 9.607/1.197/1.140. Si algún valor cambia, `T-1.5` vuelve a `[~]` hasta nueva revisión cruzada de I1, I3 e I4.
+
+El Integrante 2 coordinó este contrato con revisión técnica del Integrante 1 y revisión cruzada de I3/I4 ratificada en daily 2026-07-24.
 
 ### Gate `Data Ready`
 
 No podrá comenzar el entrenamiento individual hasta verificar:
 
-- [x] Dataset seleccionado y accesible mediante Zenodo.
-- [x] Fuente, licencia y cita obligatoria documentadas.
-- [ ] Target y clases aprobados.
-- [ ] EDA inicial completado.
-- [ ] Reglas comunes de limpieza aprobadas.
-- [ ] Variables con leakage excluidas.
-- [ ] Contrato de datos aprobado.
-- [ ] Particiones comunes reproducibles.
-- [ ] Test final protegido.
-- [ ] Métricas comunes definidas.
-- [ ] Fórmula de overfitting definida.
-- [ ] Cuatro modelos candidatos aprobados.
+- [x] Dataset seleccionado y accesible localmente.
+- [x] Condiciones de uso y redistribución aprobadas (uso local ratificado 2026-07-24, incluida la permanencia de los CSV ya trackeados en Git).
+- [x] Target y clases aprobados.
+- [x] EDA inicial completado (T-1.3: revisión compartida I1–I4 el 2026-07-24).
+- [x] Reglas comunes de limpieza aprobadas (T-1.4: revisión I2/I4; regeneración y contrato de splits verificados el 2026-07-24).
+- [x] Variables con leakage excluidas técnicamente por el contrato y el generador histórico, revisado por I2.
+- [x] Generador común de features históricas aprobado y probado (`historical_features_v1`; manifest y pruebas reproducibles).
+- [x] Contrato de datos aprobado (T-1.2: diccionario y auditoría revisados por I3 el 2026-07-24).
+- [x] Particiones comunes reproducibles.
+- [x] Test final protegido.
+- [x] Métricas comunes definidas.
+- [x] Fórmula de overfitting definida.
+- [x] Cuatro modelos candidatos aprobados.
 
 ## Pipelines individuales
 
@@ -386,6 +435,19 @@ Cada experimento deberá registrar:
 
 La comparación solo será válida si los cuatro candidatos respetan este contrato.
 
+### Contrato de calibración para el ensemble
+
+Los componentes que aporten probabilidades a T-4.1 deberán cumplir además:
+
+- Ajustar estimador, preprocesamiento y calibrador únicamente con train; validation se utiliza para comparar alternativas y el test final permanece protegido.
+- Conservar el dataset, las features históricas y los splits comunes, registrando sus versiones o huellas.
+- Evaluar `macro-F1` como métrica principal y complementar con log loss, Brier multiclase, ECE, suma de probabilidades, matriz de confusión y gap train-validación.
+- Guardar el pipeline completo de forma reproducible, pero mantener los artefactos binarios `.joblib` fuera de Git; las métricas y la configuración sí se versionan.
+
+El primer componente registrado por I4 es un SVC RBF con `C=0.5`, `gamma="scale"` y `class_weight="balanced"`. El SVC base no activa su estimación probabilística interna: se envuelve en `CalibratedClassifierCV(method="temperature")`, con cinco folds estratificados dentro de train y `ensemble=False`. Esta configuración produce probabilidades multiclase explícitas y comparables sin consultar el test protegido.
+
+Este componente no sustituye al Champion actual ni cierra T-4.1 por sí solo. Su inclusión definitiva depende de la integración con los demás estimadores, la comparación del ensemble completo y la revisión cruzada asignada.
+
 ## Selección del Champion
 
 El equipo seleccionará el pipeline más modelo que se productivizará. Ningún integrante podrá promocionar unilateralmente su candidato.
@@ -442,25 +504,108 @@ El test final se utilizará una única vez después de la selección y no se reu
 
 ## Contrato de aplicación
 
-La aplicación deberá ofrecer, como mínimo:
+Contrato preliminar versionado para que I3 e I4 puedan trabajar con mocks compatibles:
 
-- Inputs equivalentes al contrato del Champion.
-- Validación de tipos y valores.
-- Ejecución del mismo pipeline usado durante entrenamiento.
-- Clase predicha.
-- Probabilidad o confianza cuando aplique.
-- Mensaje comprensible y no causal.
-- Tratamiento controlado de errores.
+Arquitectura aprobada por I1–I4 en T-0.6:
 
-El contrato concreto deberá definirse después del `Data Ready` e incluir:
+- I3 — César desarrolla el frontend en `app/frontend/`. Aprobado originalmente con React, TypeScript y Vite; la implementación entregada es HTML + CSS + JavaScript plano, servido como estático (sin build, sin `package.json`).
+- I4 — Fernanda desarrolla el backend en `app/backend/` con FastAPI, Pydantic y Uvicorn.
+- El frontend consume el backend mediante HTTP y JSON; no accede directamente al modelo ni a los datos procesados.
+- I4 no modifica `app/frontend/` e I3 no modifica `app/backend/` sin coordinación, para evitar solapamientos.
 
-- Schema de entrada.
-- Schema de salida.
-- Manejo de errores.
-- Versión del modelo.
-- Mecanismo de feedback si se alcanza el Nivel Medio.
+Ruta de predicción seleccionada:
+
+```text
+POST /api/v1/predictions
+```
+
+```json
+{
+  "home_team": "Real Madrid",
+  "away_team": "Barcelona",
+  "match_date": "2026-10-25"
+}
+```
+
+Respuesta válida:
+
+```json
+{
+  "contract_version": "1.0",
+  "request_id": "018f0f52-7a6d-7f48-9dcb-58f0e65d21a3",
+  "prediction": "H",
+  "probabilities": {"H": 0.51, "D": 0.25, "A": 0.24},
+  "model_version": "mock-v1",
+  "data_version": "laliga_matches_1995_96_to_2025_26_v1",
+  "status": "ok",
+  "latency_ms": 12.4,
+  "message": "Estimación probabilística basada en el histórico disponible."
+}
+```
+
+Error uniforme:
+
+```json
+{
+  "status": "error",
+  "contract_version": "1.0",
+  "request_id": "018f0f52-7a6d-7f48-9dcb-58f0e65d21a3",
+  "error": "INVALID_INPUT",
+  "message": "El equipo local y el visitante deben ser distintos.",
+  "details": [{"field": "away_team", "reason": "SAME_TEAM"}]
+}
+```
+
+Convenciones:
+
+- Fecha ISO-8601 `YYYY-MM-DD`.
+- `home_team` y `away_team` son obligatorios, se recortan en los extremos y admiten entre 1 y 80 caracteres.
+- Los equipos deben ser distintos sin diferenciar mayúsculas y deben existir en el catálogo disponible.
+- No se admiten campos adicionales ni cuerpos JSON mayores de 4 KiB.
+- Para `match_date`, el backend solo usa partidos estrictamente anteriores; si no existe historial suficiente devuelve un error controlado.
+- `prediction` solo admite `H`, `D` o `A`.
+- El backend calcula las features; el frontend no envía agregados históricos ni transforma datos.
+- Las probabilidades se devuelven para las tres clases y suman 1 con tolerancia numérica.
+- `latency_ms` mide el procesamiento dentro del backend; el objetivo caliente es p95 menor de 1 segundo, sin contar red ni arranque en frío.
+- Los logs incluyen `request_id`, ruta, estado, latencia y versiones, pero no almacenan el payload completo.
+- El mecanismo de feedback se añade sin romper este contrato si se alcanza el Nivel Medio.
+
+### Códigos HTTP y errores
+
+| HTTP | Código de error | Uso |
+|---:|---|---|
+| `200` | — | Predicción válida. |
+| `400` | `MALFORMED_JSON` | El cuerpo no es JSON válido. |
+| `404` | `TEAM_NOT_FOUND` | Algún equipo no pertenece al catálogo. |
+| `409` | `INSUFFICIENT_HISTORY` | No existe historial anterior suficiente. |
+| `413` | `PAYLOAD_TOO_LARGE` | El cuerpo supera 4 KiB. |
+| `415` | `UNSUPPORTED_MEDIA_TYPE` | El contenido no es JSON. |
+| `422` | `INVALID_INPUT` | Faltan o sobran campos, la fecha es inválida o los equipos coinciden. |
+| `500` | `INTERNAL_ERROR` | Fallo inesperado sin exponer trazas al cliente. |
+| `503` | `MODEL_UNAVAILABLE` | El mock o el Champion no están disponibles. |
+
+Todos los errores utilizan el sobre uniforme mostrado arriba. `details` puede ser una lista vacía y nunca expone trazas, secretos, rutas locales o datos del dataset.
+
+### Versionado y compatibilidad
+
+- La versión mayor forma parte de la ruta: `/api/v1`.
+- `contract_version` identifica la revisión compatible del contrato v1.
+- Añadir un campo opcional es compatible; eliminar, renombrar o cambiar el significado de un campo requiere `/api/v2`.
+- `model_version` y `data_version` evolucionan de forma independiente y no cambian por sí solas la versión de la API.
+- Sustituir `mock-v1` por el Champion no modifica la ruta ni el formato consumido por el frontend.
 
 El frontend no realizará transformaciones estadísticas propias del pipeline.
+
+## Requisitos no funcionales
+
+| ID | Requisito | Objetivo |
+|---|---|---|
+| RNF-01 | Reproducibilidad | Un clon limpio reproduce preparación, evaluación y tests con comandos documentados. |
+| RNF-02 | Latencia de inferencia | Objetivo inicial p95 < 1 s, medido sin incluir arranque en frío. |
+| RNF-03 | Calidad de respuesta | Ninguna entrada inválida produce excepción no controlada. |
+| RNF-04 | Seguridad | Secretos fuera de Git y logs; dependencias con versiones registradas. |
+| RNF-05 | Portabilidad | Compatibilidad Docker comprobada temprano; gate formal de contenedor en Nivel Avanzado. |
+| RNF-06 | Observabilidad mínima | Logs estructurados con versión del modelo, estado y latencia, sin datos sensibles. |
 
 ## Testing distribuido
 
@@ -503,3 +648,25 @@ Cambios sobre dataset, target, limpieza, splits, métricas, overfitting, contrat
 3. Aprobación del equipo.
 4. Actualización de `.specify/`.
 5. Reevaluación de candidatos si se pierde comparabilidad.
+6. Si cambia la limpieza o el dataset procesado, ejecutar de nuevo `scripts/run_laliga_preprocessing.py`, `python -m src.evaluation.splits` y `verify_preprocessing_split_contract`; registrar la nueva huella, cobertura de `match_id` y conteos antes de permitir cualquier entrenamiento.
+
+## Trazabilidad mínima
+
+| Requisito o decisión | Tareas principales | Evidencia esperada |
+|---|---|---|
+| DEC-01–DEC-06 | T-0.2a, T-0.2b, T-0.3 | ADR, procedencia, licencia y acta de decisión |
+| DEC-07–DEC-09 | T-0.4, T-1.5 | contrato de evaluación, splits versionados y tests |
+| RF-01–RF-06 | T-0.6, T-1.6, T-1.7, T-3.2, T-3.3 | fixtures de contrato, tests de API/UI y smoke test |
+| ML-01 Datos sin leakage | T-1.1–T-1.5 | manifest, diccionario, generador de features y test temporal |
+| ML-02 Cuatro candidatos | T-2.1–T-2.5 | registros de experimentos comparables |
+| ML-03 Champion | T-2.6, T-3.1 | decisión, artefacto, metadata y evaluación final |
+| ML-04 Ensemble probabilístico | T-4.1–T-4.2 | componentes calibrados, métricas de probabilidad, comparación y revisión |
+| RNF-01–RNF-06 | T-3.4, T-3.6, T-5.1–T-5.4 | comandos, resultados, logs, contenedor y despliegue |
+
+## Estado del documento
+
+| Campo | Valor |
+|---|---|
+| Estado | v1.1 — Nivel Esencial cerrado; contrato de calibración de T-4.1 añadido |
+| Fecha | 27/07/2026 |
+| Bloqueos | Completar la integración y comparación del ensemble de T-4.1 antes de T-4.2 |

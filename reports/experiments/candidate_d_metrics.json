@@ -1,0 +1,182 @@
+{
+  "candidate_id": "D",
+  "member": "I4",
+  "algorithm": "SVC RBF + calibración explícita (temperature, 5-fold estratificado)",
+  "model_version": "candidate_d_svc_rbf_calibrated_v1",
+  "seed": 42,
+  "feature_generator_version": "historical_features_v1",
+  "data_version_sha256": "56e59efa9200042f76638beafd47feaf67a41a28c00c02aa521192739a607104",
+  "split_manifest_reference": "reports/metrics/split_manifest.json",
+  "features_sha256": "a092ae51f30f7de84c329a66b90ff11215e6f1009040f9fcf8e5840fcb0395aa",
+  "feature_columns": [
+    "home_team",
+    "away_team",
+    "home_matches_played",
+    "away_matches_played",
+    "home_points_per_match_5",
+    "away_points_per_match_5",
+    "home_goals_for_per_match_5",
+    "away_goals_for_per_match_5",
+    "home_goals_against_per_match_5",
+    "away_goals_against_per_match_5",
+    "home_win_rate_5",
+    "away_win_rate_5",
+    "home_elo_pre_match",
+    "away_elo_pre_match",
+    "elo_difference_home",
+    "home_days_since_last_match",
+    "away_days_since_last_match"
+  ],
+  "rows": {
+    "train": 9607,
+    "validation": 1197,
+    "test_used": 0
+  },
+  "hyperparameters": {
+    "cv": "StratifiedKFold(n_splits=5, random_state=None, shuffle=False)",
+    "ensemble": false,
+    "estimator__memory": null,
+    "estimator__steps": [
+      [
+        "preprocessing",
+        "ColumnTransformer(transformers=[('numeric',\n                                 Pipeline(steps=[('imputer',\n                                                  SimpleImputer(strategy='median')),\n                                                 ('scaler', StandardScaler())]),\n                                 ['home_matches_played', 'away_matches_played',\n                                  'home_points_per_match_5',\n                                  'away_points_per_match_5',\n                                  'home_goals_for_per_match_5',\n                                  'away_goals_for_per_match_5',\n                                  'home_goals_against_per_match_5',\n                                  'away_goals_against_per_match_5',\n                                  'home_win_rate_5', 'away_win_rate_5',\n                                  'home_elo_pre_match', 'away_elo_pre_match',\n                                  'elo_difference_home',\n                                  'home_days_since_last_match',\n                                  'away_days_since_last_match']),\n                                ('teams',\n                                 Pipeline(steps=[('imputer',\n                                                  SimpleImputer(strategy='most_frequent')),\n                                                 ('one_hot',\n                                                  OneHotEncoder(handle_unknown='ignore'))]),\n                                 ['home_team', 'away_team'])])"
+      ],
+      [
+        "classifier",
+        "SVC(C=0.5, class_weight='balanced', random_state=42)"
+      ]
+    ],
+    "estimator__transform_input": null,
+    "estimator__verbose": false,
+    "estimator__preprocessing": "ColumnTransformer(transformers=[('numeric',\n                                 Pipeline(steps=[('imputer',\n                                                  SimpleImputer(strategy='median')),\n                                                 ('scaler', StandardScaler())]),\n                                 ['home_matches_played', 'away_matches_played',\n                                  'home_points_per_match_5',\n                                  'away_points_per_match_5',\n                                  'home_goals_for_per_match_5',\n                                  'away_goals_for_per_match_5',\n                                  'home_goals_against_per_match_5',\n                                  'away_goals_against_per_match_5',\n                                  'home_win_rate_5', 'away_win_rate_5',\n                                  'home_elo_pre_match', 'away_elo_pre_match',\n                                  'elo_difference_home',\n                                  'home_days_since_last_match',\n                                  'away_days_since_last_match']),\n                                ('teams',\n                                 Pipeline(steps=[('imputer',\n                                                  SimpleImputer(strategy='most_frequent')),\n                                                 ('one_hot',\n                                                  OneHotEncoder(handle_unknown='ignore'))]),\n                                 ['home_team', 'away_team'])])",
+    "estimator__classifier": "SVC(C=0.5, class_weight='balanced', random_state=42)",
+    "estimator__preprocessing__n_jobs": null,
+    "estimator__preprocessing__remainder": "drop",
+    "estimator__preprocessing__sparse_threshold": 0.3,
+    "estimator__preprocessing__transformer_weights": null,
+    "estimator__preprocessing__transformers": [
+      [
+        "numeric",
+        "Pipeline(steps=[('imputer', SimpleImputer(strategy='median')),\n                ('scaler', StandardScaler())])",
+        [
+          "home_matches_played",
+          "away_matches_played",
+          "home_points_per_match_5",
+          "away_points_per_match_5",
+          "home_goals_for_per_match_5",
+          "away_goals_for_per_match_5",
+          "home_goals_against_per_match_5",
+          "away_goals_against_per_match_5",
+          "home_win_rate_5",
+          "away_win_rate_5",
+          "home_elo_pre_match",
+          "away_elo_pre_match",
+          "elo_difference_home",
+          "home_days_since_last_match",
+          "away_days_since_last_match"
+        ]
+      ],
+      [
+        "teams",
+        "Pipeline(steps=[('imputer', SimpleImputer(strategy='most_frequent')),\n                ('one_hot', OneHotEncoder(handle_unknown='ignore'))])",
+        [
+          "home_team",
+          "away_team"
+        ]
+      ]
+    ],
+    "estimator__preprocessing__verbose": false,
+    "estimator__preprocessing__verbose_feature_names_out": true,
+    "estimator__preprocessing__numeric": "Pipeline(steps=[('imputer', SimpleImputer(strategy='median')),\n                ('scaler', StandardScaler())])",
+    "estimator__preprocessing__teams": "Pipeline(steps=[('imputer', SimpleImputer(strategy='most_frequent')),\n                ('one_hot', OneHotEncoder(handle_unknown='ignore'))])",
+    "estimator__preprocessing__numeric__memory": null,
+    "estimator__preprocessing__numeric__steps": [
+      [
+        "imputer",
+        "SimpleImputer(strategy='median')"
+      ],
+      [
+        "scaler",
+        "StandardScaler()"
+      ]
+    ],
+    "estimator__preprocessing__numeric__transform_input": null,
+    "estimator__preprocessing__numeric__verbose": false,
+    "estimator__preprocessing__numeric__imputer": "SimpleImputer(strategy='median')",
+    "estimator__preprocessing__numeric__scaler": "StandardScaler()",
+    "estimator__preprocessing__numeric__imputer__add_indicator": false,
+    "estimator__preprocessing__numeric__imputer__copy": true,
+    "estimator__preprocessing__numeric__imputer__fill_value": null,
+    "estimator__preprocessing__numeric__imputer__keep_empty_features": false,
+    "estimator__preprocessing__numeric__imputer__missing_values": NaN,
+    "estimator__preprocessing__numeric__imputer__strategy": "median",
+    "estimator__preprocessing__numeric__scaler__copy": true,
+    "estimator__preprocessing__numeric__scaler__with_mean": true,
+    "estimator__preprocessing__numeric__scaler__with_std": true,
+    "estimator__preprocessing__teams__memory": null,
+    "estimator__preprocessing__teams__steps": [
+      [
+        "imputer",
+        "SimpleImputer(strategy='most_frequent')"
+      ],
+      [
+        "one_hot",
+        "OneHotEncoder(handle_unknown='ignore')"
+      ]
+    ],
+    "estimator__preprocessing__teams__transform_input": null,
+    "estimator__preprocessing__teams__verbose": false,
+    "estimator__preprocessing__teams__imputer": "SimpleImputer(strategy='most_frequent')",
+    "estimator__preprocessing__teams__one_hot": "OneHotEncoder(handle_unknown='ignore')",
+    "estimator__preprocessing__teams__imputer__add_indicator": false,
+    "estimator__preprocessing__teams__imputer__copy": true,
+    "estimator__preprocessing__teams__imputer__fill_value": null,
+    "estimator__preprocessing__teams__imputer__keep_empty_features": false,
+    "estimator__preprocessing__teams__imputer__missing_values": NaN,
+    "estimator__preprocessing__teams__imputer__strategy": "most_frequent",
+    "estimator__preprocessing__teams__one_hot__categories": "auto",
+    "estimator__preprocessing__teams__one_hot__drop": null,
+    "estimator__preprocessing__teams__one_hot__dtype": "<class 'numpy.float64'>",
+    "estimator__preprocessing__teams__one_hot__feature_name_combiner": "concat",
+    "estimator__preprocessing__teams__one_hot__handle_unknown": "ignore",
+    "estimator__preprocessing__teams__one_hot__max_categories": null,
+    "estimator__preprocessing__teams__one_hot__min_frequency": null,
+    "estimator__preprocessing__teams__one_hot__sparse_output": true,
+    "estimator__classifier__C": 0.5,
+    "estimator__classifier__break_ties": false,
+    "estimator__classifier__cache_size": 200,
+    "estimator__classifier__class_weight": "balanced",
+    "estimator__classifier__coef0": 0.0,
+    "estimator__classifier__decision_function_shape": "ovr",
+    "estimator__classifier__degree": 3,
+    "estimator__classifier__gamma": "scale",
+    "estimator__classifier__kernel": "rbf",
+    "estimator__classifier__max_iter": -1,
+    "estimator__classifier__probability": "deprecated",
+    "estimator__classifier__random_state": 42,
+    "estimator__classifier__shrinking": true,
+    "estimator__classifier__tol": 0.001,
+    "estimator__classifier__verbose": false,
+    "estimator": "Pipeline(steps=[('preprocessing',\n                 ColumnTransformer(transformers=[('numeric',\n                                                  Pipeline(steps=[('imputer',\n                                                                   SimpleImputer(strategy='median')),\n                                                                  ('scaler',\n                                                                   StandardScaler())]),\n                                                  ['home_matches_played',\n                                                   'away_matches_played',\n                                                   'home_points_per_match_5',\n                                                   'away_points_per_match_5',\n                                                   'home_goals_for_per_match_5',\n                                                   'away_goals_for_per_match_5',\n                                                   'home_goals_against_per_matc...\n                                                   'home_elo_pre_match',\n                                                   'away_elo_pre_match',\n                                                   'elo_difference_home',\n                                                   'home_days_since_last_match',\n                                                   'away_days_since_last_match']),\n                                                 ('teams',\n                                                  Pipeline(steps=[('imputer',\n                                                                   SimpleImputer(strategy='most_frequent')),\n                                                                  ('one_hot',\n                                                                   OneHotEncoder(handle_unknown='ignore'))]),\n                                                  ['home_team',\n                                                   'away_team'])])),\n                ('classifier',\n                 SVC(C=0.5, class_weight='balanced', random_state=42))])",
+    "method": "temperature",
+    "n_jobs": -1
+  },
+  "train": {
+    "macro_f1": 0.49300210043414366,
+    "accuracy": 0.5016134068908088,
+    "balanced_accuracy": 0.5025074150845028,
+    "log_loss": 1.0443287162370332
+  },
+  "validation": {
+    "macro_f1": 0.4828670934026496,
+    "accuracy": 0.4954051796157059,
+    "balanced_accuracy": 0.48816063640719626,
+    "log_loss": 1.051745550502276
+  },
+  "overfitting_gap_macro_f1": 0.010135007031494059,
+  "absolute_macro_f1_difference": 0.010135007031494059,
+  "training_time_seconds": 81.28565710003022,
+  "inference_time_ms_per_row": 2.487847284875256,
+  "artifact_path": "models/candidates/model_d/candidate_d_svc_rbf_v1.joblib",
+  "test_protection": "El estimador recibe únicamente train y validation; test_used es siempre 0."
+}

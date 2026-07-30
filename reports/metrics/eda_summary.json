@@ -1,0 +1,677 @@
+{
+  "quality": {
+    "rows": 10804,
+    "columns": 54,
+    "season_count": 28,
+    "date_min": "1995-09-02",
+    "date_max": "2023-06-04",
+    "duplicate_rows": 0,
+    "duplicate_match_ids": 0,
+    "missing_target": 0,
+    "missing_half_time_rows": 2,
+    "full_time_result_inconsistencies": 0,
+    "invalid_target_values": [],
+    "same_team_rows": 0,
+    "negative_goal_rows": 0,
+    "detailed_rows": 0,
+    "source_coverage": {
+      "historical_only": 10804
+    }
+  },
+  "target": {
+    "counts": {
+      "H": 5119,
+      "D": 2761,
+      "A": 2924
+    },
+    "shares": {
+      "H": 0.4738059977786005,
+      "D": 0.25555349870418365,
+      "A": 0.27064050351721586
+    },
+    "majority_class": "H",
+    "majority_baseline_accuracy": 0.4738059977786005,
+    "majority_confusion_matrix": [
+      [
+        5119,
+        0,
+        0
+      ],
+      [
+        2761,
+        0,
+        0
+      ],
+      [
+        2924,
+        0,
+        0
+      ]
+    ],
+    "max_to_min_ratio": 1.8540383918869974
+  },
+  "missingness": {
+    "columns_with_missing": 32,
+    "columns_over_90_pct_missing": 29,
+    "top": {
+      "match_time": 1.0,
+      "odds_avg_under_2_5_open": 1.0,
+      "odds_avg_over_2_5_close": 1.0,
+      "odds_avg_away_close": 1.0,
+      "odds_avg_draw_close": 1.0,
+      "odds_avg_home_close": 1.0,
+      "odds_avg_home_open": 1.0,
+      "odds_avg_draw_open": 1.0,
+      "odds_avg_away_open": 1.0,
+      "odds_avg_over_2_5_open": 1.0,
+      "red_cards_away": 1.0,
+      "red_cards_home": 1.0,
+      "yellow_cards_away": 1.0,
+      "yellow_cards_home": 1.0,
+      "fouls_home": 1.0,
+      "fouls_away": 1.0,
+      "corners_home": 1.0,
+      "corners_away": 1.0,
+      "shots_home": 1.0,
+      "shots_away": 1.0
+    }
+  },
+  "temporal": {
+    "season_summary": [
+      {
+        "season": "1995-96",
+        "matches": 462,
+        "home_win_rate": 0.45670995670995673,
+        "draw_rate": 0.2813852813852814,
+        "away_win_rate": 0.2619047619047619,
+        "avg_total_goals": 2.696969696969697,
+        "avg_home_goal_diff": 0.42424242424242425
+      },
+      {
+        "season": "1996-97",
+        "matches": 462,
+        "home_win_rate": 0.47619047619047616,
+        "draw_rate": 0.25757575757575757,
+        "away_win_rate": 0.2662337662337662,
+        "avg_total_goals": 2.7510822510822512,
+        "avg_home_goal_diff": 0.5432900432900433
+      },
+      {
+        "season": "1997-98",
+        "matches": 380,
+        "home_win_rate": 0.4789473684210526,
+        "draw_rate": 0.2894736842105263,
+        "away_win_rate": 0.23157894736842105,
+        "avg_total_goals": 2.655263157894737,
+        "avg_home_goal_diff": 0.5078947368421053
+      },
+      {
+        "season": "1998-99",
+        "matches": 380,
+        "home_win_rate": 0.5026315789473684,
+        "draw_rate": 0.25526315789473686,
+        "away_win_rate": 0.24210526315789474,
+        "avg_total_goals": 2.639473684210526,
+        "avg_home_goal_diff": 0.5815789473684211
+      },
+      {
+        "season": "1999-00",
+        "matches": 380,
+        "home_win_rate": 0.4789473684210526,
+        "draw_rate": 0.29473684210526313,
+        "away_win_rate": 0.22631578947368422,
+        "avg_total_goals": 2.6289473684210525,
+        "avg_home_goal_diff": 0.5184210526315789
+      },
+      {
+        "season": "2000-01",
+        "matches": 380,
+        "home_win_rate": 0.5236842105263158,
+        "draw_rate": 0.26052631578947366,
+        "away_win_rate": 0.21578947368421053,
+        "avg_total_goals": 2.8815789473684212,
+        "avg_home_goal_diff": 0.6552631578947369
+      },
+      {
+        "season": "2001-02",
+        "matches": 380,
+        "home_win_rate": 0.48947368421052634,
+        "draw_rate": 0.2657894736842105,
+        "away_win_rate": 0.24473684210526317,
+        "avg_total_goals": 2.528947368421053,
+        "avg_home_goal_diff": 0.4763157894736842
+      },
+      {
+        "season": "2002-03",
+        "matches": 380,
+        "home_win_rate": 0.4631578947368421,
+        "draw_rate": 0.27631578947368424,
+        "away_win_rate": 0.26052631578947366,
+        "avg_total_goals": 2.6736842105263157,
+        "avg_home_goal_diff": 0.43157894736842106
+      },
+      {
+        "season": "2003-04",
+        "matches": 380,
+        "home_win_rate": 0.45263157894736844,
+        "draw_rate": 0.25,
+        "away_win_rate": 0.29736842105263156,
+        "avg_total_goals": 2.6710526315789473,
+        "avg_home_goal_diff": 0.29210526315789476
+      },
+      {
+        "season": "2004-05",
+        "matches": 380,
+        "home_win_rate": 0.5052631578947369,
+        "draw_rate": 0.2631578947368421,
+        "away_win_rate": 0.23157894736842105,
+        "avg_total_goals": 2.5789473684210527,
+        "avg_home_goal_diff": 0.45263157894736844
+      },
+      {
+        "season": "2005-06",
+        "matches": 380,
+        "home_win_rate": 0.4263157894736842,
+        "draw_rate": 0.27631578947368424,
+        "away_win_rate": 0.29736842105263156,
+        "avg_total_goals": 2.463157894736842,
+        "avg_home_goal_diff": 0.26842105263157895
+      },
+      {
+        "season": "2006-07",
+        "matches": 380,
+        "home_win_rate": 0.45263157894736844,
+        "draw_rate": 0.2578947368421053,
+        "away_win_rate": 0.2894736842105263,
+        "avg_total_goals": 2.4789473684210526,
+        "avg_home_goal_diff": 0.24736842105263157
+      },
+      {
+        "season": "2007-08",
+        "matches": 380,
+        "home_win_rate": 0.4789473684210526,
+        "draw_rate": 0.22894736842105262,
+        "away_win_rate": 0.29210526315789476,
+        "avg_total_goals": 2.6868421052631577,
+        "avg_home_goal_diff": 0.4131578947368421
+      },
+      {
+        "season": "2008-09",
+        "matches": 380,
+        "home_win_rate": 0.4842105263157895,
+        "draw_rate": 0.21842105263157896,
+        "away_win_rate": 0.29736842105263156,
+        "avg_total_goals": 2.8973684210526316,
+        "avg_home_goal_diff": 0.4236842105263158
+      },
+      {
+        "season": "2009-10",
+        "matches": 380,
+        "home_win_rate": 0.5105263157894737,
+        "draw_rate": 0.25,
+        "away_win_rate": 0.2394736842105263,
+        "avg_total_goals": 2.713157894736842,
+        "avg_home_goal_diff": 0.4868421052631579
+      },
+      {
+        "season": "2010-11",
+        "matches": 380,
+        "home_win_rate": 0.5184210526315789,
+        "draw_rate": 0.20789473684210527,
+        "away_win_rate": 0.2736842105263158,
+        "avg_total_goals": 2.7421052631578946,
+        "avg_home_goal_diff": 0.531578947368421
+      },
+      {
+        "season": "2011-12",
+        "matches": 380,
+        "home_win_rate": 0.49473684210526314,
+        "draw_rate": 0.24736842105263157,
+        "away_win_rate": 0.2578947368421053,
+        "avg_total_goals": 2.763157894736842,
+        "avg_home_goal_diff": 0.5947368421052631
+      },
+      {
+        "season": "2012-13",
+        "matches": 380,
+        "home_win_rate": 0.49736842105263157,
+        "draw_rate": 0.22105263157894736,
+        "away_win_rate": 0.28157894736842104,
+        "avg_total_goals": 2.8710526315789475,
+        "avg_home_goal_diff": 0.5026315789473684
+      },
+      {
+        "season": "2013-14",
+        "matches": 380,
+        "home_win_rate": 0.4710526315789474,
+        "draw_rate": 0.22631578947368422,
+        "away_win_rate": 0.3026315789473684,
+        "avg_total_goals": 2.75,
+        "avg_home_goal_diff": 0.5131578947368421
+      },
+      {
+        "season": "2014-15",
+        "matches": 380,
+        "home_win_rate": 0.45,
+        "draw_rate": 0.2394736842105263,
+        "away_win_rate": 0.3105263157894737,
+        "avg_total_goals": 2.655263157894737,
+        "avg_home_goal_diff": 0.41842105263157897
+      },
+      {
+        "season": "2015-16",
+        "matches": 380,
+        "home_win_rate": 0.48157894736842105,
+        "draw_rate": 0.24210526315789474,
+        "away_win_rate": 0.27631578947368424,
+        "avg_total_goals": 2.7447368421052634,
+        "avg_home_goal_diff": 0.4921052631578947
+      },
+      {
+        "season": "2016-17",
+        "matches": 380,
+        "home_win_rate": 0.4763157894736842,
+        "draw_rate": 0.23421052631578948,
+        "away_win_rate": 0.2894736842105263,
+        "avg_total_goals": 2.942105263157895,
+        "avg_home_goal_diff": 0.38421052631578945
+      },
+      {
+        "season": "2017-18",
+        "matches": 380,
+        "home_win_rate": 0.4710526315789474,
+        "draw_rate": 0.22631578947368422,
+        "away_win_rate": 0.3026315789473684,
+        "avg_total_goals": 2.694736842105263,
+        "avg_home_goal_diff": 0.4
+      },
+      {
+        "season": "2018-19",
+        "matches": 380,
+        "home_win_rate": 0.4421052631578947,
+        "draw_rate": 0.2894736842105263,
+        "away_win_rate": 0.26842105263157895,
+        "avg_total_goals": 2.586842105263158,
+        "avg_home_goal_diff": 0.31842105263157894
+      },
+      {
+        "season": "2019-20",
+        "matches": 323,
+        "home_win_rate": 0.47058823529411764,
+        "draw_rate": 0.2848297213622291,
+        "away_win_rate": 0.24458204334365324,
+        "avg_total_goals": 2.51702786377709,
+        "avg_home_goal_diff": 0.4613003095975232
+      },
+      {
+        "season": "2020-21",
+        "matches": 437,
+        "home_win_rate": 0.41189931350114417,
+        "draw_rate": 0.2791762013729977,
+        "away_win_rate": 0.30892448512585813,
+        "avg_total_goals": 2.4759725400457664,
+        "avg_home_goal_diff": 0.20137299771167047
+      },
+      {
+        "season": "2021-22",
+        "matches": 380,
+        "home_win_rate": 0.4342105263157895,
+        "draw_rate": 0.29210526315789476,
+        "away_win_rate": 0.2736842105263158,
+        "avg_total_goals": 2.5026315789473683,
+        "avg_home_goal_diff": 0.3394736842105263
+      },
+      {
+        "season": "2022-23",
+        "matches": 380,
+        "home_win_rate": 0.4789473684210526,
+        "draw_rate": 0.23421052631578948,
+        "away_win_rate": 0.2868421052631579,
+        "avg_total_goals": 2.513157894736842,
+        "avg_home_goal_diff": 0.3973684210526316
+      }
+    ],
+    "result_share_by_season": [
+      {
+        "season": "1995-96",
+        "H": 0.45670995670995673,
+        "D": 0.2813852813852814,
+        "A": 0.2619047619047619
+      },
+      {
+        "season": "1996-97",
+        "H": 0.47619047619047616,
+        "D": 0.25757575757575757,
+        "A": 0.2662337662337662
+      },
+      {
+        "season": "1997-98",
+        "H": 0.4789473684210526,
+        "D": 0.2894736842105263,
+        "A": 0.23157894736842105
+      },
+      {
+        "season": "1998-99",
+        "H": 0.5026315789473684,
+        "D": 0.25526315789473686,
+        "A": 0.24210526315789474
+      },
+      {
+        "season": "1999-00",
+        "H": 0.4789473684210526,
+        "D": 0.29473684210526313,
+        "A": 0.22631578947368422
+      },
+      {
+        "season": "2000-01",
+        "H": 0.5236842105263158,
+        "D": 0.26052631578947366,
+        "A": 0.21578947368421053
+      },
+      {
+        "season": "2001-02",
+        "H": 0.48947368421052634,
+        "D": 0.2657894736842105,
+        "A": 0.24473684210526317
+      },
+      {
+        "season": "2002-03",
+        "H": 0.4631578947368421,
+        "D": 0.27631578947368424,
+        "A": 0.26052631578947366
+      },
+      {
+        "season": "2003-04",
+        "H": 0.45263157894736844,
+        "D": 0.25,
+        "A": 0.29736842105263156
+      },
+      {
+        "season": "2004-05",
+        "H": 0.5052631578947369,
+        "D": 0.2631578947368421,
+        "A": 0.23157894736842105
+      },
+      {
+        "season": "2005-06",
+        "H": 0.4263157894736842,
+        "D": 0.27631578947368424,
+        "A": 0.29736842105263156
+      },
+      {
+        "season": "2006-07",
+        "H": 0.45263157894736844,
+        "D": 0.2578947368421053,
+        "A": 0.2894736842105263
+      },
+      {
+        "season": "2007-08",
+        "H": 0.4789473684210526,
+        "D": 0.22894736842105262,
+        "A": 0.29210526315789476
+      },
+      {
+        "season": "2008-09",
+        "H": 0.4842105263157895,
+        "D": 0.21842105263157896,
+        "A": 0.29736842105263156
+      },
+      {
+        "season": "2009-10",
+        "H": 0.5105263157894737,
+        "D": 0.25,
+        "A": 0.2394736842105263
+      },
+      {
+        "season": "2010-11",
+        "H": 0.5184210526315789,
+        "D": 0.20789473684210527,
+        "A": 0.2736842105263158
+      },
+      {
+        "season": "2011-12",
+        "H": 0.49473684210526314,
+        "D": 0.24736842105263157,
+        "A": 0.2578947368421053
+      },
+      {
+        "season": "2012-13",
+        "H": 0.49736842105263157,
+        "D": 0.22105263157894736,
+        "A": 0.28157894736842104
+      },
+      {
+        "season": "2013-14",
+        "H": 0.4710526315789474,
+        "D": 0.22631578947368422,
+        "A": 0.3026315789473684
+      },
+      {
+        "season": "2014-15",
+        "H": 0.45,
+        "D": 0.2394736842105263,
+        "A": 0.3105263157894737
+      },
+      {
+        "season": "2015-16",
+        "H": 0.48157894736842105,
+        "D": 0.24210526315789474,
+        "A": 0.27631578947368424
+      },
+      {
+        "season": "2016-17",
+        "H": 0.4763157894736842,
+        "D": 0.23421052631578948,
+        "A": 0.2894736842105263
+      },
+      {
+        "season": "2017-18",
+        "H": 0.4710526315789474,
+        "D": 0.22631578947368422,
+        "A": 0.3026315789473684
+      },
+      {
+        "season": "2018-19",
+        "H": 0.4421052631578947,
+        "D": 0.2894736842105263,
+        "A": 0.26842105263157895
+      },
+      {
+        "season": "2019-20",
+        "H": 0.47058823529411764,
+        "D": 0.2848297213622291,
+        "A": 0.24458204334365324
+      },
+      {
+        "season": "2020-21",
+        "H": 0.41189931350114417,
+        "D": 0.2791762013729977,
+        "A": 0.30892448512585813
+      },
+      {
+        "season": "2021-22",
+        "H": 0.4342105263157895,
+        "D": 0.29210526315789476,
+        "A": 0.2736842105263158
+      },
+      {
+        "season": "2022-23",
+        "H": 0.4789473684210526,
+        "D": 0.23421052631578948,
+        "A": 0.2868421052631579
+      }
+    ]
+  },
+  "goals": {
+    "mean_total": 2.6686412439837097,
+    "median_total": 2.0,
+    "pct_over_2_5": 0.49648278415401703,
+    "pct_both_teams_scored": 0.5149018881895594,
+    "mean_home": 1.5532210292484265,
+    "mean_away": 1.1154202147352832
+  },
+  "associations": {
+    "season_vs_target_cramers_v": 0.027748823866429555,
+    "home_team_vs_target_cramers_v": 0.16788680901049544,
+    "away_team_vs_target_cramers_v": 0.17961658967724187
+  },
+  "cardinality": {
+    "match_id_unique_pct": 1.0,
+    "home_teams": 48,
+    "away_teams": 48,
+    "seasons": 28
+  },
+  "detailed_subset": {
+    "rows": 0,
+    "share_of_total": 0.0,
+    "opening_odds_coverage_within_subset": NaN
+  },
+  "market_baseline": {
+    "rows_with_complete_opening_odds": 0,
+    "confusion_matrix": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    "status": "not_available_without_development_opening_odds"
+  },
+  "outliers_iqr": {
+    "home_goals_ft": {
+      "count": 891,
+      "pct": 0.08246945575712698,
+      "lower": -0.5,
+      "upper": 3.5
+    },
+    "away_goals_ft": {
+      "count": 30,
+      "pct": 0.0027767493520918177,
+      "lower": -3.0,
+      "upper": 5.0
+    },
+    "total_goals": {
+      "count": 21,
+      "pct": 0.0019437245464642725,
+      "lower": -3.5,
+      "upper": 8.5
+    },
+    "shots_home": {
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
+    },
+    "shots_away": {
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
+    },
+    "shots_on_target_home": {
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
+    },
+    "shots_on_target_away": {
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
+    },
+    "fouls_home": {
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
+    },
+    "fouls_away": {
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
+    },
+    "yellow_cards_home": {
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
+    },
+    "yellow_cards_away": {
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
+    },
+    "red_cards_home": {
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
+    },
+    "red_cards_away": {
+      "count": 0,
+      "pct": 0.0,
+      "lower": null,
+      "upper": null
+    }
+  },
+  "leakage": {
+    "post_event_columns": [
+      "away_goals_ft",
+      "away_goals_ht",
+      "away_points",
+      "both_teams_scored",
+      "clean_sheet_away",
+      "clean_sheet_home",
+      "corners_away",
+      "corners_home",
+      "fouls_away",
+      "fouls_home",
+      "goal_diff_home",
+      "home_goals_ft",
+      "home_goals_ht",
+      "home_points",
+      "over_2_5",
+      "red_cards_away",
+      "red_cards_home",
+      "result_ht",
+      "shots_away",
+      "shots_home",
+      "shots_on_target_away",
+      "shots_on_target_home",
+      "total_goals",
+      "yellow_cards_away",
+      "yellow_cards_home"
+    ],
+    "identifier_columns": [
+      "match_id"
+    ],
+    "metadata_columns": [
+      "has_detailed_stats",
+      "league_code",
+      "source_coverage"
+    ],
+    "closing_market_timing_risk": [
+      "asian_handicap_line_close",
+      "odds_avg_asian_away_close",
+      "odds_avg_asian_home_close",
+      "odds_avg_away_close",
+      "odds_avg_draw_close",
+      "odds_avg_home_close",
+      "odds_avg_over_2_5_close",
+      "odds_avg_under_2_5_close"
+    ]
+  }
+}

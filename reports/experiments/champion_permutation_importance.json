@@ -1,0 +1,99 @@
+{
+  "method": "sklearn.inspection.permutation_importance",
+  "scoring": "macro_f1",
+  "evaluated_on": "validation (never train ni test)",
+  "n_repeats": 10,
+  "random_state": 42,
+  "champion_candidate_id": "ENSEMBLE_ABCD",
+  "champion_model_version": "ensemble_abcd_soft_voting_v1",
+  "artifact_sha256": "f9c0e93317924613e9dc8fb57125ecd5b227fdb0afa6fc7ec1f6e963407d5696",
+  "data_version_sha256": "56e59efa9200042f76638beafd47feaf67a41a28c00c02aa521192739a607104",
+  "baseline_macro_f1_validation": 0.4852523887607542,
+  "per_feature_importance": [
+    {
+      "feature": "elo_difference_home",
+      "importance_mean": 0.03258015330964791,
+      "importance_std": 0.011876732878296173
+    },
+    {
+      "feature": "away_elo_pre_match",
+      "importance_mean": 0.027511660223668234,
+      "importance_std": 0.008313033499515952
+    },
+    {
+      "feature": "away_matches_played",
+      "importance_mean": 0.017362641208382344,
+      "importance_std": 0.005098437029360218
+    },
+    {
+      "feature": "away_points_per_match_5",
+      "importance_mean": 0.01619165158608169,
+      "importance_std": 0.0033386021831760837
+    },
+    {
+      "feature": "away_team",
+      "importance_mean": 0.012359380000502518,
+      "importance_std": 0.004092022856513371
+    },
+    {
+      "feature": "away_goals_for_per_match_5",
+      "importance_mean": 0.012344603302792212,
+      "importance_std": 0.004635506823429336
+    },
+    {
+      "feature": "home_win_rate_5",
+      "importance_mean": 0.011778154810078278,
+      "importance_std": 0.0037213750823009597
+    },
+    {
+      "feature": "home_matches_played",
+      "importance_mean": 0.009312485941720194,
+      "importance_std": 0.0048289655717204324
+    },
+    {
+      "feature": "away_win_rate_5",
+      "importance_mean": 0.008549056378349462,
+      "importance_std": 0.003242070787410209
+    },
+    {
+      "feature": "home_team",
+      "importance_mean": 0.008060082463990481,
+      "importance_std": 0.0046052150235746155
+    },
+    {
+      "feature": "away_goals_against_per_match_5",
+      "importance_mean": 0.007389955124342517,
+      "importance_std": 0.0027217341074664597
+    },
+    {
+      "feature": "home_elo_pre_match",
+      "importance_mean": 0.00651338909708532,
+      "importance_std": 0.004535282349546719
+    },
+    {
+      "feature": "home_goals_for_per_match_5",
+      "importance_mean": 0.006419916162614958,
+      "importance_std": 0.002991829719716621
+    },
+    {
+      "feature": "home_goals_against_per_match_5",
+      "importance_mean": 0.005839346763743303,
+      "importance_std": 0.002502904237612276
+    },
+    {
+      "feature": "home_points_per_match_5",
+      "importance_mean": 0.005684817190124458,
+      "importance_std": 0.00328031315257545
+    },
+    {
+      "feature": "away_days_since_last_match",
+      "importance_mean": 0.0034679810375880084,
+      "importance_std": 0.002859558221247897
+    },
+    {
+      "feature": "home_days_since_last_match",
+      "importance_mean": 0.0012509403465851387,
+      "importance_std": 0.0019736332089517637
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "scope": "development_only_train_and_validation",
+  "excluded_test_seasons": [
+    "2023-24",
+    "2024-25",
+    "2025-26"
+  ],
+  "source_rows": 11944,
+  "analyzed_rows": 10804
+}

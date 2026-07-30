@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LaLiga Predictor — Predicción de resultados</title>
+  <meta name="description" content="Predictor deportivo de resultados de LaLiga española. Estadísticas, probabilidades y factores clave en una interfaz limpia y responsive." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__overlay"></div>
+    <div class="hero__content">
+      <span class="hero__badge">LaLiga EA Sports</span>
+      <h1 class="hero__title">Predictor de Resultados</h1>
+      <p class="hero__subtitle">Análisis, probabilidades y factores clave para cada enfrentamiento.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="panel predictor" aria-labelledby="predictor-title">
+      <h2 id="predictor-title" class="panel__title">Nueva predicción</h2>
+
+      <form id="predict-form" class="predictor__form" novalidate>
+        <div class="field">
+          <label for="home-team">Equipo local</label>
+          <select id="home-team" required>
+            <option value="" disabled selected>Selecciona local</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="away-team">Equipo visitante</label>
+          <select id="away-team" required>
+            <option value="" disabled selected>Selecciona visitante</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="match-date">Fecha del partido</label>
+          <input type="date" id="match-date" required />
+        </div>
+
+        <button type="submit" class="btn btn--primary">Predecir resultado</button>
+      </form>
+    </section>
+
+    <section id="result-section" class="panel result" aria-live="polite" hidden>
+      <div class="result__header">
+        <div class="result__teams">
+          <span id="result-home" class="result__team result__team--home"></span>
+          <span class="result__vs">VS</span>
+          <span id="result-away" class="result__team result__team--away"></span>
+        </div>
+        <div id="result-prediction" class="result__prediction"></div>
+      </div>
+
+      <div class="result__grid">
+        <div class="gauge">
+          <svg viewBox="0 0 120 120" class="gauge__svg" aria-hidden="true">
+            <circle class="gauge__track" cx="60" cy="60" r="54"></circle>
+            <circle id="gauge-arc" class="gauge__arc" cx="60" cy="60" r="54"></circle>
+          </svg>
+          <div class="gauge__value">
+            <span id="confidence-value">0%</span>
+            <small>confianza</small>
+          </div>
+        </div>
+
+        <div class="probabilities">
+          <h3 class="probabilities__title">Probabilidades</h3>
+          <div class="bar">
+            <span class="bar__label">Local</span>
+            <div class="bar__track"><div id="bar-home" class="bar__fill bar__fill--home"></div></div>
+            <span id="prob-home" class="bar__value">0%</span>
+          </div>
+          <div class="bar">
+            <span class="bar__label">Empate</span>
+            <div class="bar__track"><div id="bar-draw" class="bar__fill bar__fill--draw"></div></div>
+            <span id="prob-draw" class="bar__value">0%</span>
+          </div>
+          <div class="bar">
+            <span class="bar__label">Visitante</span>
+            <div class="bar__track"><div id="bar-away" class="bar__fill bar__fill--away"></div></div>
+            <span id="prob-away" class="bar__value">0%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="factors">
+        <h3 class="factors__title">Factores considerados</h3>
+        <ul id="factors-list" class="factors__list"></ul>
+      </div>
+    </section>
+
+    <section class="panel history" aria-labelledby="history-title">
+      <div class="history__header">
+        <h2 id="history-title" class="panel__title">Historial</h2>
+        <button id="clear-history" type="button" class="btn btn--ghost">Limpiar</button>
+      </div>
+      <ul id="history-list" class="history__list"></ul>
+      <p id="history-empty" class="history__empty">Aún no hay predicciones. Empieza seleccionando un partido.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>LaLiga Predictor · Predicción basada en histórico real de LaLiga</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

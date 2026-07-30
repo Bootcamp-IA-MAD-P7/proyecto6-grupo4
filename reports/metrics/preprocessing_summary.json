@@ -1,0 +1,109 @@
+{
+  "pipeline_version": "laliga_preprocessing_v2",
+  "join": {
+    "type": "vertical_union_with_overlap_precedence",
+    "key": [
+      "normalized_match_date",
+      "trimmed_home_team",
+      "trimmed_away_team"
+    ],
+    "why": "Las fuentes describen la misma unidad (partido) con esquemas distintos. Una unión vertical preserva el histórico; para las claves repetidas se conserva la fila detallada porque contiene todas las variables del histórico más estadísticas y promedios de mercado.",
+    "overlap_rows": 100,
+    "historical_overlap_rows_discarded": 100,
+    "detailed_rows_prioritized": 100
+  },
+  "source_cleaning": {
+    "LaLiga_Matches.csv": {
+      "input": {
+        "filename": "LaLiga_Matches.csv",
+        "rows": 11664,
+        "columns": 10,
+        "exact_duplicate_rows": 0,
+        "columns_with_missing": 3,
+        "missing_cells": 6
+      },
+      "exact_duplicate_rows_removed": 0,
+      "invalid_rows_removed": 0,
+      "invalid_breakdown_before_union": {
+        "invalid_date": 0,
+        "missing_critical": 0,
+        "blank_team": 0,
+        "invalid_target": 0,
+        "same_team": 0,
+        "negative_goals": 0,
+        "result_goal_inconsistency": 0
+      },
+      "duplicate_match_keys_removed": 0,
+      "season_mismatches_against_derived": 437,
+      "rows_after_source_cleaning": 11664
+    },
+    "laliga_2025_2026_stats.csv": {
+      "input": {
+        "filename": "laliga_2025_2026_stats.csv",
+        "rows": 380,
+        "columns": 131,
+        "exact_duplicate_rows": 0,
+        "columns_with_missing": 65,
+        "missing_cells": 4295
+      },
+      "exact_duplicate_rows_removed": 0,
+      "invalid_rows_removed": 0,
+      "invalid_breakdown_before_union": {
+        "invalid_date": 0,
+        "missing_critical": 0,
+        "blank_team": 0,
+        "invalid_target": 0,
+        "same_team": 0,
+        "negative_goals": 0,
+        "result_goal_inconsistency": 0
+      },
+      "duplicate_match_keys_removed": 0,
+      "season_mismatches_against_derived": 0,
+      "rows_after_source_cleaning": 380
+    }
+  },
+  "column_policy_summary": {
+    "historical_input_columns": 10,
+    "detailed_input_columns": 131,
+    "detailed_columns_kept": 39,
+    "detailed_columns_dropped": 92,
+    "canonical_columns": 54
+  },
+  "null_policy": {
+    "critical_fields": [
+      "Date",
+      "HomeTeam",
+      "AwayTeam",
+      "FTHG",
+      "FTAG",
+      "FTR"
+    ],
+    "critical_rule": "remove_row_if_missing_or_invalid",
+    "optional_half_time_rule": "retain_missing; these fields are post-event and excluded from pre-match modeling",
+    "historical_detailed_block_rule": "retain_as_null; absence is structural and is not imputed"
+  },
+  "output": {
+    "rows": 11944,
+    "columns": 54,
+    "season_count": 31,
+    "date_min": "1995-09-02",
+    "date_max": "2026-05-24",
+    "duplicate_rows": 0,
+    "duplicate_match_ids": 0,
+    "missing_target": 0,
+    "missing_half_time_rows": 2,
+    "full_time_result_inconsistencies": 0,
+    "invalid_target_values": [],
+    "same_team_rows": 0,
+    "negative_goal_rows": 0,
+    "detailed_rows": 380,
+    "source_coverage": {
+      "historical_only": 11564,
+      "detailed_only": 280,
+      "both_sources": 100
+    },
+    "path": "data/processed/laliga_matches_clean.csv",
+    "bytes": 2105717,
+    "sha256": "56e59efa9200042f76638beafd47feaf67a41a28c00c02aa521192739a607104"
+  }
+}

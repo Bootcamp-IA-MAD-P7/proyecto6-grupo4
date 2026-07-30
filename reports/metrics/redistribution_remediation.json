@@ -1,0 +1,18 @@
+{
+  "task": "T-0.2b",
+  "recorded_at": "2026-07-24",
+  "decision": "documented_redistribution_policy_approved",
+  "license_assessment": "No open license was identified for either source; this is recorded as provenance context and does not block T-0.2b.",
+  "repository_remediation": {
+    "status": "completed_csv_retained_for_reproducible_execution",
+    "retained_paths": [
+      "data/raw/LaLiga_Matches.csv",
+      "data/raw/laliga_2025_2026_stats.csv",
+      "data/processed/LaLiga_EDA_preparado.csv",
+      "data/processed/laliga_matches_clean.csv"
+    ],
+    "public_repository_requirement": "Retain source attribution, source URL, consultation date, and the documented provenance record."
+  },
+  "remaining_gate_requirements": [],
+  "task_status": "completed"
+}

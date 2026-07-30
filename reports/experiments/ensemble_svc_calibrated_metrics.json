@@ -1,0 +1,72 @@
+{
+  "component_id": "D_CAL",
+  "member": "I4",
+  "purpose": "probability_component_for_ensemble",
+  "algorithm": "SVC RBF + explicit temperature calibration",
+  "model_version": "ensemble_svc_rbf_calibrated_v1",
+  "seed": 42,
+  "calibration": {
+    "method": "temperature",
+    "cv": "StratifiedKFold",
+    "n_splits": 5,
+    "ensemble": false
+  },
+  "base_svc": {
+    "kernel": "rbf",
+    "C": 0.5,
+    "gamma": "scale",
+    "probability": false,
+    "class_weight": "balanced"
+  },
+  "feature_generator_version": "historical_features_v1",
+  "data_version_sha256": "6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c",
+  "features_sha256": "563634a73e265ab71f4d1b3795d1245eedf33a82c26328a61e99d16d8f8d2c81",
+  "split_manifest_reference": "reports/metrics/split_manifest.json",
+  "feature_columns": [
+    "home_team",
+    "away_team",
+    "home_matches_played",
+    "away_matches_played",
+    "home_points_per_match_5",
+    "away_points_per_match_5",
+    "home_goals_for_per_match_5",
+    "away_goals_for_per_match_5",
+    "home_goals_against_per_match_5",
+    "away_goals_against_per_match_5",
+    "home_win_rate_5",
+    "away_win_rate_5",
+    "home_elo_pre_match",
+    "away_elo_pre_match",
+    "elo_difference_home",
+    "home_days_since_last_match",
+    "away_days_since_last_match"
+  ],
+  "rows": {
+    "train": 9607,
+    "validation": 1197,
+    "test_used": 0
+  },
+  "train": {
+    "macro_f1": 0.4924223311705944,
+    "accuracy": 0.5008847715207662,
+    "balanced_accuracy": 0.5020415576826576,
+    "log_loss": 1.0447755102675638,
+    "multiclass_brier": 0.6296438547538415,
+    "top_label_ece_10_bins": 0.0736690587926096,
+    "probability_sum_max_abs_error": 2.220446049250313e-16
+  },
+  "validation": {
+    "macro_f1": 0.4848588228891235,
+    "accuracy": 0.49707602339181284,
+    "balanced_accuracy": 0.49023102978193744,
+    "log_loss": 1.0515315594467083,
+    "multiclass_brier": 0.6340724082089997,
+    "top_label_ece_10_bins": 0.07010372361133217,
+    "probability_sum_max_abs_error": 2.220446049250313e-16
+  },
+  "overfitting_gap_macro_f1": 0.007563508281470899,
+  "training_time_seconds": 63.77218009997159,
+  "inference_time_ms_per_row": 2.189862405987878,
+  "artifact_path": "models/ensemble/ensemble_svc_rbf_calibrated_v1.joblib",
+  "test_protection": "El calibrador recibe solo train; validation se usa para medir y test_used es 0."
+}

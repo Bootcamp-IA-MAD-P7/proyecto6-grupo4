@@ -1,0 +1,49 @@
+{
+  "LaLiga_Matches.csv": {
+    "source_name": "La Liga Complete Dataset",
+    "publisher": "Kishan Kumar (Kaggle)",
+    "source_page_url": "https://www.kaggle.com/datasets/kishan305/la-liga-results-19952020",
+    "upstream_source_url": "https://www.football-data.co.uk/data.php",
+    "acquisition": "Descarga manual del CSV consolidado publicado en Kaggle.",
+    "license": "Data files © Original Authors (según la ficha de Kaggle).",
+    "license_evidence_url": "https://www.kaggle.com/datasets/kishan305/la-liga-results-19952020",
+    "license_checked_at": "2026-07-23",
+    "license_status": "no_open_license_public_redistribution_not_demonstrated",
+    "open_license_identifier": null,
+    "usage_assessment": "El uso analítico para predicción de partidos es compatible con la finalidad declarada por la fuente aguas arriba, pero la ficha no concede una licencia abierta ni permiso explícito de redistribución.",
+    "redistribution_status": "not_authorized_without_explicit_permission",
+    "repository_policy": "public_repository_team_accepted_risk",
+    "team_risk_acceptance": {
+      "status": "ratified",
+      "ratified_at": "2026-07-24",
+      "reference": ".specify/4_tasks.md T-0.2b (daily 2026-07-24)",
+      "reaffirmed_at": "2026-07-30",
+      "rationale": "El equipo acepta explicitamente el riesgo de mantener los CSV (crudos y derivados) publicos en el repositorio de GitHub pese a no contar con una licencia abierta confirmada de la fuente. Esta ratificacion documenta la decision del equipo, no una autorizacion del proveedor de datos."
+    },
+    "provenance_confidence": "confirmed_by_filename_schema_and_dataset_card"
+  },
+  "laliga_2025_2026_stats.csv": {
+    "source_name": "Football-Data Spain La Liga 2025/2026 (SP1.csv)",
+    "publisher": "Football-Data.co.uk",
+    "source_page_url": "https://www.football-data.co.uk/data.php",
+    "direct_download_url": "https://www.football-data.co.uk/mmz4281/2526/SP1.csv",
+    "column_notes_url": "https://www.football-data.co.uk/notes.txt",
+    "acquisition": "Descarga del CSV SP1 de la temporada 2025/2026 y renombrado local. La copia raw corresponde a una instantánea anterior a la versión actualmente publicada.",
+    "license": "Football-Data ofrece acceso gratuito y declara los datos para predicción de partidos de liga; no publica una licencia abierta ni un permiso explícito de redistribución.",
+    "license_evidence_url": "https://www.football-data.co.uk/data.php",
+    "license_checked_at": "2026-07-23",
+    "license_status": "no_open_license_public_redistribution_not_demonstrated",
+    "open_license_identifier": null,
+    "usage_assessment": "El proyecto de predicción prepartido encaja con la finalidad publicada. Esto no equivale a autorización para republicar los archivos.",
+    "redistribution_status": "not_authorized_without_explicit_permission",
+    "repository_policy": "public_repository_team_accepted_risk",
+    "team_risk_acceptance": {
+      "status": "ratified",
+      "ratified_at": "2026-07-24",
+      "reference": ".specify/4_tasks.md T-0.2b (daily 2026-07-24)",
+      "reaffirmed_at": "2026-07-30",
+      "rationale": "El equipo acepta explicitamente el riesgo de mantener los CSV (crudos y derivados) publicos en el repositorio de GitHub pese a no contar con una licencia abierta confirmada de la fuente. Esta ratificacion documenta la decision del equipo, no una autorizacion del proveedor de datos."
+    },
+    "provenance_confidence": "confirmed_by_url_schema_season_and_380_match_rows"
+  }
+}
