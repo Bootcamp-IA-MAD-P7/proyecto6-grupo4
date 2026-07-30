@@ -21,6 +21,8 @@ services:
       dockerfile: docker/backend.Dockerfile
     environment:
       DATABASE_URL: postgresql+psycopg://laliga:laliga@postgres:5432/laliga
+      AUTH_SECRET_KEY: local-dev-secret-key-change-in-production
+      CORS_ORIGINS: http://localhost:5173,http://localhost:8000
       PORT: "8000"
     ports:
       - "8000:8000"

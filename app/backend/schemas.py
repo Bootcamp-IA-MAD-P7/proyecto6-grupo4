@@ -62,6 +62,8 @@ class FeedbackRequest(BaseModel):
     def different_teams(self):
         if self.home_team.casefold() == self.away_team.casefold():
             raise ValueError("Los equipos local y visitante deben ser distintos.")
+        if self.match_date > date.today():
+            raise ValueError("La fecha del partido no puede ser futura.")
         return self
 
 

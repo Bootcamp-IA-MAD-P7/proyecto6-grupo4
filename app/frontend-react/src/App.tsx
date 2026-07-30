@@ -21,7 +21,7 @@ function AppShell() {
 
   useEffect(() => {
     const controller = new AbortController();
-    apiFetch<{ items: Fixture[] }>("/api/v1/fixtures?days=30")
+    apiFetch<{ items: Fixture[] }>("/api/v1/fixtures?days=30", { signal: controller.signal })
       .then((payload) => {
         if (!controller.signal.aborted) setFixtures(payload.items);
       })

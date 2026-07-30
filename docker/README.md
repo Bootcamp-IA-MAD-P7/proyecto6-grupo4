@@ -4,7 +4,7 @@
 
 `docker/backend.Dockerfile` **no reentrena nada** durante el build. Descarga
 `laliga_champion_v1.joblib` desde el release público
-`model-ensemble-abcd-soft-voting-v1-38fee61a` y comprueba su SHA-256 antes de
+`model-ensemble-abcd-soft-voting-v1-f9c0e933` y comprueba su SHA-256 antes de
 continuar.
 El binario permanece fuera del historial Git, pero un clon limpio puede
 construir una imagen reproducible.

@@ -39,7 +39,7 @@ class FeedbackValidationError(ValueError):
 
 
 @dataclass(frozen=True)
-class FeedbackRecord:
+class FeedbackCSVRecord:
     home_team: str
     away_team: str
     match_date: date
@@ -51,7 +51,7 @@ class FeedbackRecord:
     feedback_id: str | None = None
     received_at: str | None = None
 
-    def validated(self) -> "FeedbackRecord":
+    def validated(self) -> "FeedbackCSVRecord":
         errors: list[str] = []
         if not self.home_team or not self.home_team.strip():
             errors.append("home_team no puede estar vacío.")
@@ -67,7 +67,7 @@ class FeedbackRecord:
             errors.append("comment no puede superar 500 caracteres.")
         if errors:
             raise FeedbackValidationError("; ".join(errors))
-        return FeedbackRecord(
+        return FeedbackCSVRecord(
             home_team=self.home_team.strip(),
             away_team=self.away_team.strip(),
             match_date=self.match_date,
@@ -86,7 +86,7 @@ class FeedbackRecord:
         return {key: ("" if row[key] is None else str(row[key])) for key in FEEDBACK_FIELDS}
 
 
-def append_feedback(record: FeedbackRecord, path: str | Path) -> FeedbackRecord:
+def append_feedback(record: FeedbackCSVRecord, path: str | Path) -> FeedbackCSVRecord:
     """Valida y añade una fila; nunca sobrescribe filas existentes."""
 
     validated = record.validated()

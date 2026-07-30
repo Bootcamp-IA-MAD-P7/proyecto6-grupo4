@@ -38,7 +38,7 @@ from app.backend.schemas import (
 from src.auth.errors import AuthError
 from src.auth.security import hash_password, verify_password
 from src.auth.tokens import create_access_token, create_refresh_token, decode_access_token
-from src.feedback.store import FeedbackRecord, FeedbackValidationError, append_feedback
+from src.feedback.store import FeedbackCSVRecord, FeedbackValidationError, append_feedback
 from src.inference.champion import ChampionPredictor, InferenceError
 from src.persistence.db import init_schema, session_scope
 from src.persistence import repository as persistence_repository
@@ -74,6 +74,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         get_predictor()
     except Exception:
         logger.exception("El Champion no superó la validación de arranque.")
+    _purge_stale_rate_limits()
     yield
 
 
@@ -92,6 +93,13 @@ def _check_rate_limit(ip: str) -> bool:
         return False
     _rate_limit_store[ip].append(now)
     return True
+
+
+def _purge_stale_rate_limits() -> None:
+    now = time.time()
+    stale = [ip for ip, timestamps in _rate_limit_store.items() if not timestamps or now - timestamps[-1] > RATE_LIMIT_WINDOW * 2]
+    for ip in stale:
+        del _rate_limit_store[ip]
 
 
 app = FastAPI(title="LaLiga Prediction API", version="0.1.0", lifespan=lifespan)
@@ -138,7 +146,10 @@ async def request_id_size_limit_and_logging(request: Request, call_next):
 
 def _log_request(request: Request, status_code: int, started: float) -> None:
     latency_ms = (perf_counter() - started) * 1000
-    model_version = _predictor.metadata.get("champion_model_version") if _predictor else None
+    try:
+        model_version = get_predictor().metadata.get("champion_model_version")
+    except Exception:
+        model_version = None
     logger.info(
         "request_id=%s method=%s path=%s status=%s latency_ms=%.2f model_version=%s",
         request.state.request_id, request.method, request.url.path, status_code, latency_ms, model_version,
@@ -196,7 +207,7 @@ def health_check():
     }
 
 
-@app.post("/api/v1/auth/register", response_model=AuthResponse, responses={409: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
+@app.post("/api/v1/auth/register", response_model=AuthResponse, responses={409: {"model": ErrorResponse}, 429: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
 def register(payload: RegisterRequest, request: Request):
     request_id = request.state.request_id
     ip = request.client.host if request.client else "unknown"
@@ -226,7 +237,7 @@ def register(payload: RegisterRequest, request: Request):
     return AuthResponse(access_token=token, refresh_token=refresh, user=UserSummary(id=user_id, email=user_email, first_name=first_name, last_name=last_name))
 
 
-@app.post("/api/v1/auth/login", response_model=AuthResponse, responses={401: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
+@app.post("/api/v1/auth/login", response_model=AuthResponse, responses={401: {"model": ErrorResponse}, 429: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
 def login(payload: LoginRequest, request: Request):
     request_id = request.state.request_id
     ip = request.client.host if request.client else "unknown"
@@ -315,12 +326,14 @@ def create_prediction(payload: PredictionRequest, request: Request, current_user
     latency_ms = (perf_counter() - started) * 1000
     model_version = get_predictor().metadata["champion_model_version"]
     data_version = get_predictor().metadata["source_data_sha256"]
+    no_history = result.pop("no_history", False)
+    message = "Equipo(s) recién ascendido(s) sin histórico suficiente. Probabilidades por defecto." if no_history else "Estimación probabilística basada únicamente en el histórico anterior."
     _persist_prediction_best_effort(
         request_id=request_id, user_id=current_user.id, home_team=payload.home_team, away_team=payload.away_team, match_date=payload.match_date,
         prediction=result["prediction"], probability_h=result["H"], probability_d=result["D"], probability_a=result["A"],
         model_version=model_version, data_version=data_version, latency_ms=latency_ms,
     )
-    return PredictionResponse(request_id=request_id, prediction=result["prediction"], probabilities={"H": result["H"], "D": result["D"], "A": result["A"]}, model_version=model_version, data_version=data_version, latency_ms=latency_ms, message="Estimación probabilística basada únicamente en el histórico anterior.")
+    return PredictionResponse(request_id=request_id, prediction=result["prediction"], probabilities={"H": result["H"], "D": result["D"], "A": result["A"]}, model_version=model_version, data_version=data_version, latency_ms=latency_ms, message=message)
 
 
 @app.post("/api/v1/feedback", response_model=FeedbackResponse, responses={401: {"model": ErrorResponse}, 422: {"model": ErrorResponse}})
@@ -328,7 +341,7 @@ def create_feedback(payload: FeedbackRequest, request: Request, current_user: Au
     request_id = request.state.request_id
     try:
         stored = append_feedback(
-            FeedbackRecord(
+            FeedbackCSVRecord(
                 home_team=payload.home_team,
                 away_team=payload.away_team,
                 match_date=payload.match_date,
@@ -342,6 +355,9 @@ def create_feedback(payload: FeedbackRequest, request: Request, current_user: Au
         )
     except FeedbackValidationError as exc:
         return _error(request_id, "INVALID_FEEDBACK", str(exc))
+    except Exception:
+        logger.exception("No se pudo procesar el feedback.")
+        return _error(request_id, "FEEDBACK_UNAVAILABLE", "No se pudo registrar el feedback. Intenta de nuevo.", status_code=503)
     _persist_feedback_best_effort(
         feedback_id=stored.feedback_id, home_team=stored.home_team, away_team=stored.away_team, match_date=stored.match_date,
         actual_result=stored.actual_result, predicted_result=stored.predicted_result, model_version=stored.model_version,

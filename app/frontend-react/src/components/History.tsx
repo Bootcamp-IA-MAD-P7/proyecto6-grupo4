@@ -20,7 +20,7 @@ export function History({ refreshToken }: HistoryProps) {
     }
     const controller = new AbortController();
     setLoading(true);
-    apiFetch<{ items: HistoryItem[] }>("/api/v1/history")
+    apiFetch<{ items: HistoryItem[] }>("/api/v1/history", { signal: controller.signal })
       .then((payload) => {
         if (!controller.signal.aborted) setItems(payload.items);
       })

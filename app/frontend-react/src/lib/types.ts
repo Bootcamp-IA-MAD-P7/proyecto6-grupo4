@@ -31,6 +31,7 @@ export interface PredictionResult {
   data_version: string;
   latency_ms: number;
   message: string;
+  no_history?: boolean;
 }
 
 export interface HistoryItem {
@@ -57,11 +58,4 @@ export interface AuthResponse {
   refresh_token: string;
   token_type: string;
   user: User;
-}
-
-export interface ApiError {
-  status: "error";
-  error: string;
-  message: string;
-  details: { field: string | null; reason: string }[];
 }

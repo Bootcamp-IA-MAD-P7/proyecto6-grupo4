@@ -47,10 +47,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
       try {
-        await apiFetch<{ items: unknown[] }>("/api/v1/history");
+        await apiFetch<{ items: unknown[] }>("/api/v1/history?limit=1");
         setLoading(false);
       } catch {
-        clearToken();
         setUser(null);
         setLoading(false);
       }

@@ -14,7 +14,7 @@ export function setToken(token: string): void {
   localStorage.setItem(TOKEN_KEY, token);
 }
 
-export function getRefreshToken(): string | null {
+function getRefreshToken(): string | null {
   return localStorage.getItem(REFRESH_KEY);
 }
 
@@ -40,9 +40,13 @@ export class ApiRequestError extends Error {
 const MAX_RETRIES = 2;
 const REQUEST_TIMEOUT_MS = 30000;
 
-async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number): Promise<Response> {
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number, externalSignal?: AbortSignal): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
+  if (externalSignal) {
+    if (externalSignal.aborted) controller.abort();
+    else externalSignal.addEventListener("abort", () => controller.abort(), { once: true });
+  }
   try {
     return await fetch(url, { ...init, signal: controller.signal });
   } finally {
@@ -71,8 +75,10 @@ async function tryRefreshToken(): Promise<boolean> {
 
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   let lastError: ApiRequestError | null = null;
+  const externalSignal = options.signal ?? undefined;
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    if (externalSignal?.aborted) throw new ApiRequestError("Solicitud cancelada.", "ABORTED", 0);
     const token = getToken();
     const headers: Record<string, string> = {
       ...((options.headers as Record<string, string>) || {}),
@@ -85,6 +91,7 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
         `${API_ORIGIN}${path}`,
         { ...options, headers },
         REQUEST_TIMEOUT_MS,
+        externalSignal,
       );
       const payload = await response.json().catch(() => ({}));
 

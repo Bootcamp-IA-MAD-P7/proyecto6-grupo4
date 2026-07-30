@@ -64,10 +64,6 @@ export function PredictionPanel({ fixture, onRequireAuth, onPredicted }: Predict
     setError(null);
     if (!fixture) return;
     if (!isAuthenticated) return;
-    if (!fixture.has_history) {
-      setError("Este partido incluye un equipo recién ascendido: aún no hay histórico suficiente para predecirlo.");
-      return;
-    }
 
     let cancelled = false;
     setLoading(true);
@@ -127,10 +123,15 @@ export function PredictionPanel({ fixture, onRequireAuth, onPredicted }: Predict
 
       {isAuthenticated && result && (
         <div className="prediction-panel__result">
+          {result.no_history && (
+            <div className="prediction-panel__no-history">
+              <p><strong>Sin histórico disponible.</strong> Este equipo fue recién ascendido a Primera División y aún no posee datos suficientes para generar una predicción fiable. Se muestran probabilidades por defecto.</p>
+            </div>
+          )}
           <div className="prediction-panel__badge">{OUTCOME_LABEL[result.prediction]}</div>
 
           <div className="prediction-panel__content">
-            <ConfidenceRing value={Math.round(Math.max(result.probabilities.H, result.probabilities.D, result.probabilities.A) * 100)} />
+            <ConfidenceRing value={Math.min(100, Math.round(Math.max(result.probabilities.H, result.probabilities.D, result.probabilities.A) * 100))} />
 
             <div className="prediction-panel__probabilities">
               <h3 className="prediction-panel__prob-title">Probabilidades</h3>
