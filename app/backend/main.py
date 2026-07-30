@@ -21,6 +21,13 @@ from src.persistence import repository as persistence_repository
 
 
 logger = logging.getLogger("laliga.backend")
+logger.setLevel(logging.INFO)
+if not logging.getLogger().handlers:
+    # Sin esto, logger.info() queda silenciado por el "handler of last
+    # resort" de Python (que solo muestra WARNING+): el log estructurado
+    # por peticion (request_id/ruta/estado/latencia) nunca se veria.
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+
 ROOT = Path(__file__).resolve().parents[2]
 FEEDBACK_PATH = ROOT / "data/feedback/predictions_feedback.csv"
 _predictor: ChampionPredictor | None = None

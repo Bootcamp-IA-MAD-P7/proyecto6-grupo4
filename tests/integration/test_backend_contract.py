@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import subprocess
+import sys
+from pathlib import Path
+
 from fastapi.testclient import TestClient
 
 from app.backend.main import app
@@ -66,6 +70,28 @@ def test_predictions_endpoint_returns_400_for_malformed_json() -> None:
     )
     assert response.status_code == 400
     assert response.json()["error"] == "MALFORMED_JSON"
+
+
+def test_module_import_configures_logging_so_info_level_actually_prints() -> None:
+    # Regresion real: logger.info() sin logging.basicConfig() queda
+    # silenciado por el "handler of last resort" de Python (solo WARNING+),
+    # asi que el log estructurado exigido por RNF-06 nunca aparecia en un
+    # proceso real (uvicorn/Docker). pytest's caplog NO detecta este bug
+    # porque instala su propio handler en el root logger independientemente
+    # de que basicConfig se haya llamado o no; por eso esta prueba lanza un
+    # proceso Python nuevo, igual que correria uvicorn en produccion.
+    probe = (
+        "import app.backend.main\n"
+        "import logging\n"
+        "logging.getLogger('laliga.backend').info('request_id=probe123 method=GET path=/probe status=200')\n"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", probe],
+        cwd=str(Path(__file__).resolve().parents[2]),
+        capture_output=True, text=True, timeout=60,
+    )
+    combined = result.stdout + result.stderr
+    assert "request_id=probe123" in combined, f"log no emitido en un proceso real; salida={combined!r}"
 
 
 def test_predictions_response_request_id_matches_error_envelope_shape() -> None:
