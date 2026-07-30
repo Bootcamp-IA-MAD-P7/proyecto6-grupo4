@@ -1,6 +1,6 @@
 # Tabla de experimentos (T-2.5)
 
-Tabla consolidada tras `Data Ready`. Las cuatro filas comparten datos, features y splits; el Champion D y su evaluación final constan en `champion_metadata.json`.
+Tabla consolidada tras `Data Ready`. Las cuatro filas comparten datos, features y splits; el Champion vigente es el ensemble `ENSEMBLE_ABCD` (no un candidato individual) y su evaluación final consta en `champion_metadata.json`.
 
 ## Columnas de `experiments_table.csv`
 
