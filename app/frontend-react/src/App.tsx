@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AuthModal } from "./components/AuthModal";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
+import { InfoPanel } from "./components/InfoPanel";
 import { PredictionPanel } from "./components/PredictionPanel";
 import { Sidebar } from "./components/Sidebar";
 import { UpcomingMatches } from "./components/UpcomingMatches";
@@ -61,6 +62,7 @@ function AppShell() {
       </footer>
 
       {authModal && <AuthModal mode={authModal} onClose={() => setAuthModal(null)} onSwitchMode={setAuthModal} />}
+      <InfoPanel />
     </div>
   );
 }

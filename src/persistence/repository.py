@@ -10,8 +10,24 @@ from sqlalchemy.orm import Session
 from src.persistence.models import FeedbackRecord, PredictionRecord, UserRecord
 
 
-def create_user(session: Session, *, email: str, password_hash: str) -> UserRecord:
-    record = UserRecord(email=email, password_hash=password_hash)
+def create_user(
+    session: Session,
+    *,
+    email: str,
+    password_hash: str,
+    first_name: str,
+    last_name: str,
+    birth_date: date,
+    phone: str,
+) -> UserRecord:
+    record = UserRecord(
+        email=email,
+        password_hash=password_hash,
+        first_name=first_name,
+        last_name=last_name,
+        birth_date=birth_date,
+        phone=phone,
+    )
     session.add(record)
     session.flush()
     return record
