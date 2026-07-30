@@ -21,4 +21,7 @@ export const FALLBACK_TEAMS: Team[] = [
   { label: "RCD Espanyol", value: "Espanol" },
   { label: "Elche CF", value: "Elche" },
   { label: "Levante UD", value: "Levante" },
+  { label: "RC Deportivo", value: "Deportivo" },
+  { label: "Málaga CF", value: "Malaga" },
+  { label: "Racing de Santander", value: "Racing Santander" },
 ];

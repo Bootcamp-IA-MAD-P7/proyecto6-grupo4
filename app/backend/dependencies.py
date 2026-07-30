@@ -22,9 +22,9 @@ def require_current_user(request: Request) -> AuthenticatedUser:
     """Extrae y valida el `Authorization: Bearer <token>`; exige sesión activa."""
 
     header = request.headers.get("authorization", "")
-    if not header.startswith("Bearer "):
+    if not header.lower().startswith("bearer "):
         raise AuthError("UNAUTHORIZED", "Inicia sesión para usar esta función.", 401)
-    token = header.removeprefix("Bearer ").strip()
+    token = header[7:].strip()
     if not token:
         raise AuthError("UNAUTHORIZED", "Inicia sesión para usar esta función.", 401)
 

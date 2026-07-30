@@ -29,7 +29,7 @@ export function Header({ onOpenAuth }: HeaderProps) {
         {isAuthenticated ? (
           <>
             <span className="topbar__user">
-              Hola, {user?.first_name} 👋
+              Hola, {user?.first_name} <span aria-hidden="true">👋</span>
             </span>
             <button type="button" className="btn btn--ghost" onClick={logout}>
               Cerrar sesión

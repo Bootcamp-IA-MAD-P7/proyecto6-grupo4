@@ -1,6 +1,13 @@
-# T-5.4: imagen desplegable del backend y frontend. El Champion se descarga
-# desde un release público versionado y se verifica antes de copiar el código.
-FROM python:3.13-slim
+# Stage 1: Build React frontend
+FROM node:20-slim AS frontend-builder
+WORKDIR /build
+COPY app/frontend-react/package.json app/frontend-react/package-lock.json ./
+RUN npm ci
+COPY app/frontend-react/ ./
+RUN npm run build
+
+# Stage 2: Backend + frontend estático
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -14,8 +21,9 @@ RUN mkdir -p models/champion && \
 
 COPY src ./src
 COPY app/backend ./app/backend
-COPY app/frontend-react/dist ./app/frontend-react/dist
+COPY --from=frontend-builder /build/dist ./app/frontend-react/dist
 COPY data/processed/laliga_matches_clean.csv ./data/processed/laliga_matches_clean.csv
+COPY data/fixtures ./data/fixtures
 COPY reports/experiments/champion_metadata.json ./reports/experiments/champion_metadata.json
 
 EXPOSE 10000

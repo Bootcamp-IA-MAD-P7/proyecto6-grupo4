@@ -1,13 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { apiFetch } from "../lib/api";
+import { OUTCOME_LABEL } from "../lib/constants";
 import type { HistoryItem } from "../lib/types";
-
-const OUTCOME_LABEL: Record<string, string> = { H: "Victoria local", D: "Empate", A: "Victoria visitante" };
-
-export interface HistoryHandle {
-  refresh: () => void;
-}
 
 interface HistoryProps {
   refreshToken: number;
@@ -23,11 +18,19 @@ export function History({ refreshToken }: HistoryProps) {
       setItems([]);
       return;
     }
+    const controller = new AbortController();
     setLoading(true);
-    apiFetch<{ items: HistoryItem[] }>("/api/v1/history")
-      .then((payload) => setItems(payload.items.slice(0, 20)))
-      .catch(() => setItems([]))
-      .finally(() => setLoading(false));
+    apiFetch<{ items: HistoryItem[] }>("/api/v1/history", { signal: controller.signal })
+      .then((payload) => {
+        if (!controller.signal.aborted) setItems(payload.items);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setItems([]);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+    return () => controller.abort();
   }, [isAuthenticated, refreshToken]);
 
   return (
@@ -40,14 +43,14 @@ export function History({ refreshToken }: HistoryProps) {
       {isAuthenticated && !loading && items.length === 0 && (
         <p className="upcoming__hint">Aún no hay predicciones. Empieza seleccionando un partido.</p>
       )}
-      <ul className="history-list">
+      <ul className="history-list" aria-label="Historial de predicciones">
         {items.map((item) => (
           <li key={item.request_id} className="history-list__item">
             <div>
               <strong>{item.home_team}</strong> vs <strong>{item.away_team}</strong>
               <br />
               <small>
-                {item.match_date.split("-").reverse().join("/")} · {OUTCOME_LABEL[item.prediction]}
+                {item.match_date.split("-").reverse().join("/")} · {OUTCOME_LABEL[item.prediction as keyof typeof OUTCOME_LABEL]}
               </small>
             </div>
             <span className="bar__value">

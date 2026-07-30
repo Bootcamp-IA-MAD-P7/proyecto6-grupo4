@@ -33,8 +33,24 @@
   }
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+}
+
+:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 body {
@@ -167,7 +183,7 @@ button {
 }
 
 .btn--ghost {
-  background: var(--spain-red);
+  background: transparent;
   color: #fff;
   border: 1px solid var(--spain-red);
 }
@@ -319,6 +335,10 @@ button {
   flex: 1;
 }
 
+.match-card__team--away {
+  text-align: right;
+}
+
 .match-card__team small {
   font-weight: 500;
   color: var(--muted);
@@ -436,6 +456,25 @@ button {
   color: var(--muted);
   font-size: 0.8rem;
   margin: 0.6rem 0 0;
+}
+
+.prediction-panel__no-history {
+  background: rgba(241, 191, 0, 0.12);
+  border: 1px solid rgba(241, 191, 0, 0.3);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.prediction-panel__no-history p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.prediction-panel__no-history strong {
+  color: #8a6d00;
 }
 
 /* --- Confidence ring --- */

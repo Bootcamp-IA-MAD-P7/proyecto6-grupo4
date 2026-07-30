@@ -15,6 +15,7 @@ StaticPool fuerza que todos los hilos compartan la misma conexión/base.
 
 from __future__ import annotations
 
+import logging
 import os
 from contextlib import contextmanager
 
@@ -23,6 +24,8 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from src.persistence.models import Base
+
+logger = logging.getLogger("laliga.db")
 
 DEFAULT_LOCAL_DATABASE_URL = "postgresql+psycopg://laliga:laliga@localhost:5432/laliga"
 _engine: Engine | None = None
@@ -77,6 +80,10 @@ def _ensure_predictions_user_id_column(engine: Engine) -> None:
         return
     with engine.begin() as connection:
         connection.execute(text("ALTER TABLE predictions ADD COLUMN user_id VARCHAR(36)"))
+        try:
+            connection.execute(text("ALTER TABLE predictions ADD CONSTRAINT fk_predictions_user_id FOREIGN KEY (user_id) REFERENCES users(id)"))
+        except Exception:
+            pass  # Constraint may already exist
 
 
 def get_session_factory() -> sessionmaker[Session]:
@@ -93,7 +100,10 @@ def session_scope():
         yield session
         session.commit()
     except Exception:
-        session.rollback()
+        try:
+            session.rollback()
+        except Exception:
+            logger.exception("Error durante rollback de sesión")
         raise
     finally:
         session.close()

@@ -4,7 +4,7 @@
 
 `docker/backend.Dockerfile` **no reentrena nada** durante el build. Descarga
 `laliga_champion_v1.joblib` desde el release público
-`model-ensemble-abcd-soft-voting-v1-38fee61a` y comprueba su SHA-256 antes de
+`model-ensemble-abcd-soft-voting-v1-f9c0e933` y comprueba su SHA-256 antes de
 continuar.
 El binario permanece fuera del historial Git, pero un clon limpio puede
 construir una imagen reproducible.
@@ -23,7 +23,7 @@ docker compose up --build
 - Postgres: `localhost:5432` (usuario/clave/base `laliga`; ver `docker-compose.yml`).
 
 `docker-compose.yml` ya no levanta un servicio `frontend` con nginx aparte:
-`docker/backend.Dockerfile` monta `app/frontend/public` como estáticos dentro
+`docker/backend.Dockerfile` monta `app/frontend-react/dist` como estáticos dentro
 de la misma app FastAPI (ver `app/backend/main.py`), tal cual se despliega en
 Render. Antes había dos formas de servir el frontend en local (nginx en 5173
 y el backend en 8000 simultáneamente) sin ninguna razón para mantener ambas;

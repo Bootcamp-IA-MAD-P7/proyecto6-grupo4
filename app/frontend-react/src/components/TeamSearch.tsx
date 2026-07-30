@@ -17,13 +17,15 @@ export function TeamSearch({ selectedFixture, onSelectFixture }: TeamSearchProps
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    apiFetch<{ items: Team[] }>("/api/v1/teams")
+    const controller = new AbortController();
+    apiFetch<{ items: Team[] }>("/api/v1/teams", { signal: controller.signal })
       .then((payload) => {
-        if (payload.items.length) setTeams(payload.items);
+        if (!controller.signal.aborted && payload.items.length) setTeams(payload.items);
       })
       .catch(() => {
         /* se mantiene el catálogo de respaldo */
       });
+    return () => controller.abort();
   }, []);
 
   async function handleSearch() {

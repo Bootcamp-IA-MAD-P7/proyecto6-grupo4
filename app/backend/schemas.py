@@ -62,6 +62,8 @@ class FeedbackRequest(BaseModel):
     def different_teams(self):
         if self.home_team.casefold() == self.away_team.casefold():
             raise ValueError("Los equipos local y visitante deben ser distintos.")
+        if self.match_date > date.today():
+            raise ValueError("La fecha del partido no puede ser futura.")
         return self
 
 
@@ -125,6 +127,11 @@ class LoginRequest(BaseModel):
         return value.lower()
 
 
+class RefreshTokenRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    refresh_token: str = Field(min_length=1)
+
+
 class UserSummary(BaseModel):
     id: str
     email: str
@@ -136,6 +143,7 @@ class AuthResponse(BaseModel):
     contract_version: Literal["1.0"] = "1.0"
     status: Literal["ok"] = "ok"
     access_token: str
+    refresh_token: str
     token_type: Literal["bearer"] = "bearer"
     user: UserSummary
 

@@ -10,7 +10,7 @@ interface SidebarProps {
 
 export function Sidebar({ selectedFixture, onSelectFixture, historyRefreshToken }: SidebarProps) {
   return (
-    <aside className="sidebar">
+    <aside className="sidebar" aria-label="Panel lateral">
       <TeamSearch selectedFixture={selectedFixture} onSelectFixture={onSelectFixture} />
       <History refreshToken={historyRefreshToken} />
     </aside>

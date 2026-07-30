@@ -15,7 +15,7 @@ __pycache__/
 .jupyter_runtime/
 .mypy_cache/
 .ruff_cache/
-.coverage
+coverage
 htmlcov/
 
 # Jupyter
@@ -23,6 +23,9 @@ htmlcov/
 
 # Dependencias generadas dentro de carpetas de trabajo
 **/node_modules/
+
+# Build artifacts
+app/frontend-react/dist/
 
 # Editores y sistema operativo
 .idea/

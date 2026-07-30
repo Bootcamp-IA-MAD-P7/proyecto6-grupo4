@@ -83,7 +83,15 @@ class ChampionPredictor:
         feature_table = build_historical_features(pd.concat([minimal, request], ignore_index=True))
         return feature_table.loc[feature_table["match_id"].eq("__inference_request__"), list(MODEL_FEATURES)]
 
+    def has_history(self, home_team: str, away_team: str) -> bool:
+        return home_team in self.teams and away_team in self.teams
+
+    def predict_no_history(self) -> dict[str, float | str]:
+        return {"prediction": "D", "H": 0.0, "D": 1.0, "A": 0.0, "no_history": True}
+
     def predict(self, home_team: str, away_team: str, match_date: date) -> dict[str, float | str]:
+        if not self.has_history(home_team, away_team):
+            return self.predict_no_history()
         row = self.feature_row(home_team, away_team, match_date)
         probabilities = self.pipeline.predict_proba(row)[0]
         by_class = dict(zip(self.pipeline.classes_, probabilities, strict=True))

@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import logging
+import os
+import time
+from collections import defaultdict
 from contextlib import asynccontextmanager
 from datetime import date
 from pathlib import Path
@@ -28,13 +31,14 @@ from app.backend.schemas import (
     PredictionRequest,
     PredictionResponse,
     RegisterRequest,
+    RefreshTokenRequest,
     TeamsResponse,
     UserSummary,
 )
 from src.auth.errors import AuthError
 from src.auth.security import hash_password, verify_password
-from src.auth.tokens import create_access_token
-from src.feedback.store import FeedbackRecord, FeedbackValidationError, append_feedback
+from src.auth.tokens import create_access_token, create_refresh_token, decode_access_token
+from src.feedback.store import FeedbackCSVRecord, FeedbackValidationError, append_feedback
 from src.inference.champion import ChampionPredictor, InferenceError
 from src.persistence.db import init_schema, session_scope
 from src.persistence import repository as persistence_repository
@@ -70,16 +74,40 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         get_predictor()
     except Exception:
         logger.exception("El Champion no superó la validación de arranque.")
+    _purge_stale_rate_limits()
     yield
 
 
 MAX_PAYLOAD_BYTES = 4096
 
+# --- Rate limiter simple (in-memory, por IP) ---
+_rate_limit_store: dict[str, list[float]] = defaultdict(list)
+RATE_LIMIT_WINDOW = 60  # segundos
+RATE_LIMIT_MAX_AUTH = 10  # intentos por ventana
+
+
+def _check_rate_limit(ip: str) -> bool:
+    now = time.time()
+    _rate_limit_store[ip] = [t for t in _rate_limit_store[ip] if now - t < RATE_LIMIT_WINDOW]
+    if len(_rate_limit_store[ip]) >= RATE_LIMIT_MAX_AUTH:
+        return False
+    _rate_limit_store[ip].append(now)
+    return True
+
+
+def _purge_stale_rate_limits() -> None:
+    now = time.time()
+    stale = [ip for ip, timestamps in _rate_limit_store.items() if not timestamps or now - timestamps[-1] > RATE_LIMIT_WINDOW * 2]
+    for ip in stale:
+        del _rate_limit_store[ip]
+
 
 app = FastAPI(title="LaLiga Prediction API", version="0.1.0", lifespan=lifespan)
+
+_cors_origins = os.environ.get("CORS_ORIGINS", "*")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[o.strip() for o in _cors_origins.split(",")],
     allow_methods=["POST", "GET"],
     allow_headers=["Content-Type", "Authorization"],
 )
@@ -118,7 +146,10 @@ async def request_id_size_limit_and_logging(request: Request, call_next):
 
 def _log_request(request: Request, status_code: int, started: float) -> None:
     latency_ms = (perf_counter() - started) * 1000
-    model_version = _predictor.metadata.get("champion_model_version") if _predictor else None
+    try:
+        model_version = get_predictor().metadata.get("champion_model_version")
+    except Exception:
+        model_version = None
     logger.info(
         "request_id=%s method=%s path=%s status=%s latency_ms=%.2f model_version=%s",
         request.state.request_id, request.method, request.url.path, status_code, latency_ms, model_version,
@@ -176,9 +207,12 @@ def health_check():
     }
 
 
-@app.post("/api/v1/auth/register", response_model=AuthResponse, responses={409: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
+@app.post("/api/v1/auth/register", response_model=AuthResponse, responses={409: {"model": ErrorResponse}, 429: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
 def register(payload: RegisterRequest, request: Request):
     request_id = request.state.request_id
+    ip = request.client.host if request.client else "unknown"
+    if not _check_rate_limit(ip):
+        return _error(request_id, "RATE_LIMITED", "Demasiadas peticiones. Espera un momento.", status_code=429)
     try:
         with session_scope() as session:
             if persistence_repository.get_user_by_email(session, email=payload.email) is not None:
@@ -199,12 +233,16 @@ def register(payload: RegisterRequest, request: Request):
         logger.exception("No se pudo registrar el usuario (base de datos no disponible).")
         return _error(request_id, "AUTH_UNAVAILABLE", "No se pudo completar el registro. Intenta de nuevo.", status_code=503)
     token = create_access_token(user_id=user_id, email=user_email)
-    return AuthResponse(access_token=token, user=UserSummary(id=user_id, email=user_email, first_name=first_name, last_name=last_name))
+    refresh = create_refresh_token(user_id=user_id, email=user_email)
+    return AuthResponse(access_token=token, refresh_token=refresh, user=UserSummary(id=user_id, email=user_email, first_name=first_name, last_name=last_name))
 
 
-@app.post("/api/v1/auth/login", response_model=AuthResponse, responses={401: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
+@app.post("/api/v1/auth/login", response_model=AuthResponse, responses={401: {"model": ErrorResponse}, 429: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
 def login(payload: LoginRequest, request: Request):
     request_id = request.state.request_id
+    ip = request.client.host if request.client else "unknown"
+    if not _check_rate_limit(ip):
+        return _error(request_id, "RATE_LIMITED", "Demasiadas peticiones. Espera un momento.", status_code=429)
     try:
         with session_scope() as session:
             user = persistence_repository.get_user_by_email(session, email=payload.email)
@@ -218,15 +256,49 @@ def login(payload: LoginRequest, request: Request):
         logger.exception("No se pudo iniciar sesión (base de datos no disponible).")
         return _error(request_id, "AUTH_UNAVAILABLE", "No se pudo iniciar sesión. Intenta de nuevo.", status_code=503)
     token = create_access_token(user_id=user_id, email=user_email)
-    return AuthResponse(access_token=token, user=UserSummary(id=user_id, email=user_email, first_name=first_name, last_name=last_name))
+    refresh = create_refresh_token(user_id=user_id, email=user_email)
+    return AuthResponse(access_token=token, refresh_token=refresh, user=UserSummary(id=user_id, email=user_email, first_name=first_name, last_name=last_name))
+
+
+@app.post("/api/v1/auth/refresh", response_model=AuthResponse, responses={401: {"model": ErrorResponse}})
+def refresh_token(payload: RefreshTokenRequest, request: Request):
+    request_id = request.state.request_id
+    try:
+        data = decode_access_token(payload.refresh_token)
+    except Exception:
+        return _error(request_id, "UNAUTHORIZED", "El refresh token no es válido o expiró.", status_code=401)
+    if data.get("type") != "refresh":
+        return _error(request_id, "UNAUTHORIZED", "El token no es un refresh token válido.", status_code=401)
+    user_id, email = data["sub"], data["email"]
+    try:
+        with session_scope() as session:
+            user = persistence_repository.get_user_by_id(session, user_id=user_id)
+            if user is None:
+                return _error(request_id, "UNAUTHORIZED", "El usuario ya no existe.", status_code=401)
+    except Exception:
+        return _error(request_id, "AUTH_UNAVAILABLE", "No se pudo verificar la sesión.", status_code=503)
+    new_access = create_access_token(user_id=user_id, email=email)
+    new_refresh = create_refresh_token(user_id=user_id, email=email)
+    return AuthResponse(
+        access_token=new_access,
+        refresh_token=new_refresh,
+        user=UserSummary(id=user_id, email=email, first_name=user.first_name, last_name=user.last_name),
+    )
 
 
 @app.get("/api/v1/history", response_model=HistoryResponse, responses={401: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
-def get_history(request: Request, current_user: AuthenticatedUser = Depends(require_current_user)):
+def get_history(
+    request: Request,
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    current_user: AuthenticatedUser = Depends(require_current_user),
+):
     request_id = request.state.request_id
     try:
         with session_scope() as session:
-            records = persistence_repository.list_predictions_for_user(session, user_id=current_user.id)
+            records = persistence_repository.list_predictions_for_user(
+                session, user_id=current_user.id, limit=limit, offset=offset,
+            )
             items = [
                 PredictionHistoryItem(
                     request_id=r.request_id, home_team=r.home_team, away_team=r.away_team, match_date=r.match_date,
@@ -254,12 +326,14 @@ def create_prediction(payload: PredictionRequest, request: Request, current_user
     latency_ms = (perf_counter() - started) * 1000
     model_version = get_predictor().metadata["champion_model_version"]
     data_version = get_predictor().metadata["source_data_sha256"]
+    no_history = result.pop("no_history", False)
+    message = "Equipo(s) recién ascendido(s) sin histórico suficiente. Probabilidades por defecto." if no_history else "Estimación probabilística basada únicamente en el histórico anterior."
     _persist_prediction_best_effort(
         request_id=request_id, user_id=current_user.id, home_team=payload.home_team, away_team=payload.away_team, match_date=payload.match_date,
         prediction=result["prediction"], probability_h=result["H"], probability_d=result["D"], probability_a=result["A"],
         model_version=model_version, data_version=data_version, latency_ms=latency_ms,
     )
-    return PredictionResponse(request_id=request_id, prediction=result["prediction"], probabilities={"H": result["H"], "D": result["D"], "A": result["A"]}, model_version=model_version, data_version=data_version, latency_ms=latency_ms, message="Estimación probabilística basada únicamente en el histórico anterior.")
+    return PredictionResponse(request_id=request_id, prediction=result["prediction"], probabilities={"H": result["H"], "D": result["D"], "A": result["A"]}, model_version=model_version, data_version=data_version, latency_ms=latency_ms, message=message)
 
 
 @app.post("/api/v1/feedback", response_model=FeedbackResponse, responses={401: {"model": ErrorResponse}, 422: {"model": ErrorResponse}})
@@ -267,7 +341,7 @@ def create_feedback(payload: FeedbackRequest, request: Request, current_user: Au
     request_id = request.state.request_id
     try:
         stored = append_feedback(
-            FeedbackRecord(
+            FeedbackCSVRecord(
                 home_team=payload.home_team,
                 away_team=payload.away_team,
                 match_date=payload.match_date,
@@ -281,6 +355,9 @@ def create_feedback(payload: FeedbackRequest, request: Request, current_user: Au
         )
     except FeedbackValidationError as exc:
         return _error(request_id, "INVALID_FEEDBACK", str(exc))
+    except Exception:
+        logger.exception("No se pudo procesar el feedback.")
+        return _error(request_id, "FEEDBACK_UNAVAILABLE", "No se pudo registrar el feedback. Intenta de nuevo.", status_code=503)
     _persist_feedback_best_effort(
         feedback_id=stored.feedback_id, home_team=stored.home_team, away_team=stored.away_team, match_date=stored.match_date,
         actual_result=stored.actual_result, predicted_result=stored.predicted_result, model_version=stored.model_version,
