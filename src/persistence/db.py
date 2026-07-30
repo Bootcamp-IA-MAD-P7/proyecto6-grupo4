@@ -4,6 +4,13 @@ Sin `DATABASE_URL` (por ejemplo en tests unitarios o en un entorno sin
 Postgres disponible), `get_engine()` usa SQLite en memoria: el esquema y
 las consultas son idénticos porque SQLAlchemy abstrae el dialecto, pero la
 persistencia real solo ocurre con Postgres configurado.
+
+SQLite en memoria requiere `poolclass=StaticPool`: por defecto SQLAlchemy
+abre una conexión (y por tanto una base ``:memory:`` distinta) por hilo, y
+FastAPI ejecuta los endpoints síncronos en un threadpool. Sin StaticPool,
+una petición puede caer en un hilo cuya base en memoria nunca vio
+`init_schema()`, resultando en ``sqlite3.OperationalError: no such table``.
+StaticPool fuerza que todos los hilos compartan la misma conexión/base.
 """
 
 from __future__ import annotations
@@ -13,6 +20,7 @@ from contextlib import contextmanager
 
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from src.persistence.models import Base
 
@@ -32,8 +40,15 @@ def get_engine() -> Engine:
     global _engine
     if _engine is None:
         url = get_database_url()
-        connect_args = {"check_same_thread": False} if url.startswith("sqlite") else {}
-        _engine = create_engine(url, connect_args=connect_args, pool_pre_ping=True)
+        if url.startswith("sqlite"):
+            _engine = create_engine(
+                url,
+                connect_args={"check_same_thread": False},
+                poolclass=StaticPool,
+                pool_pre_ping=True,
+            )
+        else:
+            _engine = create_engine(url, pool_pre_ping=True)
     return _engine
 
 

@@ -7,8 +7,8 @@ WORKDIR /app
 COPY requirements-backend.txt .
 RUN pip install --no-cache-dir -r requirements-backend.txt
 
-ARG CHAMPION_MODEL_URL=https://github.com/Bootcamp-IA-MAD-P7/proyecto6-grupo4/releases/download/model-ensemble-abcd-soft-voting-v1-38fee61a/laliga_champion_v1.joblib
-ARG CHAMPION_MODEL_SHA256=38fee61ac11493ce44312bda45279251cc6ae008ada18a5e314429b2c9a2c78a
+ARG CHAMPION_MODEL_URL=https://github.com/Bootcamp-IA-MAD-P7/proyecto6-grupo4/releases/download/model-ensemble-abcd-soft-voting-v1-f9c0e933/laliga_champion_v1.joblib
+ARG CHAMPION_MODEL_SHA256=f9c0e93317924613e9dc8fb57125ecd5b227fdb0afa6fc7ec1f6e963407d5696
 RUN mkdir -p models/champion && \
     python -c "from hashlib import sha256; from pathlib import Path; from urllib.request import urlretrieve; target=Path('models/champion/laliga_champion_v1.joblib'); urlretrieve('${CHAMPION_MODEL_URL}', target); actual=sha256(target.read_bytes()).hexdigest(); assert actual == '${CHAMPION_MODEL_SHA256}', f'SHA-256 inesperado: {actual}'"
 

@@ -4,8 +4,8 @@
   "n_splits_requested": 4,
   "n_folds_scored": 4,
   "feature_generator_version": "historical_features_v1",
-  "data_version_sha256": "6288a872df07a196a48ea05039671feba0616489927ebc12b344d96f0e921b0c",
-  "features_sha256": "563634a73e265ab71f4d1b3795d1245eedf33a82c26328a61e99d16d8f8d2c81",
+  "data_version_sha256": "56e59efa9200042f76638beafd47feaf67a41a28c00c02aa521192739a607104",
+  "features_sha256": "a092ae51f30f7de84c329a66b90ff11215e6f1009040f9fcf8e5840fcb0395aa",
   "folds": [
     {
       "fold": 0,
@@ -15,10 +15,10 @@
         "2000-02-15",
         "2005-03-05"
       ],
-      "macro_f1": 0.37701107280412677,
-      "accuracy": 0.43831337844872464,
-      "balanced_accuracy": 0.37930726400932085,
-      "log_loss": 1.0779159859081957
+      "macro_f1": 0.37350909492109396,
+      "accuracy": 0.4341488807912546,
+      "balanced_accuracy": 0.3755845152472497,
+      "log_loss": 1.0805618974400666
     },
     {
       "fold": 1,
@@ -28,10 +28,10 @@
         "2005-03-05",
         "2010-03-27"
       ],
-      "macro_f1": 0.3993919502281205,
-      "accuracy": 0.46017699115044247,
-      "balanced_accuracy": 0.4182478445975513,
-      "log_loss": 1.0487859622912687
+      "macro_f1": 0.3983831199773851,
+      "accuracy": 0.45809474232170744,
+      "balanced_accuracy": 0.41613750946332423,
+      "log_loss": 1.049682033432432
     },
     {
       "fold": 2,
@@ -41,10 +41,10 @@
         "2010-03-27",
         "2015-04-11"
       ],
-      "macro_f1": 0.44563116812998355,
+      "macro_f1": 0.4461638574013998,
       "accuracy": 0.504424778761062,
-      "balanced_accuracy": 0.4653136601960222,
-      "log_loss": 0.9997000856148006
+      "balanced_accuracy": 0.46546556640600484,
+      "log_loss": 0.9995685239690956
     },
     {
       "fold": 3,
@@ -54,13 +54,13 @@
         "2015-04-11",
         "2020-06-30"
       ],
-      "macro_f1": 0.4340999286369054,
-      "accuracy": 0.5033836543466944,
-      "balanced_accuracy": 0.46489197287949385,
-      "log_loss": 0.9971010385611315
+      "macro_f1": 0.4360850107822043,
+      "accuracy": 0.5049453409682457,
+      "balanced_accuracy": 0.46681421132047135,
+      "log_loss": 0.997030184800133
     }
   ],
-  "macro_f1_mean": 0.41403352994978404,
-  "macro_f1_std": 0.027322652162103354,
+  "macro_f1_mean": 0.41353527077052077,
+  "macro_f1_std": 0.029175322906998206,
   "test_protection": "Solo usa filas split=train; validation y test nunca se leen aquí."
 }

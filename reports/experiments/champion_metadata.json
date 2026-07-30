@@ -2,7 +2,7 @@
   "champion_candidate_id": "ENSEMBLE_ABCD",
   "champion_model_version": "ensemble_abcd_soft_voting_v1",
   "selection_rule": "Mayor macro-F1 de validation entre candidatos con gap < 0.05; empate por menor latencia.",
-  "selection_timestamp_utc": "2026-07-29T22:29:37.098605+00:00",
+  "selection_timestamp_utc": "2026-07-30T09:44:26.331633+00:00",
   "comparability": {
     "data_version_sha256": "56e59efa9200042f76638beafd47feaf67a41a28c00c02aa521192739a607104",
     "features_sha256": "a092ae51f30f7de84c329a66b90ff11215e6f1009040f9fcf8e5840fcb0395aa",
@@ -10,18 +10,18 @@
     "split_manifest_reference": "reports/metrics/split_manifest.json"
   },
   "validation": {
-    "macro_f1": 0.48663283374126004,
-    "accuracy": 0.5012531328320802,
-    "balanced_accuracy": 0.4913801570345215,
-    "log_loss": 1.0207399169279192
+    "macro_f1": 0.4852523887607542,
+    "accuracy": 0.49958228905597324,
+    "balanced_accuracy": 0.4901151348966341,
+    "log_loss": 1.020626952141517
   },
   "train": {
-    "macro_f1": 0.49065820482645717,
-    "accuracy": 0.5026543145622984,
-    "balanced_accuracy": 0.4983375661913969,
-    "log_loss": 1.0120220498551726
+    "macro_f1": 0.4906374789844712,
+    "accuracy": 0.5025502237951494,
+    "balanced_accuracy": 0.4983217857540894,
+    "log_loss": 1.0126459944412973
   },
-  "overfitting_gap_macro_f1": 0.004025371085197127,
+  "overfitting_gap_macro_f1": 0.005385090223716971,
   "promotion_contract": {
     "fit_splits": [
       "train",
@@ -36,7 +36,7 @@
     "path": "reports/experiments/champion_test_metrics.json",
     "sha256": "3e221ba196fa1fff7b3b588ced8df8e468a9367098cdd2fb0d5644872f63af4b"
   },
-  "final_fit_seconds": 117.27269719995093,
+  "final_fit_seconds": 186.9394927000394,
   "artifact_path": "models/champion/laliga_champion_v1.joblib",
   "feature_columns": [
     "home_team",
@@ -59,7 +59,7 @@
   ],
   "feature_generator_version": "historical_features_v1",
   "source_data_sha256": "56e59efa9200042f76638beafd47feaf67a41a28c00c02aa521192739a607104",
-  "artifact_sha256": "38fee61ac11493ce44312bda45279251cc6ae008ada18a5e314429b2c9a2c78a",
+  "artifact_sha256": "f9c0e93317924613e9dc8fb57125ecd5b227fdb0afa6fc7ec1f6e963407d5696",
   "artifact_descriptor": {
     "root_type": "Pipeline",
     "pipeline_steps": [

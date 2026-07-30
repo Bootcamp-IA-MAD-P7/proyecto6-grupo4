@@ -37,7 +37,7 @@
     "class_weight": "balanced",
     "early_stopping": true,
     "interaction_cst": null,
-    "l2_regularization": 0.5,
+    "l2_regularization": 1.0,
     "learning_rate": 0.025,
     "loss": "log_loss",
     "max_bins": 255,
@@ -56,21 +56,21 @@
     "warm_start": false
   },
   "train": {
-    "macro_f1": 0.5228419109239583,
-    "accuracy": 0.5385656292286874,
-    "balanced_accuracy": 0.5305060387560397,
-    "log_loss": 0.985868103455202
+    "macro_f1": 0.5219530792604598,
+    "accuracy": 0.5367960861871552,
+    "balanced_accuracy": 0.52975823495295,
+    "log_loss": 0.9879631479403571
   },
   "validation": {
-    "macro_f1": 0.469004824151883,
-    "accuracy": 0.47869674185463656,
-    "balanced_accuracy": 0.4704436319835925,
-    "log_loss": 1.029548498712677
+    "macro_f1": 0.4720904486558933,
+    "accuracy": 0.48120300751879697,
+    "balanced_accuracy": 0.4733785632709984,
+    "log_loss": 1.028604502976055
   },
-  "overfitting_gap_macro_f1": 0.05383708677207527,
-  "absolute_macro_f1_difference": 0.05383708677207527,
-  "training_time_seconds": 8.699844100046903,
-  "inference_time_ms_per_row": 0.145255555608835,
+  "overfitting_gap_macro_f1": 0.04986263060456647,
+  "absolute_macro_f1_difference": 0.04986263060456647,
+  "training_time_seconds": 45.3499839999713,
+  "inference_time_ms_per_row": 0.7306609857895893,
   "artifact_path": "models/candidates/model_b/candidate_b_hist_gradient_boosting_v1.joblib",
   "test_protection": "El estimador recibe únicamente train y validation; test_used es siempre 0."
 }

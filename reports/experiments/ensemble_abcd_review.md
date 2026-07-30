@@ -141,3 +141,34 @@ de coordinación con el equipo completo, no tomada aquí.
 
 - Métricas y tabla regeneradas: `reports/experiments/ensemble_abcd_metrics.json`, fila `ENSEMBLE_ABCD` en `reports/experiments/ensemble_table.csv`.
 - Reproducción: primero `./.venv/Scripts/python.exe scripts/run_candidate_d.py` (D calibrado), luego `./.venv/Scripts/python.exe scripts/run_ensemble_abcd.py`.
+
+---
+
+## Actualización 2026-07-30 — dataset corregido (alias Villarreal) y B re-tuneado con búsqueda reproducible
+
+Tras normalizar el alias de equipo `Villareal`->`Villarreal` en el dataset
+(fragmentaba el historial de Elo/rachas de ese club), se reentrenó todo el
+pipeline. Consecuencia: el gap de B subió de 0.042 a 0.0538, por encima del
+umbral 0.05. La afirmación previa de "grid search (256 combinaciones)" no
+tenía script asociado en el repositorio, así que se implementó uno real y
+reproducible: `scripts/tune_candidate_b.py`, que barre exactamente 256
+combinaciones (`learning_rate` × `max_leaf_nodes` × `min_samples_leaf` ×
+`l2_regularization`, 4 valores cada uno), ajustando solo en `train` y
+puntuando en `validation`. Resultado completo en
+`reports/experiments/candidate_b_tuning_search.json`.
+
+La malla confirmó que subir `l2_regularization` de 0.5 a 1.0 (mismos demás
+hiperparámetros) da mejor macro-F1 en validation (0.4721 vs 0.4690) **y**
+vuelve a cumplir el umbral de gap (0.0499 vs 0.0538). Se aplicó ese cambio
+en `src/candidates/model_b/pipeline.py` y se reentrenó B, el ensemble ABCD
+y el Champion.
+
+| | Validation macro-F1 | Gap |
+|---|---:|---:|
+| B antes (l2=0.5, dataset corregido) | 0.469005 | 0.053837 |
+| B después (l2=1.0, elegido por malla reproducible) | 0.472090 | 0.049863 |
+| Ensemble ABCD (con B re-tuneado) | 0.485252 | 0.005385 |
+
+Reproducción: `./.venv/Scripts/python.exe scripts/tune_candidate_b.py` (búsqueda,
+~45 min), luego `run_candidate_b.py` → `run_ensemble_abcd.py` →
+`select_champion.py`.

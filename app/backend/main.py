@@ -46,6 +46,9 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     yield
 
 
+MAX_PAYLOAD_BYTES = 4096
+
+
 app = FastAPI(title="LaLiga Prediction API", version="0.1.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
@@ -53,6 +56,46 @@ app.add_middleware(
     allow_methods=["POST", "GET"],
     allow_headers=["Content-Type"],
 )
+
+
+@app.middleware("http")
+async def request_id_size_limit_and_logging(request: Request, call_next):
+    """Asigna request_id, rechaza payloads > 4 KiB y deja un log estructurado por petición.
+
+    El log nunca incluye el cuerpo de la petición, solo metadatos (RNF-06).
+    """
+
+    request.state.request_id = str(uuid4())
+    started = perf_counter()
+
+    content_length = request.headers.get("content-length")
+    if content_length is not None:
+        try:
+            too_large = int(content_length) > MAX_PAYLOAD_BYTES
+        except ValueError:
+            too_large = False
+        if too_large:
+            response = _error(
+                request.state.request_id,
+                "PAYLOAD_TOO_LARGE",
+                "El cuerpo supera 4 KiB.",
+                status_code=413,
+            )
+            _log_request(request, response.status_code, started)
+            return response
+
+    response = await call_next(request)
+    _log_request(request, response.status_code, started)
+    return response
+
+
+def _log_request(request: Request, status_code: int, started: float) -> None:
+    latency_ms = (perf_counter() - started) * 1000
+    model_version = _predictor.metadata.get("champion_model_version") if _predictor else None
+    logger.info(
+        "request_id=%s method=%s path=%s status=%s latency_ms=%.2f model_version=%s",
+        request.state.request_id, request.method, request.url.path, status_code, latency_ms, model_version,
+    )
 
 
 def _persist_prediction_best_effort(**kwargs) -> None:
@@ -76,9 +119,12 @@ def _error(request_id: str, code: str, message: str, *, details: list[dict] | No
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
-    request_id = str(uuid4())
-    return _error(request_id, "INVALID_INPUT", "La entrada no cumple el contrato.", details=[{"field": ".".join(map(str, item["loc"][1:])), "reason": item["type"]} for item in exc.errors()])
+async def validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:
+    request_id = getattr(request.state, "request_id", str(uuid4()))
+    errors = exc.errors()
+    if any(error["type"] == "json_invalid" for error in errors):
+        return _error(request_id, "MALFORMED_JSON", "El cuerpo no es JSON válido.", status_code=400)
+    return _error(request_id, "INVALID_INPUT", "La entrada no cumple el contrato.", details=[{"field": ".".join(map(str, item["loc"][1:])), "reason": item["type"]} for item in errors])
 
 
 @app.get("/health")
@@ -98,8 +144,8 @@ def health_check():
 
 
 @app.post("/api/v1/predictions", response_model=PredictionResponse, responses={404: {"model": ErrorResponse}, 409: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
-def create_prediction(payload: PredictionRequest):
-    request_id = str(uuid4())
+def create_prediction(payload: PredictionRequest, request: Request):
+    request_id = request.state.request_id
     started = perf_counter()
     try:
         result = get_predictor().predict(payload.home_team, payload.away_team, payload.match_date)
@@ -119,8 +165,8 @@ def create_prediction(payload: PredictionRequest):
 
 
 @app.post("/api/v1/feedback", response_model=FeedbackResponse, responses={422: {"model": ErrorResponse}})
-def create_feedback(payload: FeedbackRequest):
-    request_id = str(uuid4())
+def create_feedback(payload: FeedbackRequest, request: Request):
+    request_id = request.state.request_id
     try:
         stored = append_feedback(
             FeedbackRecord(

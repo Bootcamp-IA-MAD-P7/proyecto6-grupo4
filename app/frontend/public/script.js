@@ -34,19 +34,23 @@ const API_ORIGIN =
     : window.location.origin;
 const API_URL = `${API_ORIGIN}/api/v1/predictions`;
 
-// Refleja las variables reales que usa el modelo (ver MODEL_FEATURES en
-// src/data/historical_features.py y feature_columns en champion_metadata.json).
+// Pesos calculados de verdad con permutation importance sobre el Champion
+// (scripts/run_permutation_importance.py, medido en validation, nunca en
+// train ni test). Cada peso agrupa las features de MODEL_FEATURES afines
+// (ver src/data/historical_features.py) y está normalizado para sumar 1.
+// Fuente completa por feature individual:
+// reports/experiments/champion_permutation_importance.json
 // El modelo NO usa lesiones, clima ni enfrentamientos directos: solo
-// estadísticas históricas de resultados/goles/Elo/descanso, calculadas
-// aparte para cada equipo. Los pesos son ilustrativos (agrupan variables
-// afines), no coeficientes exactos del ensemble.
+// estadísticas históricas de resultados/goles/Elo/descanso/identidad de
+// equipo, calculadas aparte para cada equipo.
 const FACTORS = [
-  { label: "Forma reciente (últimos 5 partidos)", weight: 0.30, icon: "🔥" },
-  { label: "Fortaleza histórica (Elo)", weight: 0.20, icon: "📈" },
-  { label: "Ataque reciente (goles a favor)", weight: 0.15, icon: "⚽" },
-  { label: "Defensa reciente (goles en contra)", weight: 0.15, icon: "🛡️" },
-  { label: "Descanso entre partidos", weight: 0.10, icon: "⏱️" },
-  { label: "Partidos disputados en la temporada", weight: 0.10, icon: "📅" },
+  { label: "Fortaleza histórica (Elo)", weight: 0.3458, icon: "📈" },
+  { label: "Forma reciente (últimos 5 partidos)", weight: 0.2191, icon: "🔥" },
+  { label: "Partidos disputados en la temporada", weight: 0.1385, icon: "📅" },
+  { label: "Identidad del equipo", weight: 0.1060, icon: "🏟️" },
+  { label: "Ataque reciente (goles a favor)", weight: 0.0974, icon: "⚽" },
+  { label: "Defensa reciente (goles en contra)", weight: 0.0687, icon: "🛡️" },
+  { label: "Descanso entre partidos", weight: 0.0245, icon: "⏱️" },
 ];
 
 const homeSelect = document.getElementById("home-team");
