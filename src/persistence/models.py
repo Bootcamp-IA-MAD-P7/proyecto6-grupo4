@@ -9,12 +9,27 @@ from __future__ import annotations
 from datetime import UTC, date, datetime
 from uuid import uuid4
 
-from sqlalchemy import Date, DateTime, Float, String
+from sqlalchemy import Date, DateTime, Float, ForeignKey, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class Base(DeclarativeBase):
     pass
+
+
+class UserRecord(Base):
+    """Un usuario registrado. La contraseña nunca se guarda en texto plano."""
+
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
+    email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    first_name: Mapped[str] = mapped_column(String(120), nullable=False)
+    last_name: Mapped[str] = mapped_column(String(120), nullable=False)
+    birth_date: Mapped[date] = mapped_column(Date, nullable=False)
+    phone: Mapped[str] = mapped_column(String(30), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False)
 
 
 class PredictionRecord(Base):
@@ -24,6 +39,10 @@ class PredictionRecord(Base):
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
     request_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
+    # Nullable a nivel de esquema por compatibilidad con filas de antes de
+    # T-6.1 (autenticación), que no tenían usuario asociado. La aplicación
+    # siempre provee user_id para predicciones nuevas (login obligatorio).
+    user_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("users.id"), nullable=True, index=True)
     home_team: Mapped[str] = mapped_column(String(80), nullable=False)
     away_team: Mapped[str] = mapped_column(String(80), nullable=False)
     match_date: Mapped[date] = mapped_column(Date, nullable=False)

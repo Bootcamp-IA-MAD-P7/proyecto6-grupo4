@@ -25,28 +25,37 @@ def test_root_serves_the_client_demo() -> None:
     assert "LaLiga" in response.text
 
 
-def test_predictions_endpoint_returns_404_for_unknown_team() -> None:
+def test_predictions_endpoint_requires_authentication() -> None:
     client = TestClient(app)
     response = client.post(
         "/api/v1/predictions",
+        json={"home_team": "Real Madrid", "away_team": "Barcelona", "match_date": "2026-10-25"},
+    )
+    assert response.status_code == 401
+    assert response.json()["error"] == "UNAUTHORIZED"
+
+
+def test_predictions_endpoint_returns_404_for_unknown_team(client, auth_headers) -> None:
+    response = client.post(
+        "/api/v1/predictions",
         json={"home_team": "Equipo Inexistente FC", "away_team": "Barcelona", "match_date": "2026-10-25"},
+        headers=auth_headers,
     )
     assert response.status_code == 404
     assert response.json()["error"] == "TEAM_NOT_FOUND"
 
 
-def test_predictions_endpoint_returns_409_for_insufficient_history() -> None:
-    client = TestClient(app)
+def test_predictions_endpoint_returns_409_for_insufficient_history(client, auth_headers) -> None:
     response = client.post(
         "/api/v1/predictions",
         json={"home_team": "Real Madrid", "away_team": "Barcelona", "match_date": "1990-01-01"},
+        headers=auth_headers,
     )
     assert response.status_code == 409
     assert response.json()["error"] == "INSUFFICIENT_HISTORY"
 
 
-def test_predictions_endpoint_rejects_payloads_over_4kib() -> None:
-    client = TestClient(app)
+def test_predictions_endpoint_rejects_payloads_over_4kib(client, auth_headers) -> None:
     oversized_comment = "x" * 5000
     response = client.post(
         "/api/v1/predictions",
@@ -55,18 +64,17 @@ def test_predictions_endpoint_rejects_payloads_over_4kib() -> None:
             + oversized_comment
             + '"}'
         ),
-        headers={"Content-Type": "application/json"},
+        headers={**auth_headers, "Content-Type": "application/json"},
     )
     assert response.status_code == 413
     assert response.json()["error"] == "PAYLOAD_TOO_LARGE"
 
 
-def test_predictions_endpoint_returns_400_for_malformed_json() -> None:
-    client = TestClient(app)
+def test_predictions_endpoint_returns_400_for_malformed_json(client, auth_headers) -> None:
     response = client.post(
         "/api/v1/predictions",
         content="{esto no es json valido",
-        headers={"Content-Type": "application/json"},
+        headers={**auth_headers, "Content-Type": "application/json"},
     )
     assert response.status_code == 400
     assert response.json()["error"] == "MALFORMED_JSON"
@@ -94,11 +102,11 @@ def test_module_import_configures_logging_so_info_level_actually_prints() -> Non
     assert "request_id=probe123" in combined, f"log no emitido en un proceso real; salida={combined!r}"
 
 
-def test_predictions_response_request_id_matches_error_envelope_shape() -> None:
-    client = TestClient(app)
+def test_predictions_response_request_id_matches_error_envelope_shape(client, auth_headers) -> None:
     response = client.post(
         "/api/v1/predictions",
         json={"home_team": "Real Madrid", "away_team": "Barcelona", "match_date": "2026-10-25"},
+        headers=auth_headers,
     )
     assert response.status_code == 200
     body = response.json()

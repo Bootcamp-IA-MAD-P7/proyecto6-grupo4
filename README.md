@@ -26,25 +26,34 @@ Es un proyecto académico hecho por un equipo de 4 personas, siguiendo un proces
 La forma más simple es a través de la **página web** (el frontend):
 
 1. Se abre la página en el navegador (ver [Cómo poner en marcha el proyecto](#cómo-poner-en-marcha-el-proyecto) más abajo para las instrucciones exactas).
-2. Se elige el **equipo local** en el primer menú desplegable.
-3. Se elige el **equipo visitante** en el segundo menú desplegable (tiene que ser distinto al local).
-4. Se elige la **fecha del partido**.
-5. Se pulsa el botón **"Predecir resultado"**.
+2. **Hace falta tener una cuenta.** La página pide iniciar sesión o registrarse (solo email y contraseña) antes de dejar predecir nada — no hay modo anónimo.
+3. Se elige el **equipo local** en el primer menú desplegable.
+4. Se elige el **equipo visitante** en el segundo menú desplegable (tiene que ser distinto al local).
+5. Se elige la **fecha del partido**.
+6. Se pulsa el botón **"Predecir resultado"**.
 
 La página muestra:
 
 - El resultado más probable (**Victoria local**, **Empate** o **Victoria visitante**) con un porcentaje de confianza.
 - El desglose de probabilidad de cada uno de los tres resultados posibles.
-- Un historial de las predicciones que se han hecho en esa sesión, para poder comparar varias.
+- **Tu historial de predicciones**, guardado en tu cuenta: sigue ahí aunque cierres el navegador o inicies sesión desde otro sitio, porque vive en la base de datos, no en el navegador.
 
 Cada predicción también queda registrada internamente (ver el punto 5, sobre bases de datos), y la propia aplicación permite enviar **feedback**: es decir, indicar cuál fue el resultado real del partido una vez jugado, para que quede guardado y se pueda comparar con lo que predijo el modelo.
 
 ### Para quien prefiera hacerlo de forma técnica (API)
 
-La predicción también se puede pedir directamente al servidor que hace los cálculos (el "backend"), sin pasar por la página web, con una petición HTTP:
+La predicción también se puede pedir directamente al servidor que hace los cálculos (el "backend"), sin pasar por la página web, con una petición HTTP — pero primero hay que registrarse o iniciar sesión para obtener un token:
+
+```
+POST /api/v1/auth/register
+{ "email": "tú@ejemplo.com", "password": "al menos 8 caracteres" }
+```
+
+La respuesta incluye un `access_token`. Ese token se manda en cada petición protegida, incluida la de predicción:
 
 ```
 POST /api/v1/predictions
+Authorization: Bearer <access_token>
 {
   "home_team": "Real Madrid",
   "away_team": "Barcelona",
@@ -52,7 +61,7 @@ POST /api/v1/predictions
 }
 ```
 
-La respuesta incluye el resultado predicho, las tres probabilidades, qué versión del modelo respondió, y cuánto tardó en calcularse.
+La respuesta incluye el resultado predicho, las tres probabilidades, qué versión del modelo respondió, y cuánto tardó en calcularse. El historial propio se consulta con `GET /api/v1/history` (mismo header `Authorization`).
 
 ---
 
@@ -124,9 +133,10 @@ Cada vez que alguien pide una predicción o envía feedback a través de la apli
 
 ### 1. Base de datos PostgreSQL (la forma principal)
 
-Hay dos tablas:
+Hay tres tablas:
 
-- **`predictions`**: guarda cada predicción hecha (equipos, fecha, resultado predicho, las tres probabilidades, qué versión del modelo respondió, y cuánto tardó).
+- **`users`**: cuentas registradas (email y contraseña, esta última siempre guardada como hash — nunca en texto plano). Hace falta tener una cuenta para usar la aplicación.
+- **`predictions`**: guarda cada predicción hecha (de qué usuario, equipos, fecha, resultado predicho, las tres probabilidades, qué versión del modelo respondió, y cuánto tardó). Es la que alimenta "tu historial" en la página.
 - **`feedback`**: guarda cada resultado real que alguien reportó después de un partido (para poder comparar, más adelante, lo que predijo el modelo contra lo que pasó de verdad).
 
 El detalle técnico completo de estas tablas (columnas, tipos de dato) está en [`docs/database_schema.md`](docs/database_schema.md).
@@ -231,7 +241,7 @@ El proyecto tiene una batería de pruebas automáticas que comprueban que cada p
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Si todo está en orden, el resultado final indica cuántas pruebas pasaron (por ejemplo, `91 passed`).
+Si todo está en orden, el resultado final indica cuántas pruebas pasaron (por ejemplo, `107 passed`).
 
 ---
 

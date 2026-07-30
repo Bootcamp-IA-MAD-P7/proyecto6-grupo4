@@ -14,6 +14,10 @@ services:
         fromDatabase:
           name: laliga-predictor-grupo4-db
           property: connectionString
+      - key: AUTH_SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        sync: false
 
 databases:
   - name: laliga-predictor-grupo4-db

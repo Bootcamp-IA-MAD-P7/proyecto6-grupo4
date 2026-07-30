@@ -15,14 +15,17 @@ StaticPool fuerza que todos los hilos compartan la misma conexión/base.
 
 from __future__ import annotations
 
+import logging
 import os
 from contextlib import contextmanager
 
-from sqlalchemy import Engine, create_engine
+from sqlalchemy import Engine, create_engine, inspect, text
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from src.persistence.models import Base
+
+logger = logging.getLogger("laliga.db")
 
 DEFAULT_LOCAL_DATABASE_URL = "postgresql+psycopg://laliga:laliga@localhost:5432/laliga"
 _engine: Engine | None = None
@@ -53,9 +56,34 @@ def get_engine() -> Engine:
 
 
 def init_schema(engine: Engine | None = None) -> None:
-    """Crea las tablas si no existen. Idempotente: seguro de llamar en cada arranque."""
+    """Crea las tablas si no existen. Idempotente: seguro de llamar en cada arranque.
 
-    Base.metadata.create_all(engine or get_engine())
+    `create_all()` solo crea tablas que no existen; NO altera una tabla ya
+    existente para añadirle una columna nueva (por ejemplo `predictions.user_id`,
+    añadido en T-6.1 sobre una base que ya tenía filas de antes de la
+    autenticación). Se aplica una migración mínima e idempotente para ese
+    caso puntual; una evolución de esquema más compleja debería pasar a
+    Alembic, fuera del alcance de T-5.3/T-6.1.
+    """
+
+    target_engine = engine or get_engine()
+    Base.metadata.create_all(target_engine)
+    _ensure_predictions_user_id_column(target_engine)
+
+
+def _ensure_predictions_user_id_column(engine: Engine) -> None:
+    inspector = inspect(engine)
+    if "predictions" not in inspector.get_table_names():
+        return
+    columns = {column["name"] for column in inspector.get_columns("predictions")}
+    if "user_id" in columns:
+        return
+    with engine.begin() as connection:
+        connection.execute(text("ALTER TABLE predictions ADD COLUMN user_id VARCHAR(36)"))
+        try:
+            connection.execute(text("ALTER TABLE predictions ADD CONSTRAINT fk_predictions_user_id FOREIGN KEY (user_id) REFERENCES users(id)"))
+        except Exception:
+            pass  # Constraint may already exist
 
 
 def get_session_factory() -> sessionmaker[Session]:
@@ -72,7 +100,10 @@ def session_scope():
         yield session
         session.commit()
     except Exception:
-        session.rollback()
+        try:
+            session.rollback()
+        except Exception:
+            logger.exception("Error durante rollback de sesión")
         raise
     finally:
         session.close()
