@@ -16,7 +16,8 @@ Es un proyecto académico hecho por un equipo de 4 personas, siguiendo un proces
 6. [Cómo poner en marcha el proyecto](#cómo-poner-en-marcha-el-proyecto)
 7. [Estructura del repositorio](#estructura-del-repositorio)
 8. [Pruebas automáticas (tests)](#pruebas-automáticas-tests)
-9. [Documentación adicional](#documentación-adicional)
+9. [Gestión del equipo](#gestión-del-equipo)
+10. [Documentación adicional](#documentación-adicional)
 
 ---
 
@@ -230,7 +231,13 @@ El proyecto tiene una batería de pruebas automáticas que comprueban que cada p
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Si todo está en orden, el resultado final indica cuántas pruebas pasaron (por ejemplo, `76 passed`).
+Si todo está en orden, el resultado final indica cuántas pruebas pasaron (por ejemplo, `91 passed`).
+
+---
+
+## Gestión del equipo
+
+El trabajo se organizó y siguió en el propio repositorio de GitHub: [Bootcamp-IA-MAD-P7/proyecto6-grupo4](https://github.com/Bootcamp-IA-MAD-P7/proyecto6-grupo4), usando [Issues](https://github.com/Bootcamp-IA-MAD-P7/proyecto6-grupo4/issues) para el backlog de tareas (ver `.specify/4_tasks.md` para el detalle completo de cada una) y Pull Requests para revisar cada cambio antes de fusionarlo a `develop`.
 
 ---
 
