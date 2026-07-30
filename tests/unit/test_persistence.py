@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.persistence.db import get_database_url
+from src.persistence.db import get_database_url, get_engine, init_schema, reset_engine_for_testing, session_scope
 from src.persistence.models import Base
 from src.persistence.repository import (
     count_feedback,
@@ -87,6 +88,33 @@ def test_feedback_id_is_unique(session) -> None:
         save_feedback(
             session, feedback_id="fb-dup", home_team="C", away_team="D", match_date=date(2026, 1, 2), actual_result="A",
         )
+
+
+def test_sqlite_memory_fallback_shares_schema_and_data_across_threads(monkeypatch) -> None:
+    # Reproduce el escenario real de FastAPI: endpoints sincronos corren en
+    # un threadpool, así que distintas peticiones pueden caer en hilos
+    # distintos. Sin poolclass=StaticPool, cada hilo vería una base
+    # ``:memory:`` vacía y fallaría con "no such table".
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    reset_engine_for_testing()
+    try:
+        init_schema(get_engine())
+
+        def save_from_this_thread() -> None:
+            with session_scope() as session:
+                save_prediction(
+                    session, request_id="req-thread", home_team="Alaves", away_team="Girona",
+                    match_date=date(2026, 11, 1), prediction="D", probability_h=0.3, probability_d=0.4,
+                    probability_a=0.3, model_version="v1", data_version="sha", latency_ms=1.0,
+                )
+
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            executor.submit(save_from_this_thread).result()
+
+        with session_scope() as session:
+            assert count_predictions(session) == 1
+    finally:
+        reset_engine_for_testing()
 
 
 def test_render_postgres_url_uses_the_installed_psycopg_driver(monkeypatch) -> None:
