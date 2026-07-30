@@ -1,0 +1,89 @@
+{
+  "champion_candidate_id": "ENSEMBLE_ABCD",
+  "champion_model_version": "ensemble_abcd_soft_voting_v1",
+  "selection_rule": "Mayor macro-F1 de validation entre candidatos con gap < 0.05; empate por menor latencia.",
+  "selection_timestamp_utc": "2026-07-30T09:44:26.331633+00:00",
+  "comparability": {
+    "data_version_sha256": "56e59efa9200042f76638beafd47feaf67a41a28c00c02aa521192739a607104",
+    "features_sha256": "a092ae51f30f7de84c329a66b90ff11215e6f1009040f9fcf8e5840fcb0395aa",
+    "feature_generator_version": "historical_features_v1",
+    "split_manifest_reference": "reports/metrics/split_manifest.json"
+  },
+  "validation": {
+    "macro_f1": 0.4852523887607542,
+    "accuracy": 0.49958228905597324,
+    "balanced_accuracy": 0.4901151348966341,
+    "log_loss": 1.020626952141517
+  },
+  "train": {
+    "macro_f1": 0.4906374789844712,
+    "accuracy": 0.5025502237951494,
+    "balanced_accuracy": 0.4983217857540894,
+    "log_loss": 1.0126459944412973
+  },
+  "overfitting_gap_macro_f1": 0.005385090223716971,
+  "promotion_contract": {
+    "fit_splits": [
+      "train",
+      "validation"
+    ],
+    "fit_rows": 10804,
+    "test_rows_used": 0,
+    "test_metrics_recomputed": false
+  },
+  "historical_test_evidence": {
+    "status": "frozen_not_recomputed",
+    "path": "reports/experiments/champion_test_metrics.json",
+    "sha256": "3e221ba196fa1fff7b3b588ced8df8e468a9367098cdd2fb0d5644872f63af4b"
+  },
+  "final_fit_seconds": 186.9394927000394,
+  "artifact_path": "models/champion/laliga_champion_v1.joblib",
+  "feature_columns": [
+    "home_team",
+    "away_team",
+    "home_matches_played",
+    "away_matches_played",
+    "home_points_per_match_5",
+    "away_points_per_match_5",
+    "home_goals_for_per_match_5",
+    "away_goals_for_per_match_5",
+    "home_goals_against_per_match_5",
+    "away_goals_against_per_match_5",
+    "home_win_rate_5",
+    "away_win_rate_5",
+    "home_elo_pre_match",
+    "away_elo_pre_match",
+    "elo_difference_home",
+    "home_days_since_last_match",
+    "away_days_since_last_match"
+  ],
+  "feature_generator_version": "historical_features_v1",
+  "source_data_sha256": "56e59efa9200042f76638beafd47feaf67a41a28c00c02aa521192739a607104",
+  "artifact_sha256": "f9c0e93317924613e9dc8fb57125ecd5b227fdb0afa6fc7ec1f6e963407d5696",
+  "artifact_descriptor": {
+    "root_type": "Pipeline",
+    "pipeline_steps": [
+      "classifier"
+    ],
+    "classifier_type": "VotingClassifier",
+    "classes": [
+      "A",
+      "D",
+      "H"
+    ],
+    "voting": "soft",
+    "estimator_names": [
+      "logistic_a",
+      "hgb_b",
+      "rf_c",
+      "svc_d"
+    ],
+    "member_classifier_types": {
+      "logistic_a": "LogisticRegression",
+      "hgb_b": "HistGradientBoostingClassifier",
+      "rf_c": "RandomForestClassifier",
+      "svc_d": "CalibratedClassifierCV"
+    }
+  },
+  "limitations": "Predicción orientativa; se apoya únicamente en histórico. Equipos nuevos usan cold-start y no se usan cuotas."
+}

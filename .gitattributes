@@ -1,0 +1,2 @@
+# Preserve immutable raw datasets byte-for-byte across platforms.
+data/raw/*.csv -text

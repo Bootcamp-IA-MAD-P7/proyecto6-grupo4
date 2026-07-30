@@ -1,0 +1,80 @@
+{
+  "protocol_reference": "docs/decisions/0002-evaluation-protocol-proposal.md",
+  "status": "frozen_team_ratified_2026-07-24",
+  "frozen_at": "2026-07-23",
+  "responsible": [
+    "I1",
+    "I2"
+  ],
+  "technical_approvals": {
+    "I1": {
+      "status": "approved",
+      "date": "2026-07-23",
+      "scope": "dataset_hash_season_assignment_counts_reproducibility_test_protection"
+    },
+    "I3_I4": {
+      "status": "cross_review_ratified",
+      "date": "2026-07-24",
+      "scope": "season_assignment_counts_reproducibility_test_protection"
+    }
+  },
+  "required_cross_reviewers_pending": [],
+  "seed": 42,
+  "strategy": "chronological_by_season_no_shuffle_no_stratification",
+  "rationale": "El EDA detecta deriva temporal en la tasa de victoria local entre temporadas; una partición aleatoria filtraria informacion futura hacia el entrenamiento.",
+  "source_dataset": {
+    "path": "data/processed/laliga_matches_clean.csv",
+    "sha256": "56e59efa9200042f76638beafd47feaf67a41a28c00c02aa521192739a607104",
+    "rows": 11944
+  },
+  "season_assignment": {
+    "train": [
+      "1995-96",
+      "1996-97",
+      "1997-98",
+      "1998-99",
+      "1999-00",
+      "2000-01",
+      "2001-02",
+      "2002-03",
+      "2003-04",
+      "2004-05",
+      "2005-06",
+      "2006-07",
+      "2007-08",
+      "2008-09",
+      "2009-10",
+      "2010-11",
+      "2011-12",
+      "2012-13",
+      "2013-14",
+      "2014-15",
+      "2015-16",
+      "2016-17",
+      "2017-18",
+      "2018-19",
+      "2019-20"
+    ],
+    "validation": [
+      "2020-21",
+      "2021-22",
+      "2022-23"
+    ],
+    "test": [
+      "2023-24",
+      "2024-25",
+      "2025-26"
+    ]
+  },
+  "row_counts": {
+    "train": 9607,
+    "validation": 1197,
+    "test": 1140
+  },
+  "row_fractions": {
+    "train": 0.8043,
+    "validation": 0.1002,
+    "test": 0.0954
+  },
+  "test_protection": "El split de test no se utiliza para EDA, tuning ni comparacion de candidatos. Se evalua una unica vez tras seleccionar el Champion (T-2.6)."
+}
