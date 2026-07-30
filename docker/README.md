@@ -23,7 +23,7 @@ docker compose up --build
 - Postgres: `localhost:5432` (usuario/clave/base `laliga`; ver `docker-compose.yml`).
 
 `docker-compose.yml` ya no levanta un servicio `frontend` con nginx aparte:
-`docker/backend.Dockerfile` monta `app/frontend/public` como estáticos dentro
+`docker/backend.Dockerfile` monta `app/frontend-react/dist` como estáticos dentro
 de la misma app FastAPI (ver `app/backend/main.py`), tal cual se despliega en
 Render. Antes había dos formas de servir el frontend en local (nginx en 5173
 y el backend en 8000 simultáneamente) sin ninguna razón para mantener ambas;

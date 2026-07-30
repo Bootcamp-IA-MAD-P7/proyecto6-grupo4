@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from src.persistence.models import FeedbackRecord, PredictionRecord, UserRecord
@@ -76,12 +76,14 @@ def save_prediction(
     return record
 
 
-def list_predictions_for_user(session: Session, *, user_id: str) -> list[PredictionRecord]:
+def list_predictions_for_user(session: Session, *, user_id: str, limit: int = 50, offset: int = 0) -> list[PredictionRecord]:
     return list(
         session.scalars(
             select(PredictionRecord)
             .where(PredictionRecord.user_id == user_id)
             .order_by(PredictionRecord.created_at.desc())
+            .limit(limit)
+            .offset(offset)
         )
     )
 
@@ -124,8 +126,8 @@ def list_feedback(session: Session) -> list[FeedbackRecord]:
 
 
 def count_predictions(session: Session) -> int:
-    return len(list_predictions(session))
+    return session.scalar(select(func.count()).select_from(PredictionRecord)) or 0
 
 
 def count_feedback(session: Session) -> int:
-    return len(list_feedback(session))
+    return session.scalar(select(func.count()).select_from(FeedbackRecord)) or 0

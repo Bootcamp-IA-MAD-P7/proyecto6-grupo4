@@ -33,8 +33,24 @@
   }
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+}
+
+:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 body {
@@ -167,8 +183,8 @@ button {
 }
 
 .btn--ghost {
-  background: var(--spain-red);
-  color: #fff;
+  background: transparent;
+  color: var(--spain-red);
   border: 1px solid var(--spain-red);
 }
 

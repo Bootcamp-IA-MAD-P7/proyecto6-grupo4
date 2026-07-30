@@ -16,6 +16,7 @@ COPY src ./src
 COPY app/backend ./app/backend
 COPY app/frontend-react/dist ./app/frontend-react/dist
 COPY data/processed/laliga_matches_clean.csv ./data/processed/laliga_matches_clean.csv
+COPY data/fixtures ./data/fixtures
 COPY reports/experiments/champion_metadata.json ./reports/experiments/champion_metadata.json
 
 EXPOSE 10000

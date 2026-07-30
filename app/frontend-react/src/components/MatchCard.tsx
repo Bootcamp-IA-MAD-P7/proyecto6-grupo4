@@ -17,6 +17,8 @@ export function MatchCard({ fixture, selected, onSelect }: MatchCardProps) {
       type="button"
       className={`match-card ${selected ? "match-card--selected" : ""}`}
       onClick={() => onSelect(fixture)}
+      aria-pressed={selected}
+      aria-label={`${fixture.home_label} vs ${fixture.away_label}, ${formatDate(fixture.date)} ${fixture.time}`}
     >
       <div className="match-card__meta">
         <span>{formatDate(fixture.date)}</span>

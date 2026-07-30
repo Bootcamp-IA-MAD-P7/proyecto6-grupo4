@@ -9,11 +9,14 @@ fila, para auditoría o para alimentar T-4.4/T-6.3 más adelante.
 from __future__ import annotations
 
 import csv
+import threading
 from dataclasses import asdict, dataclass
 from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
+
+CSV_WRITE_LOCK = threading.Lock()
 
 VALID_RESULTS = {"H", "D", "A"}
 
@@ -89,12 +92,13 @@ def append_feedback(record: FeedbackRecord, path: str | Path) -> FeedbackRecord:
     validated = record.validated()
     file_path = Path(path)
     file_path.parent.mkdir(parents=True, exist_ok=True)
-    is_new_file = not file_path.exists() or file_path.stat().st_size == 0
-    with file_path.open("a", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=FEEDBACK_FIELDS)
-        if is_new_file:
-            writer.writeheader()
-        writer.writerow(validated.as_row())
+    with CSV_WRITE_LOCK:
+        is_new_file = not file_path.exists() or file_path.stat().st_size == 0
+        with file_path.open("a", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=FEEDBACK_FIELDS)
+            if is_new_file:
+                writer.writeheader()
+            writer.writerow(validated.as_row())
     return validated
 
 

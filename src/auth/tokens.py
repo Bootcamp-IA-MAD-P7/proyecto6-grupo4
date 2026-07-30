@@ -20,7 +20,8 @@ import jwt
 logger = logging.getLogger("laliga.auth")
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_TTL = timedelta(days=7)
+ACCESS_TOKEN_TTL = timedelta(hours=1)
+REFRESH_TOKEN_TTL = timedelta(days=30)
 
 
 def _get_secret_key() -> str:
@@ -51,6 +52,19 @@ def create_access_token(*, user_id: str, email: str) -> str:
         "email": email,
         "iat": now,
         "exp": now + ACCESS_TOKEN_TTL,
+        "type": "access",
+    }
+    return jwt.encode(payload, _get_secret_key(), algorithm=ALGORITHM)
+
+
+def create_refresh_token(*, user_id: str, email: str) -> str:
+    now = datetime.now(UTC)
+    payload = {
+        "sub": user_id,
+        "email": email,
+        "iat": now,
+        "exp": now + REFRESH_TOKEN_TTL,
+        "type": "refresh",
     }
     return jwt.encode(payload, _get_secret_key(), algorithm=ALGORITHM)
 

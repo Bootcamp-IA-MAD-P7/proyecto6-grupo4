@@ -125,6 +125,11 @@ class LoginRequest(BaseModel):
         return value.lower()
 
 
+class RefreshTokenRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    refresh_token: str = Field(min_length=1)
+
+
 class UserSummary(BaseModel):
     id: str
     email: str
@@ -136,6 +141,7 @@ class AuthResponse(BaseModel):
     contract_version: Literal["1.0"] = "1.0"
     status: Literal["ok"] = "ok"
     access_token: str
+    refresh_token: str
     token_type: Literal["bearer"] = "bearer"
     user: UserSummary
 

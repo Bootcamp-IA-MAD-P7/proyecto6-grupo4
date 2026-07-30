@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { apiFetch, ApiRequestError } from "../lib/api";
+import { OUTCOME_LABEL } from "../lib/constants";
 import type { Fixture, PredictionResult } from "../lib/types";
 
 interface PredictionPanelProps {
@@ -8,8 +9,6 @@ interface PredictionPanelProps {
   onRequireAuth: () => void;
   onPredicted: () => void;
 }
-
-const OUTCOME_LABEL: Record<string, string> = { H: "Victoria local", D: "Empate", A: "Victoria visitante" };
 
 
 
