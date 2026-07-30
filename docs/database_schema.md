@@ -21,7 +21,15 @@ exigen un token válido).
 | `id` | `varchar(36)` (PK) | UUID generado al registrar. |
 | `email` | `varchar(255)` | Único, indexado; normalizado a minúsculas en el backend. |
 | `password_hash` | `varchar(255)` | Hash `bcrypt` (con salt aleatorio por usuario); **nunca se guarda ni se compara texto plano**. |
+| `first_name` | `varchar(120)` | Nombre, requerido en el registro. |
+| `last_name` | `varchar(120)` | Apellido, requerido en el registro. |
+| `birth_date` | `date` | Requerido; el backend rechaza el registro si la edad calculada es menor de 18 años (`RegisterRequest.must_be_adult`, `app/backend/schemas.py`). |
+| `phone` | `varchar(30)` | Teléfono de contacto, requerido en el registro. |
 | `created_at` | `timestamptz` | Generado en el servidor. |
+
+El registro (`POST /api/v1/auth/register`) también exige `accepts_terms: true`
+(no se persiste como columna): el usuario declara ser mayor de 18 años y que
+los datos ingresados son correctos antes de crear la cuenta.
 
 La sesión se mantiene con un **JWT firmado** (`HS256`, 7 días de validez,
 `src/auth/tokens.py`), no con estado de sesión en la base de datos: el token

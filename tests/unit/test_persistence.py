@@ -23,6 +23,17 @@ from src.persistence.repository import (
 )
 
 
+def _user_kwargs(email: str, password_hash: str) -> dict:
+    return {
+        "email": email,
+        "password_hash": password_hash,
+        "first_name": "Ana",
+        "last_name": "García",
+        "birth_date": date(1990, 5, 20),
+        "phone": "+34 600 123 456",
+    }
+
+
 @pytest.fixture()
 def session():
     # SQLite en memoria: valida la logica del esquema y del repositorio sin
@@ -35,7 +46,7 @@ def session():
 
 
 def test_create_user_and_lookup_by_email_and_id(session) -> None:
-    user = create_user(session, email="fan@example.com", password_hash="hashed-value")
+    user = create_user(session, **_user_kwargs("fan@example.com", "hashed-value"))
     session.commit()
     assert get_user_by_email(session, email="fan@example.com").id == user.id
     assert get_user_by_id(session, user_id=user.id).email == "fan@example.com"
@@ -43,15 +54,15 @@ def test_create_user_and_lookup_by_email_and_id(session) -> None:
 
 
 def test_user_email_is_unique(session) -> None:
-    create_user(session, email="dup@example.com", password_hash="h1")
+    create_user(session, **_user_kwargs("dup@example.com", "h1"))
     session.commit()
     with pytest.raises(Exception):
-        create_user(session, email="dup@example.com", password_hash="h2")
+        create_user(session, **_user_kwargs("dup@example.com", "h2"))
         session.commit()
 
 
 def test_save_and_list_predictions_round_trips(session) -> None:
-    user = create_user(session, email="a@example.com", password_hash="h")
+    user = create_user(session, **_user_kwargs("a@example.com", "h"))
     session.commit()
     save_prediction(
         session, request_id="req-1", user_id=user.id, home_team="Real Madrid", away_team="Barcelona", match_date=date(2026, 9, 10),
@@ -67,8 +78,8 @@ def test_save_and_list_predictions_round_trips(session) -> None:
 
 
 def test_list_predictions_for_user_only_returns_that_users_rows(session) -> None:
-    user_a = create_user(session, email="a2@example.com", password_hash="h")
-    user_b = create_user(session, email="b2@example.com", password_hash="h")
+    user_a = create_user(session, **_user_kwargs("a2@example.com", "h"))
+    user_b = create_user(session, **_user_kwargs("b2@example.com", "h"))
     session.commit()
     save_prediction(
         session, request_id="req-a", user_id=user_a.id, home_team="Sevilla", away_team="Betis", match_date=date(2026, 9, 10),
@@ -105,7 +116,7 @@ def test_predictions_persist_across_new_sessions_on_the_same_engine() -> None:
     factory = sessionmaker(bind=engine, expire_on_commit=False)
 
     with factory() as first_session:
-        user = create_user(first_session, email="c@example.com", password_hash="h")
+        user = create_user(first_session, **_user_kwargs("c@example.com", "h"))
         first_session.commit()
         save_prediction(
             first_session, request_id="req-2", user_id=user.id, home_team="Valencia", away_team="Celta", match_date=date(2026, 10, 1),
@@ -143,7 +154,7 @@ def test_sqlite_memory_fallback_shares_schema_and_data_across_threads(monkeypatc
     try:
         init_schema(get_engine())
         with session_scope() as session:
-            user_id = create_user(session, email="thread@example.com", password_hash="h").id
+            user_id = create_user(session, **_user_kwargs("thread@example.com", "h")).id
 
         def save_from_this_thread() -> None:
             with session_scope() as session:
