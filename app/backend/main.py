@@ -2,29 +2,33 @@ from __future__ import annotations
 
 import logging
 from contextlib import asynccontextmanager
+from datetime import date
 from pathlib import Path
 from time import perf_counter
 from typing import AsyncIterator
 from uuid import uuid4
 
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from app.backend import fixtures as fixtures_catalog
 from app.backend.dependencies import AuthenticatedUser, require_current_user
 from app.backend.schemas import (
     AuthResponse,
     ErrorResponse,
     FeedbackRequest,
     FeedbackResponse,
+    FixturesResponse,
     HistoryResponse,
     LoginRequest,
     PredictionHistoryItem,
     PredictionRequest,
     PredictionResponse,
     RegisterRequest,
+    TeamsResponse,
     UserSummary,
 )
 from src.auth.errors import AuthError
@@ -75,9 +79,9 @@ MAX_PAYLOAD_BYTES = 4096
 app = FastAPI(title="LaLiga Prediction API", version="0.1.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=["*"],
     allow_methods=["POST", "GET"],
-    allow_headers=["Content-Type"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 
@@ -180,16 +184,22 @@ def register(payload: RegisterRequest, request: Request):
             if persistence_repository.get_user_by_email(session, email=payload.email) is not None:
                 raise AuthError("EMAIL_ALREADY_REGISTERED", "Ya existe una cuenta con ese email.", 409)
             user = persistence_repository.create_user(
-                session, email=payload.email, password_hash=hash_password(payload.password)
+                session,
+                email=payload.email,
+                password_hash=hash_password(payload.password),
+                first_name=payload.first_name,
+                last_name=payload.last_name,
+                birth_date=payload.birth_date,
+                phone=payload.phone,
             )
-            user_id, user_email = user.id, user.email
+            user_id, user_email, first_name, last_name = user.id, user.email, user.first_name, user.last_name
     except AuthError:
         raise
     except Exception:
         logger.exception("No se pudo registrar el usuario (base de datos no disponible).")
         return _error(request_id, "AUTH_UNAVAILABLE", "No se pudo completar el registro. Intenta de nuevo.", status_code=503)
     token = create_access_token(user_id=user_id, email=user_email)
-    return AuthResponse(access_token=token, user=UserSummary(id=user_id, email=user_email))
+    return AuthResponse(access_token=token, user=UserSummary(id=user_id, email=user_email, first_name=first_name, last_name=last_name))
 
 
 @app.post("/api/v1/auth/login", response_model=AuthResponse, responses={401: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
@@ -201,14 +211,14 @@ def login(payload: LoginRequest, request: Request):
             valid = user is not None and verify_password(payload.password, user.password_hash)
             if not valid:
                 raise AuthError("INVALID_CREDENTIALS", "Email o contraseña incorrectos.", 401)
-            user_id, user_email = user.id, user.email
+            user_id, user_email, first_name, last_name = user.id, user.email, user.first_name, user.last_name
     except AuthError:
         raise
     except Exception:
         logger.exception("No se pudo iniciar sesión (base de datos no disponible).")
         return _error(request_id, "AUTH_UNAVAILABLE", "No se pudo iniciar sesión. Intenta de nuevo.", status_code=503)
     token = create_access_token(user_id=user_id, email=user_email)
-    return AuthResponse(access_token=token, user=UserSummary(id=user_id, email=user_email))
+    return AuthResponse(access_token=token, user=UserSummary(id=user_id, email=user_email, first_name=first_name, last_name=last_name))
 
 
 @app.get("/api/v1/history", response_model=HistoryResponse, responses={401: {"model": ErrorResponse}, 503: {"model": ErrorResponse}})
@@ -279,6 +289,24 @@ def create_feedback(payload: FeedbackRequest, request: Request, current_user: Au
     return FeedbackResponse(feedback_id=stored.feedback_id)
 
 
-FRONTEND_PATH = ROOT / "app/frontend/public"
-if FRONTEND_PATH.exists():
-    app.mount("/", StaticFiles(directory=FRONTEND_PATH, html=True), name="frontend")
+@app.get("/api/v1/teams", response_model=TeamsResponse)
+def list_teams():
+    return TeamsResponse(items=fixtures_catalog.list_teams())
+
+
+@app.get("/api/v1/fixtures", response_model=FixturesResponse)
+def list_fixtures(
+    team: str | None = Query(default=None, description="Filtra por equipo (valor del catálogo, no el nombre visible)."),
+    days: int = Query(default=30, ge=1, le=365, description="Ventana de días desde hoy (ignorado si se pasa `team`)."),
+):
+    today = date.today()
+    if team:
+        items = fixtures_catalog.fixtures_for_team(team=team, today=today)
+    else:
+        items = fixtures_catalog.upcoming_fixtures(today=today, days=days)
+    return FixturesResponse(items=items)
+
+
+REACT_DIST = ROOT / "app/frontend-react/dist"
+if REACT_DIST.exists():
+    app.mount("/", StaticFiles(directory=REACT_DIST, html=True), name="frontend")
