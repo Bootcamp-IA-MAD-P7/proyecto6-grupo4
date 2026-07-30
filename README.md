@@ -172,8 +172,7 @@ Esta es la forma más simple: un solo comando levanta la página web, el servido
 docker compose up --build
 ```
 
-- Página web: [http://localhost:5173](http://localhost:5173)
-- Servidor de predicciones (API): [http://localhost:8000](http://localhost:8000) (comprobar que funciona con [http://localhost:8000/health](http://localhost:8000/health))
+- Página web y servidor de predicciones (mismo servicio, igual que en producción): [http://localhost:8000](http://localhost:8000) (comprobar que funciona con [http://localhost:8000/health](http://localhost:8000/health))
 - Base de datos: `localhost:5432`
 
 **Para apagarlo todo:** `docker compose down` (los datos guardados en la base de datos se conservan para la próxima vez).

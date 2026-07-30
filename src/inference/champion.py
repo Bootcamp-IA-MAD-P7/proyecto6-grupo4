@@ -15,6 +15,7 @@ from src.data.historical_features import (
     build_historical_features,
 )
 from src.data.laliga_loader import TARGET_COLUMN, load_processed_dataset
+from src.evaluation.artifact_integrity import verify_champion_artifact
 
 
 class InferenceError(Exception):
@@ -29,10 +30,32 @@ class ChampionPredictor:
     def __init__(self, dataset_path: str | Path, artifact_path: str | Path, metadata_path: str | Path) -> None:
         self.history = load_processed_dataset(dataset_path)
         self.artifact_path = Path(artifact_path)
-        self.metadata = json.loads(Path(metadata_path).read_text(encoding="utf-8"))
+        self.metadata_path = Path(metadata_path)
+        if not self.metadata_path.exists():
+            raise InferenceError("MODEL_UNAVAILABLE", "La metadata del Champion no está disponible.", 503)
+        self.metadata = json.loads(self.metadata_path.read_text(encoding="utf-8"))
         if not self.artifact_path.exists():
             raise InferenceError("MODEL_UNAVAILABLE", "El Champion no está disponible.", 503)
+        integrity = verify_champion_artifact(self.artifact_path, self.metadata_path)
+        if not integrity["valid"]:
+            raise InferenceError(
+                "MODEL_INTEGRITY_ERROR",
+                "El Champion no coincide con su identidad versionada.",
+                503,
+            )
         self.pipeline = joblib.load(self.artifact_path)
+        if self.metadata.get("feature_columns") != list(MODEL_FEATURES):
+            raise InferenceError(
+                "MODEL_INTEGRITY_ERROR",
+                "El contrato de variables del Champion no coincide con el backend.",
+                503,
+            )
+        if set(self.pipeline.classes_) != {"H", "D", "A"}:
+            raise InferenceError(
+                "MODEL_INTEGRITY_ERROR",
+                "Las clases del Champion no coinciden con el contrato H/D/A.",
+                503,
+            )
         self.teams = set(self.history["home_team"]) | set(self.history["away_team"])
         self.latest_history_date = self.history["match_date"].max()
         self.latest_snapshot = HistoricalFeatureSnapshot.from_frame(self.history)

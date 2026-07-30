@@ -1,3 +1,9 @@
+"""[HISTÓRICO T-4.1] Entrena el ensemble A+D original.
+
+No es el flujo vigente: el Champion actual es ENSEMBLE_ABCD, generado por
+`scripts/run_ensemble_abcd.py` + `scripts/select_champion.py`. Este script se
+conserva por trazabilidad de T-4.1, cuando B y C aún no calificaban.
+"""
 from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))

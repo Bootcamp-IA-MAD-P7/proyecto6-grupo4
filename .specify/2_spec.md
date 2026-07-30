@@ -88,7 +88,7 @@ Docker aparece también en la lista general de tecnologías. Por esta ambigüeda
 | Fórmula de overfitting | Aprobada 2026-07-23 (T-0.4) | `gap = macro-F1(train) − macro-F1(validación)`, en puntos absolutos; umbral `< 0.05` sobre medias de CV |
 | Estrategia de partición | Aprobada 2026-07-23 (T-0.4/T-1.5) | Cronológica por temporada, congelada: train 1995-96–2019-20 (9.607 filas), validación 2020-21–2022-23 (1.197 filas), test 2023-24–2025-26 (1.140 filas, protegido); semilla `42` |
 | Modelos A, B, C y D | Aprobada 2026-07-24 (T-0.5) | A: regresión logística multinomial (I1). B: gradient boosting (I2). C: random forest (I3). D: SVM kernel RBF (I4). Detalle en `docs/decisions/0003-four-candidate-models.md` |
-| Tecnología frontend | Aprobada 2026-07-24 (T-0.6) | React + TypeScript con Vite; implementación propiedad de I3 |
+| Tecnología frontend | Aprobada 2026-07-24 (T-0.6); revisada 2026-07-29 | React + TypeScript con Vite fue lo aprobado en T-0.6, pero la implementación real en `app/frontend/public/` es HTML + CSS + JavaScript sin build, sin React/TypeScript/Vite y sin `package.json`. Propiedad de I3. |
 | Tecnología backend | Aprobada 2026-07-24 (T-0.6) | FastAPI + Pydantic, servido con Uvicorn; implementación propiedad de I4 |
 | Arquitectura de aplicación | Aprobada 2026-07-24 (T-0.6) | Frontend y backend separados: React consume por HTTP/JSON la API FastAPI versionada |
 | Persistencia | Pendiente | No seleccionada |
@@ -508,7 +508,7 @@ Contrato preliminar versionado para que I3 e I4 puedan trabajar con mocks compat
 
 Arquitectura aprobada por I1–I4 en T-0.6:
 
-- I3 — César desarrolla el frontend en `app/frontend/` con React, TypeScript y Vite.
+- I3 — César desarrolla el frontend en `app/frontend/`. Aprobado originalmente con React, TypeScript y Vite; la implementación entregada es HTML + CSS + JavaScript plano, servido como estático (sin build, sin `package.json`).
 - I4 — Fernanda desarrolla el backend en `app/backend/` con FastAPI, Pydantic y Uvicorn.
 - El frontend consume el backend mediante HTTP y JSON; no accede directamente al modelo ni a los datos procesados.
 - I4 no modifica `app/frontend/` e I3 no modifica `app/backend/` sin coordinación, para evitar solapamientos.

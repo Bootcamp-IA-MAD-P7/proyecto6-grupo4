@@ -105,6 +105,22 @@ def test_preprocessing_removes_exact_duplicate_and_invalid_rows() -> None:
     assert cleaning["invalid_rows_removed"] == 1
 
 
+def test_preprocessing_normalizes_known_team_name_typos() -> None:
+    historical = pd.DataFrame(
+        [
+            ["1998-99", "31-08-1998", "Real Madrid", "Villareal", 4, 1, "H", 1, 1, "D"],
+            ["2000-01", "10-09-2000", "Villarreal", "Celta", 1, 1, "D", 1, 1, "D"],
+        ],
+        columns=["Season", "Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG", "FTR", "HTHG", "HTAG", "HTR"],
+    )
+
+    result, _ = preprocess_sources(historical, _detailed())
+
+    teams = set(result["home_team"]) | set(result["away_team"])
+    assert "Villareal" not in teams
+    assert "Villarreal" in teams
+
+
 def test_processed_csv_round_trip_preserves_contract(tmp_path: Path) -> None:
     expected = build_canonical_dataset(_historical(), _detailed())
     path = tmp_path / "clean.csv"

@@ -1,4 +1,17 @@
-"""Entrena el componente SVC RBF calibrado para el ensemble."""
+"""Diagnóstico de calidad de calibración del SVC RBF (histórico, no productivo).
+
+Este script NO forma parte del flujo vigente de entrenamiento. El SVC
+calibrado que realmente se usa en el candidato D y en el Champion
+ENSEMBLE_ABCD se entrena vía `scripts/run_candidate_d.py`, que reutiliza el
+mismo `build_calibrated_svc` de `src/ensemble/svc_calibrated.py`.
+
+Este script se conserva únicamente para volver a calcular las métricas
+específicas de calibración (Brier multiclase, ECE por bins,
+error de suma de probabilidades) que `train_candidate_d` no reporta. El
+artefacto y las métricas que genera (`models/ensemble/ensemble_svc_rbf_calibrated_v1.joblib`,
+`reports/experiments/ensemble_svc_calibrated_metrics.json`) son solo un
+componente de diagnóstico: ningún script de producción los lee.
+"""
 
 from __future__ import annotations
 

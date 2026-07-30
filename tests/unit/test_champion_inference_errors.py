@@ -14,6 +14,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from src.data.historical_features import MODEL_CATEGORICAL_FEATURES, MODEL_FEATURES, MODEL_NUMERIC_FEATURES
 from src.data.laliga_loader import CANONICAL_COLUMNS, TARGET_COLUMN
+from src.evaluation.artifact_integrity import build_artifact_identity
 from src.inference.champion import ChampionPredictor, InferenceError
 
 
@@ -54,7 +55,17 @@ def _write_dataset_and_artifact(tmp_path):
     joblib.dump(pipeline, artifact_path)
 
     metadata_path = tmp_path / "champion_metadata.json"
-    metadata_path.write_text(json.dumps({"champion_model_version": "test_v1", "source_data_sha256": "sha"}), encoding="utf-8")
+    metadata_path.write_text(
+        json.dumps(
+            {
+                "champion_model_version": "test_v1",
+                "source_data_sha256": "sha",
+                "feature_columns": list(MODEL_FEATURES),
+                **build_artifact_identity(artifact_path),
+            }
+        ),
+        encoding="utf-8",
+    )
     return dataset_path, artifact_path, metadata_path
 
 
@@ -91,3 +102,28 @@ def test_predictor_succeeds_for_a_known_team_and_valid_future_date(tmp_path) -> 
     result = predictor.predict("Real Madrid", "Barcelona", date(2024, 6, 1))
     assert result["prediction"] in {"H", "D", "A"}
     assert abs((result["H"] + result["D"] + result["A"]) - 1.0) < 1e-6
+
+
+def test_predictor_rejects_an_artifact_with_a_different_hash(tmp_path) -> None:
+    dataset_path, artifact_path, metadata_path = _write_dataset_and_artifact(tmp_path)
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    metadata["artifact_sha256"] = "0" * 64
+    metadata_path.write_text(json.dumps(metadata), encoding="utf-8")
+
+    with pytest.raises(InferenceError) as exc_info:
+        ChampionPredictor(dataset_path, artifact_path, metadata_path)
+
+    assert exc_info.value.code == "MODEL_INTEGRITY_ERROR"
+    assert exc_info.value.status_code == 503
+
+
+def test_predictor_rejects_a_different_feature_contract(tmp_path) -> None:
+    dataset_path, artifact_path, metadata_path = _write_dataset_and_artifact(tmp_path)
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    metadata["feature_columns"] = list(reversed(MODEL_FEATURES))
+    metadata_path.write_text(json.dumps(metadata), encoding="utf-8")
+
+    with pytest.raises(InferenceError) as exc_info:
+        ChampionPredictor(dataset_path, artifact_path, metadata_path)
+
+    assert exc_info.value.code == "MODEL_INTEGRITY_ERROR"
