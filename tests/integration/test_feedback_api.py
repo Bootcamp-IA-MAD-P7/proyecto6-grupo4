@@ -7,9 +7,19 @@ from app.backend.main import app
 from src.feedback.store import load_feedback
 
 
-def test_feedback_endpoint_stores_valid_feedback_and_is_recoverable(tmp_path, monkeypatch) -> None:
+def test_feedback_endpoint_requires_authentication(tmp_path, monkeypatch) -> None:
     monkeypatch.setattr(backend_main, "FEEDBACK_PATH", tmp_path / "predictions_feedback.csv")
     client = TestClient(app)
+    response = client.post(
+        "/api/v1/feedback",
+        json={"home_team": "Real Madrid", "away_team": "Barcelona", "match_date": "2026-09-10", "actual_result": "H"},
+    )
+    assert response.status_code == 401
+    assert response.json()["error"] == "UNAUTHORIZED"
+
+
+def test_feedback_endpoint_stores_valid_feedback_and_is_recoverable(tmp_path, monkeypatch, client, auth_headers) -> None:
+    monkeypatch.setattr(backend_main, "FEEDBACK_PATH", tmp_path / "predictions_feedback.csv")
     response = client.post(
         "/api/v1/feedback",
         json={
@@ -20,6 +30,7 @@ def test_feedback_endpoint_stores_valid_feedback_and_is_recoverable(tmp_path, mo
             "predicted_result": "D",
             "model_version": "ensemble_abcd_soft_voting_v1",
         },
+        headers=auth_headers,
     )
     assert response.status_code == 200
     body = response.json()
@@ -32,9 +43,8 @@ def test_feedback_endpoint_stores_valid_feedback_and_is_recoverable(tmp_path, mo
     assert recovered[0]["actual_result"] == "H"
 
 
-def test_feedback_endpoint_rejects_same_home_and_away_team(tmp_path, monkeypatch) -> None:
+def test_feedback_endpoint_rejects_same_home_and_away_team(tmp_path, monkeypatch, client, auth_headers) -> None:
     monkeypatch.setattr(backend_main, "FEEDBACK_PATH", tmp_path / "predictions_feedback.csv")
-    client = TestClient(app)
     response = client.post(
         "/api/v1/feedback",
         json={
@@ -43,14 +53,14 @@ def test_feedback_endpoint_rejects_same_home_and_away_team(tmp_path, monkeypatch
             "match_date": "2026-09-10",
             "actual_result": "H",
         },
+        headers=auth_headers,
     )
     assert response.status_code == 422
     assert response.json()["error"] == "INVALID_INPUT"
 
 
-def test_feedback_endpoint_rejects_invalid_actual_result(tmp_path, monkeypatch) -> None:
+def test_feedback_endpoint_rejects_invalid_actual_result(tmp_path, monkeypatch, client, auth_headers) -> None:
     monkeypatch.setattr(backend_main, "FEEDBACK_PATH", tmp_path / "predictions_feedback.csv")
-    client = TestClient(app)
     response = client.post(
         "/api/v1/feedback",
         json={
@@ -59,5 +69,6 @@ def test_feedback_endpoint_rejects_invalid_actual_result(tmp_path, monkeypatch) 
             "match_date": "2026-09-10",
             "actual_result": "X",
         },
+        headers=auth_headers,
     )
     assert response.status_code == 422

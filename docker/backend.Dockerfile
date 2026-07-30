@@ -14,7 +14,7 @@ RUN mkdir -p models/champion && \
 
 COPY src ./src
 COPY app/backend ./app/backend
-COPY app/frontend/public ./app/frontend/public
+COPY app/frontend-react/dist ./app/frontend-react/dist
 COPY data/processed/laliga_matches_clean.csv ./data/processed/laliga_matches_clean.csv
 COPY reports/experiments/champion_metadata.json ./reports/experiments/champion_metadata.json
 

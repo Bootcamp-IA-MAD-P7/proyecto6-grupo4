@@ -7,13 +7,29 @@ from datetime import date
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from src.persistence.models import FeedbackRecord, PredictionRecord
+from src.persistence.models import FeedbackRecord, PredictionRecord, UserRecord
+
+
+def create_user(session: Session, *, email: str, password_hash: str) -> UserRecord:
+    record = UserRecord(email=email, password_hash=password_hash)
+    session.add(record)
+    session.flush()
+    return record
+
+
+def get_user_by_email(session: Session, *, email: str) -> UserRecord | None:
+    return session.scalars(select(UserRecord).where(UserRecord.email == email)).first()
+
+
+def get_user_by_id(session: Session, *, user_id: str) -> UserRecord | None:
+    return session.get(UserRecord, user_id)
 
 
 def save_prediction(
     session: Session,
     *,
     request_id: str,
+    user_id: str,
     home_team: str,
     away_team: str,
     match_date: date,
@@ -27,6 +43,7 @@ def save_prediction(
 ) -> PredictionRecord:
     record = PredictionRecord(
         request_id=request_id,
+        user_id=user_id,
         home_team=home_team,
         away_team=away_team,
         match_date=match_date,
@@ -41,6 +58,16 @@ def save_prediction(
     session.add(record)
     session.flush()
     return record
+
+
+def list_predictions_for_user(session: Session, *, user_id: str) -> list[PredictionRecord]:
+    return list(
+        session.scalars(
+            select(PredictionRecord)
+            .where(PredictionRecord.user_id == user_id)
+            .order_by(PredictionRecord.created_at.desc())
+        )
+    )
 
 
 def save_feedback(

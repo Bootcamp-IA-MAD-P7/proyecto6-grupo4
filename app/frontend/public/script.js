@@ -32,7 +32,6 @@ const API_ORIGIN =
   window.location.port === "5173"
     ? `${window.location.protocol}//${window.location.hostname}:8000`
     : window.location.origin;
-const API_URL = `${API_ORIGIN}/api/v1/predictions`;
 
 // Pesos calculados de verdad con permutation importance sobre el Champion
 // (scripts/run_permutation_importance.py, medido en validation, nunca en
@@ -53,6 +52,23 @@ const FACTORS = [
   { label: "Descanso entre partidos", weight: 0.0245, icon: "⏱️" },
 ];
 
+const TOKEN_KEY = "laliga_predictor_token";
+const EMAIL_KEY = "laliga_predictor_email";
+
+// --- Elementos ---
+const authSection = document.getElementById("auth-section");
+const appContent = document.getElementById("app-content");
+const userBar = document.getElementById("user-bar");
+const userEmailEl = document.getElementById("user-email");
+const logoutBtn = document.getElementById("logout-btn");
+
+const tabLogin = document.getElementById("tab-login");
+const tabRegister = document.getElementById("tab-register");
+const loginForm = document.getElementById("login-form");
+const registerForm = document.getElementById("register-form");
+const loginError = document.getElementById("login-error");
+const registerError = document.getElementById("register-error");
+
 const homeSelect = document.getElementById("home-team");
 const awaySelect = document.getElementById("away-team");
 const dateInput = document.getElementById("match-date");
@@ -60,27 +76,71 @@ const form = document.getElementById("predict-form");
 const resultSection = document.getElementById("result-section");
 const historyList = document.getElementById("history-list");
 const historyEmpty = document.getElementById("history-empty");
-const clearHistoryBtn = document.getElementById("clear-history");
+const refreshHistoryBtn = document.getElementById("refresh-history");
 
-function populateSelects() {
-  TEAMS.forEach((team) => {
-    homeSelect.add(new Option(team.label, team.value));
-    awaySelect.add(new Option(team.label, team.value));
-  });
+// --- Sesión ---
+function getToken() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+function setSession(token, email) {
+  localStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem(EMAIL_KEY, email);
+}
+
+function clearSession() {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(EMAIL_KEY);
+}
+
+function showApp(email) {
+  authSection.hidden = true;
+  appContent.hidden = false;
+  userBar.hidden = false;
+  userEmailEl.textContent = email;
+}
+
+function showAuth() {
+  clearSession();
+  authSection.hidden = false;
+  appContent.hidden = true;
+  userBar.hidden = true;
+  resultSection.hidden = true;
+}
+
+// --- Llamadas a la API ---
+async function apiFetch(path, options = {}) {
+  const token = getToken();
+  const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const response = await fetch(`${API_ORIGIN}${path}`, { ...options, headers });
+  if (response.status === 401 && path !== "/api/v1/auth/login" && path !== "/api/v1/auth/register") {
+    showAuth();
+    throw new Error("Tu sesión expiró. Inicia sesión de nuevo.");
+  }
+  const payload = await response.json();
+  if (!response.ok) throw new Error(payload.message || "Ocurrió un error inesperado.");
+  return payload;
 }
 
 async function predict(home, away, date) {
-  const response = await fetch(API_URL, {
-    method: "POST", headers: { "Content-Type": "application/json" },
+  const payload = await apiFetch("/api/v1/predictions", {
+    method: "POST",
     body: JSON.stringify({ home_team: home, away_team: away, match_date: date }),
   });
-  const payload = await response.json();
-  if (!response.ok) throw new Error(payload.message || "No se pudo obtener la predicción.");
   const labels = { H: "Victoria local", D: "Empate", A: "Victoria visitante" };
   const homeProb = payload.probabilities.H;
   const drawProb = payload.probabilities.D;
   const awayProb = payload.probabilities.A;
   return { home: Math.round(homeProb * 100), draw: Math.round(drawProb * 100), away: Math.round(awayProb * 100), outcome: labels[payload.prediction], confidence: Math.round(Math.max(homeProb, drawProb, awayProb) * 100) };
+}
+
+// --- UI: selects, gauge, factores ---
+function populateSelects() {
+  TEAMS.forEach((team) => {
+    homeSelect.add(new Option(team.label, team.value));
+    awaySelect.add(new Option(team.label, team.value));
+  });
 }
 
 function setGauge(value) {
@@ -113,18 +173,37 @@ function formatDate(dateStr) {
   return `${d}/${m}/${y}`;
 }
 
-function addHistory(home, away, date, result) {
-  const li = document.createElement("li");
-  li.className = "history__item";
-  li.innerHTML = `
-    <div>
-      <strong>${home}</strong> vs <strong>${away}</strong>
-      <br><small>${formatDate(date)} · ${result.outcome}</small>
-    </div>
-    <span class="bar__value">${result.confidence}%</span>
-  `;
-  historyList.prepend(li);
+// --- Historial (persistido en el backend, por usuario) ---
+function renderHistory(items) {
+  historyList.innerHTML = "";
+  if (!items.length) {
+    historyEmpty.hidden = false;
+    return;
+  }
   historyEmpty.hidden = true;
+  const labels = { H: "Victoria local", D: "Empate", A: "Victoria visitante" };
+  items.forEach((item) => {
+    const confidence = Math.round(Math.max(item.probabilities.H, item.probabilities.D, item.probabilities.A) * 100);
+    const li = document.createElement("li");
+    li.className = "history__item";
+    li.innerHTML = `
+      <div>
+        <strong>${item.home_team}</strong> vs <strong>${item.away_team}</strong>
+        <br><small>${formatDate(item.match_date)} · ${labels[item.prediction]}</small>
+      </div>
+      <span class="bar__value">${confidence}%</span>
+    `;
+    historyList.appendChild(li);
+  });
+}
+
+async function loadHistory() {
+  try {
+    const payload = await apiFetch("/api/v1/history");
+    renderHistory(payload.items);
+  } catch (error) {
+    // Sesión ya manejada por apiFetch (redirige a login si expiró).
+  }
 }
 
 function showResult(home, away, result) {
@@ -148,6 +227,61 @@ function showResult(home, away, result) {
   resultSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
+// --- Auth: tabs, login, registro, logout ---
+function switchTab(target) {
+  const showLogin = target === "login";
+  tabLogin.classList.toggle("auth__tab--active", showLogin);
+  tabRegister.classList.toggle("auth__tab--active", !showLogin);
+  tabLogin.setAttribute("aria-selected", String(showLogin));
+  tabRegister.setAttribute("aria-selected", String(!showLogin));
+  loginForm.hidden = !showLogin;
+  registerForm.hidden = showLogin;
+  loginError.hidden = true;
+  registerError.hidden = true;
+}
+
+tabLogin.addEventListener("click", () => switchTab("login"));
+tabRegister.addEventListener("click", () => switchTab("register"));
+
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  loginError.hidden = true;
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+  try {
+    const payload = await apiFetch("/api/v1/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
+    setSession(payload.access_token, payload.user.email);
+    showApp(payload.user.email);
+    loadHistory();
+  } catch (error) {
+    loginError.textContent = error.message;
+    loginError.hidden = false;
+  }
+});
+
+registerForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  registerError.hidden = true;
+  const email = document.getElementById("register-email").value.trim();
+  const password = document.getElementById("register-password").value;
+  try {
+    const payload = await apiFetch("/api/v1/auth/register", { method: "POST", body: JSON.stringify({ email, password }) });
+    setSession(payload.access_token, payload.user.email);
+    showApp(payload.user.email);
+    loadHistory();
+  } catch (error) {
+    registerError.textContent = error.message;
+    registerError.hidden = false;
+  }
+});
+
+logoutBtn.addEventListener("click", () => {
+  showAuth();
+  switchTab("login");
+  loginForm.reset();
+});
+
+// --- Predicción ---
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const home = homeSelect.value;
@@ -165,16 +299,13 @@ form.addEventListener("submit", async (e) => {
   try {
     const result = await predict(home, away, date);
     showResult(homeLabel, awayLabel, result);
-    addHistory(homeLabel, awayLabel, date, result);
+    loadHistory();
   } catch (error) {
     alert(error.message);
   }
 });
 
-clearHistoryBtn.addEventListener("click", () => {
-  historyList.innerHTML = "";
-  historyEmpty.hidden = false;
-});
+refreshHistoryBtn.addEventListener("click", loadHistory);
 
 homeSelect.addEventListener("change", () => {
   if (homeSelect.value === awaySelect.value) awaySelect.value = "";
@@ -184,7 +315,15 @@ awaySelect.addEventListener("change", () => {
   if (awaySelect.value === homeSelect.value) homeSelect.value = "";
 });
 
-// Default date to today
+// --- Arranque ---
 dateInput.valueAsDate = new Date();
-
 populateSelects();
+
+const storedToken = getToken();
+const storedEmail = localStorage.getItem(EMAIL_KEY);
+if (storedToken && storedEmail) {
+  showApp(storedEmail);
+  loadHistory();
+} else {
+  showAuth();
+}
