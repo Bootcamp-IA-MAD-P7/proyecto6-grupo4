@@ -2,7 +2,9 @@
 
 ## Estado del análisis
 
-Este informe cubre el preprocesamiento T-1.4 y el EDA T-1.3 del dataset canónico provisional de LaLiga. El target aprobado es `result_ft`: **H** (victoria local), **D** (empate) y **A** (victoria visitante). El flujo es reproducible, pero **no cierra `Data Ready`**: todavía faltan las features históricas comunes y los mocks de frontend/backend.
+Este informe cubre el preprocesamiento T-1.4 y el EDA T-1.3 del dataset canónico provisional de LaLiga, en el estado del proyecto a esa fecha (28 temporadas, hasta 2023-06-04). El target aprobado es `result_ft`: **H** (victoria local), **D** (empate) y **A** (victoria visitante). En ese momento el flujo era reproducible pero **no cerraba `Data Ready`**.
+
+> **Nota (2026-07-30):** el gate `Data Ready` ya está cerrado desde T-1.8 (26/07/2026; ver `.specify/4_tasks.md`), con las features históricas comunes generadas y los cuatro candidatos entrenados sobre el dataset final (11.944 partidos, hasta la temporada 2025-26). Este documento describe el EDA inicial, previo a ese cierre; no se actualizó tras completarse `Data Ready` porque el análisis exploratorio en sí no cambió, solo el alcance temporal del dataset final.
 
 ## Resumen ejecutivo
 
@@ -126,7 +128,7 @@ No se evalúa señal de cuotas en este EDA porque las observaciones disponibles 
 
 ## 8. Matrices de confusión descriptivas
 
-Los splits ya están congelados, pero todavía no se entrena ningún candidato porque el gate `Data Ready` sigue abierto. Se incluyen dos reglas de referencia:
+Los splits ya están congelados; en el momento de este informe todavía no se entrenaba ningún candidato porque el gate `Data Ready` seguía abierto (ver nota al inicio del documento: ya está cerrado). Se incluyen dos reglas de referencia:
 
 1. **Clase mayoritaria** sobre el conjunto de desarrollo (train + validation): siempre predice H y alcanza 47.4%. Evidencia que accuracy puede ocultar un fallo total en D y A.
 
