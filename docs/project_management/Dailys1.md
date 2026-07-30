@@ -195,9 +195,39 @@ Este documento se actualizará al finalizar cada daily. Solo contendrá informac
 - Decisiones: `T-5.4` y el Nivel Avanzado quedan cerrados. Se prioriza el cierre de Fase 7 (`T-7.1`–`T-7.4`): revisión final de métricas, presentaciones, README, smoke test y checklist, sin añadir alcance de Nivel Experto.
 - Evidencias: PR #71, PR #72 y PR #73; `render.yaml`; `reports/experiments/deployment_verification.md`; `https://laliga-predictor-grupo4.onrender.com/`; y `.specify/4_tasks.md` con el cierre de `T-5.4`.
 
+## Daily 30/07/2026
+
+### Arnaldo
+
+- Realizado: integró en `develop` la PR #74 de integridad de modelo y evaluación, mantuvo la trazabilidad de los cierres técnicos y completó el registro final de dailys y seguimiento del tablero.
+- Siguiente: verificar que el cierre de Fase 7 incluya evidencia de reproducibilidad de datos, compatibilidad del Champion y smoke test de entrega.
+- Bloqueos: ninguno técnico registrado.
+
+### Johans
+
+- Realizado: corrigió el alias `Villareal` → `Villarreal`, regeneró dataset, splits, features, candidatos y Champion; completó tuning reproducible de B, interpretabilidad del Champion y el contrato de API. También integró autenticación, historial de usuario, frontend React servido por FastAPI, panel de información de métricas y una revisión exhaustiva con 34 correcciones.
+- Siguiente: cerrar `T-7.1` validando métricas, overfitting y consistencia entre el informe, los artefactos y la aplicación.
+- Bloqueos: ninguno técnico registrado.
+
+### César
+
+- Realizado: dejó preparada la presentación técnica de LaLiga Predictor y contribuyó a la base React integrada con el backend.
+- Siguiente: coordinar el cierre de `T-7.2`, verificar la presentación de negocio y participar en el ensayo de demo y la checklist final.
+- Bloqueos: ninguno registrado.
+
+### Fernanda
+
+- Realizado: revalidó el despliegue público de Render tras actualizar `develop`; comprobó interfaz, `/health`, Champion, hash de datos, predicción y errores contractuales. Documentó la revalidación y alineó la referencia de release de Docker. El informe técnico del commit desplegado registra 91 tests aprobados.
+- Siguiente: aportar la evidencia técnica de despliegue, latencia y recuperación a `T-7.3` y `T-7.4`; ejecutar el smoke test final de la demo.
+- Bloqueos: ninguno técnico. El despliegue requiere acción manual en Render tras futuras fusiones porque el auto-despliegue está desactivado.
+
+### Decisiones y evidencias
+
+- Decisiones: se mantiene congelado el alcance; no se inicia Nivel Experto. Permanecen abiertas únicamente las tareas de entrega `T-7.1`–`T-7.4`, que requieren revisión final de métricas, presentaciones, README/checklist y smoke test antes de considerarlas terminadas.
+- Evidencias: PR #74–#86; `reports/technical_report.md`; `reports/experiments/deployment_verification.md`; `docs/business_presentation/laliga_predictor_presentacion_negocio.pptx`; `docs/technical_presentation/proy6_g4_presentacion_tecnica.pptx`; `README.md`; y `https://laliga-predictor-grupo4.onrender.com/`.
+
 ## Próximas dailys
 
-- 30/07/2026.
 
 ## Plantilla de actualización
 
