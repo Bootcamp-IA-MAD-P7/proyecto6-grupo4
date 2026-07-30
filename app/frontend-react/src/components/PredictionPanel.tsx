@@ -66,7 +66,7 @@ export function PredictionPanel({ fixture, onRequireAuth, onPredicted }: Predict
     if (!fixture) return;
     if (!isAuthenticated) return;
     if (!fixture.has_history) {
-      setError("Este partido incluye un equipo reci\u00E9n ascendido: a\u00FAn no hay hist\u00F3rico suficiente para predecirlo.");
+      setError("Este partido incluye un equipo recién ascendido: aún no hay histórico suficiente para predecirlo.");
       return;
     }
 
@@ -83,7 +83,7 @@ export function PredictionPanel({ fixture, onRequireAuth, onPredicted }: Predict
       })
       .catch((err) => {
         if (cancelled) return;
-        setError(err instanceof ApiRequestError ? err.message : "No se pudo calcular la predicci\u00F3n.");
+        setError(err instanceof ApiRequestError ? err.message : "No se pudo calcular la predicción.");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -98,7 +98,7 @@ export function PredictionPanel({ fixture, onRequireAuth, onPredicted }: Predict
   if (!fixture) {
     return (
       <section className="panel prediction-panel prediction-panel--empty">
-        <p>Selecciona un partido de la lista para ver su predicci\u00F3n.</p>
+        <p>Selecciona un partido de la lista para ver su predicción.</p>
       </section>
     );
   }
@@ -116,14 +116,14 @@ export function PredictionPanel({ fixture, onRequireAuth, onPredicted }: Predict
 
       {!isAuthenticated && (
         <div className="prediction-panel__locked">
-          <p>Inicia sesi\u00F3n para ver la predicci\u00F3n de este partido.</p>
+          <p>Inicia sesión para ver la predicción de este partido.</p>
           <button type="button" className="btn btn--primary" onClick={onRequireAuth}>
-            Iniciar sesi\u00F3n
+            Iniciar sesión
           </button>
         </div>
       )}
 
-      {isAuthenticated && loading && <p className="upcoming__hint">Calculando predicci\u00F3n\u2026</p>}
+      {isAuthenticated && loading && <p className="upcoming__hint">Calculando predicción…</p>}
       {isAuthenticated && error && <p className="prediction-panel__error">{error}</p>}
 
       {isAuthenticated && result && (
